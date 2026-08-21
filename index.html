@@ -453,6 +453,11 @@
         }
         .view-all-btn:active { transform: scale(.99); }
         .view-all-details { margin-top: 10px; }
+
+/* Public view: everyone can see data, only unlocked Admin can edit */
+.icon-edit-btn, .delete-form-btn { display:none !important; }
+body.admin-mode .icon-edit-btn { display:block !important; }
+body.admin-mode .delete-form-btn { display:block !important; }
 </style>
 
     <!-- Firebase -->
@@ -689,12 +694,13 @@
                     <div class="settings-user-email" id="settingsUserEmail"></div>
                 </div>
                 <div class="settings-actions">
-                    <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" onclick="toggleSettings(false);openAddForm()">➕ New Input</button>
-                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" onclick="document.getElementById('excelInput').click()">📊 Import Excel</button>
-                    <button id="settingsResetBtn" class="settings-action settings-reset hidden-by-role" onclick="resetAllData()">🗑 Reset Data</button>
+                    <button id="adminLoginBtn" class="settings-action settings-users" onclick="adminLogin()">🔐 Admin Login</button>
+                    <button id="settingsInputBtn" class="settings-action settings-input" style="display:none" onclick="toggleSettings(false);openAddForm()">➕ New Input</button>
+                    <button id="settingsExcelBtn" class="settings-action settings-excel" style="display:none" onclick="document.getElementById('excelInput').click()">📊 Import Excel</button>
+                    <button id="settingsResetBtn" class="settings-action settings-reset" style="display:none" onclick="resetAllData()">🗑 Reset Data</button>
                     <button class="settings-action settings-dark" onclick="toggleTheme()" id="themeToggleBtn">🌙 Dark Mode</button>
-                    <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" onclick="toggleAdminPanel()">👥 User List</button>
-                    <button class="settings-action settings-logout" onclick="logoutFirebase()">🚪 Logout</button>
+                    <button id="settingsUsersBtn" class="settings-action settings-users" style="display:none" onclick="toggleAdminPanel()">👥 User List</button>
+                    <button id="adminLogoutBtn" class="settings-action settings-logout" style="display:none" onclick="adminLogout()">🔒 Admin Logout</button>
                 </div>
                 <input type="file" id="excelInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none" onchange="importFromExcel(event)">
                 <div id="settingsAdminBox" class="settings-admin-box">
@@ -842,6 +848,7 @@
         let dataList = [];
         let currentUser = null;
         let currentRole = 'user';
+        const ADMIN_PIN = '7288';
         let authMode = 'login';
         let firebaseInitialized = false;
         const SUPER_ADMIN_EMAIL = 'sattar124@gmail.com';
@@ -920,15 +927,33 @@
 
         function roleIsAdmin() { return currentRole === 'admin'; }
 
+        function adminLogin() {
+            const pin = prompt('Enter Admin PIN:');
+            if (pin === null) return;
+            if (pin !== ADMIN_PIN) return alert('Wrong Admin PIN.');
+            currentRole = 'admin';
+            document.body.classList.add('admin-mode');
+            applyRoleUI();
+            alert('Admin mode enabled.');
+        }
+
+        function adminLogout() {
+            currentRole = 'user';
+            document.body.classList.remove('admin-mode');
+            document.getElementById('settingsAdminBox')?.classList.remove('open');
+            applyRoleUI();
+            goHome();
+        }
+
         function applyRoleUI() {
             const admin = roleIsAdmin();
-            ['settingsInputBtn','settingsExcelBtn','settingsResetBtn','settingsUsersBtn'].forEach(id => {
+            document.body.classList.toggle('admin-mode', admin);
+            ['settingsInputBtn','settingsExcelBtn','settingsResetBtn','settingsUsersBtn','adminLogoutBtn'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.classList.toggle('hidden-by-role', !admin);
+                if (el) el.style.display = admin ? 'block' : 'none';
             });
-            document.querySelectorAll('.icon-edit-btn, .delete-form-btn').forEach(el => {
-                el.classList.toggle('hidden-by-role', !admin);
-            });
+            const loginBtn = document.getElementById('adminLoginBtn');
+            if (loginBtn) loginBtn.style.display = admin ? 'none' : 'block';
         }
 
         async function handleFirebaseAuth(user) {
@@ -1024,13 +1049,23 @@
             closeAdminPage();
         }
 
-        function initializeFirebaseUI() {
-            if (firebaseInitialized || !window.firebaseAuth || !window.firebaseFns) return;
+        async function initializePublicApp() {
+            if (firebaseInitialized || !window.firebaseFns) return;
             firebaseInitialized = true;
-            window.firebaseFns.onAuthStateChanged(window.firebaseAuth, handleFirebaseAuth);
+            document.getElementById('authView').style.display = 'none';
+            document.getElementById('appShell').style.display = 'block';
+            currentRole = 'user';
+            applyRoleUI();
+            try {
+                await loadFirebaseData();
+            } catch (err) {
+                console.error(err);
+                const card = document.getElementById('searchResultCard');
+                if (card) { card.style.display = 'block'; card.innerHTML = '<div class="search-empty">Cannot load data. Please check Firestore read rules.</div>'; }
+            }
         }
-        window.addEventListener('firebase-ready', initializeFirebaseUI);
-        if (window.firebaseReady) initializeFirebaseUI();
+        window.addEventListener('firebase-ready', initializePublicApp);
+        if (window.firebaseReady) initializePublicApp();
 
 
 
@@ -1168,6 +1203,7 @@
         window.onload = function() {
             updateCounters();
             populateSerialDropdown();
+            if (window.firebaseReady) initializePublicApp();
             
             const savedTheme = localStorage.getItem('siteTheme');
             if(savedTheme === 'dark') {
@@ -1436,7 +1472,7 @@
                                     <th class="${status === 'Complete' ? 'complete-header' : ''}">TOPC</th>
                                     <th class="${status === 'Complete' ? 'complete-header' : ''}">PCOL</th>
                                     <th class="${status === 'Complete' ? 'complete-header' : ''}">Remarks</th>
-                                    <th class="${status === 'Complete' ? 'complete-header' : ''}" style="text-align: center;">Action</th>
+                                    ${roleIsAdmin() ? `<th class="${status === 'Complete' ? 'complete-header' : ''}" style="text-align: center;">Action</th>` : ''}
                                 </tr>
                             </thead>
                             <tbody id="${tableId}">
@@ -1448,11 +1484,11 @@
                                         <td>${item.topc || '-'}</td>
                                         <td>${item.pcol || '-'}</td>
                                         <td>${item.remarks || '-'}</td>
-                                        <td style="text-align:center;">
+                                        ${roleIsAdmin() ? `<td style="text-align:center;">
                                             <div class="action-btns">
                                                 <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">Edit</button>
                                             </div>
-                                        </td>
+                                        </td>` : ''}
                                     </tr>
                                 `).join('') : `<tr><td colspan="7" style="text-align:center;">No ${status} Data Available</td></tr>`}
                             </tbody>
@@ -1577,9 +1613,9 @@
                         </div>
                         <button type="button" class="view-all-btn" onclick="openColumnModalForSearch()" style="margin-top:8px;">COLUMN</button>
                     </div>
-                    <div class="search-result-actions">
+                    ${roleIsAdmin() ? `<div class="search-result-actions">
                         <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">✎ &nbsp;Edit</button>
-                    </div>
+                    </div>` : ''}
                 </div>`;
         }
 
