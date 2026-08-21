@@ -439,7 +439,21 @@
         .user-delete { background:#dc3545; color:#fff; border:none; }
         @media(max-width:600px){ .user-row{grid-template-columns:1fr 1fr;} .user-actions{grid-column:1/-1;} .top-actions{gap:4px;} }
 
-    </style>
+    
+        .view-all-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 9px 12px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #1f2937;
+        }
+        .view-all-btn:active { transform: scale(.99); }
+        .view-all-details { margin-top: 10px; }
+</style>
 
     <!-- Firebase -->
     <script type="module">
@@ -485,6 +499,49 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+
+
+<style id="requested-header-style">
+.header-flex{
+    background:#198754 !important;
+    color:#fff !important;
+    border-radius:8px;
+    padding:8px 10px;
+}
+.header-flex h2{color:#fff !important;}
+.top-actions{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:flex-start;
+    gap:3px;
+    margin-top:-2px;
+}
+.settings-btn{
+    margin-top:-2px !important;
+}
+.header-user-name{
+    display:none;
+    color:#fff;
+    font-size:12px;
+    line-height:1.1;
+    max-width:180px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    opacity:.95;
+}
+</style>
+
+
+<style id="hide-old-login-bar">
+.user-bar {
+    display: none !important;
+}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -501,12 +558,13 @@
             </div>
             <div class="top-actions">
                 <button class="settings-btn" onclick="toggleSettings()" id="settingsBtn">⚙ Settings</button>
+                <div id="headerUserName" class="header-user-name"></div>
             </div>
         </div>
 
 
         <!-- Firebase Login / Register -->
-        <div id="authView">
+        <div id="authView" style="display:none !important;">
             <div class="auth-card">
                 <h2>PileCap Lavel</h2>
                 <div class="auth-tabs">
@@ -586,7 +644,6 @@
                     <option value="">Select Serial / No...</option>
                 </select>
             </div>
-
             <!-- Large exact-serial search result -->
             <div id="searchResultCard" style="display:none;"></div>
 
@@ -1316,43 +1373,113 @@
             result.style.display = 'none';
             card.style.display = 'block';
 
-            if(!item){ 
-                card.innerHTML = `<div class="search-empty">No Data Found for Serial ${escapeHtml(q)}</div>`; 
-                return; 
+            if(!item){
+                card.innerHTML = `<div class="search-empty">No Data Found for No. ${escapeHtml(q)}</div>`;
+                return;
             }
 
-            const extras = [];
-            extras.push(['SIZE', item.size || '-']);
-            extras.push(['Pilecap D', item.pilecapD || '-']);
-            extras.push(['SFL', item.sfl || '-']);
-            extras.push(['Beam Ref', item.beamRef || '-']);
-            extras.push(['Beam Depth', item.beamDepth || '-']);
-            extras.push(['Status', item.status || 'Pending']);
-            extras.push(['Remarks', item.remarks || '-']);
-            Object.entries(item.extra||{}).forEach(([k,v]) => extras.push([k,v]));
-
-            const iconFor = (k) => ({'SIZE':'▤','Pilecap D':'◫','SFL':'↕','Beam Ref':'▰','Beam Depth':'▤','Status':'≡','Remarks':'≡'}[k] || '•');
-            const more = extras.length ? extras.map(([k,v]) => `<div class="search-result-field"><span class="search-result-icon">${iconFor(k)}</span><div class="search-result-content"><span class="search-result-label">${escapeHtml(k)}</span><span class="search-result-value">${escapeHtml(v)}</span></div></div>`).join('') : '<div class="search-empty">No additional details</div>';
-            
+            const fields = [
+                ['No.','↕',item.serial],
+                ['REF','▤',item.ref],
+                ['FFL','↕',item.ffl],
+                ['TOPC','◈',item.topc],
+                ['PCOL','▦',item.pcol],
+                ['THICKNESS','◫',item.thickness]
+            ];
             card.innerHTML = `
                 <div class="search-result-card">
                     <div class="search-result-title">Search Result — ${escapeHtml(item.serial)}</div>
                     <div class="search-result-grid">
-                        <div class="search-result-field"><span class="search-result-icon">↕</span><div class="search-result-content"><span class="search-result-label">No / Serial</span><span class="search-result-value">${escapeHtml(item.serial||'-')}</span></div></div>
-                        <div class="search-result-field"><span class="search-result-icon">↕</span><div class="search-result-content"><span class="search-result-label">SFL</span><span class="search-result-value">${escapeHtml(item.sfl||'-')}</span></div></div>
-                        <div class="search-result-field"><span class="search-result-icon">◫</span><div class="search-result-content"><span class="search-result-label">Pilecap D</span><span class="search-result-value">${escapeHtml(item.pilecapD||'-')}</span></div></div>
-                        <div class="search-result-field"><span class="search-result-icon">↕</span><div class="search-result-content"><span class="search-result-label">FFL</span><span class="search-result-value">${escapeHtml(item.ffl||'-')}</span></div></div>
-                        <div class="search-result-field"><span class="search-result-icon">◈</span><div class="search-result-content"><span class="search-result-label">TOPC</span><span class="search-result-value">${escapeHtml(item.topc||'-')}</span></div></div>
-                        <div class="search-result-field"><span class="search-result-icon">▦</span><div class="search-result-content"><span class="search-result-label">PCOL</span><span class="search-result-value">${escapeHtml(item.pcol||'-')}</span></div></div>
+                        ${fields.map(([k,icon,v]) => `
+                            <div class="search-result-field">
+                                <span class="search-result-icon">${icon}</span>
+                                <div class="search-result-content">
+                                    <span class="search-result-label">${k}</span>
+                                    <span class="search-result-value">${escapeHtml(v || '-')}</span>
+                                </div>
+                            </div>`).join('')}
                     </div>
-                    <button type="button" class="excel-btn" style="margin-top:10px; width:100%;" onclick="toggleMoreDetails(this)">View More Columns</button>
-                    <div class="more-details" style="display:none;margin-top:10px">
-                        <div class="search-result-grid"><div class="search-result-field"><span class="search-result-icon">⌖</span><div class="search-result-content"><span class="search-result-label">Zone</span><span class="search-result-value">${escapeHtml(item.zone||'-')}</span></div></div>${more}</div>
+                    <button type="button" class="view-all-btn" onclick="toggleViewAll(this)">View All</button>
+                    <div class="view-all-details" style="display:none;">
+                        <div class="search-result-grid">
+                            ${[
+                                ['SFL','↕',item.sfl],
+                                ['ZONE','⌖',item.zone],
+                                ['BEAMDEPTH','▤',item.beamDepth],
+                                ['BEAM REF','▰',item.beamRef],
+                                ['REMARKS','≡',item.remarks]
+                            ].map(([k,icon,v]) => `
+                                <div class="search-result-field">
+                                    <span class="search-result-icon">${icon}</span>
+                                    <div class="search-result-content">
+                                        <span class="search-result-label">${k}</span>
+                                        <span class="search-result-value">${escapeHtml(v || '-')}</span>
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                        <button type="button" class="view-all-btn" onclick="openColumnModalForSearch()" style="margin-top:8px;">COLUMN</button>
                     </div>
                     <div class="search-result-actions">
-                        <button class="icon-edit-btn" onclick="editData(${item.id})">✎ &nbsp;Edit</button>
+                        <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">✎ &nbsp;Edit</button>
                     </div>
                 </div>`;
+        }
+
+        function toggleViewAll(btn){
+            const box = btn.nextElementSibling;
+            const open = box.style.display !== 'none';
+            box.style.display = open ? 'none' : 'block';
+            btn.textContent = open ? 'View All' : 'Hide All';
+        }
+
+        function openColumnModalForSearch(){
+            // Show ONLY the row matching the No. currently searched.
+            const q = String(document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+            const item = (dataList || []).find(x => String(x?.serial || '').trim().toLowerCase() === q);
+            const rows = item ? [{
+                serial: String(item.serial || '').trim(),
+                column: String(item.column || '').trim(),
+                size: String(item.size || '').trim()
+            }] : [];
+
+            let modal = document.getElementById('columnDataModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'columnDataModal';
+                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+                modal.innerHTML = `
+                    <div style="width:min(560px,100%);max-height:84vh;overflow:hidden;background:var(--container-bg,#fff);color:var(--text-color,#111);border-radius:14px;padding:16px;box-shadow:0 10px 35px rgba(0,0,0,.3);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                            <b style="font-size:20px;">COLUMN</b>
+                            <button type="button" onclick="closeColumnModal()" style="width:auto;margin:0;padding:5px 10px;border:0;border-radius:7px;">✕</button>
+                        </div>
+                        <div id="columnChoiceBody" style="max-height:70vh;overflow:auto;"></div>
+                    </div>`;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', e => { if (e.target === modal) closeColumnModal(); });
+            }
+
+            const body = document.getElementById('columnChoiceBody');
+            if (!rows.length) {
+                body.innerHTML = `<div style="padding:14px;text-align:center;">No COLUMN data found for ${escapeHtml(q || '-')}.</div>`;
+            } else {
+                const x = rows[0];
+                body.innerHTML = `
+                    <div style="display:grid;grid-template-columns:.9fr 1.1fr 1.25fr;gap:0;border:1px solid var(--border-color,#ddd);border-radius:10px;overflow:hidden;">
+                        <div style="padding:10px;font-weight:800;">NO.</div>
+                        <div style="padding:10px;font-weight:800;">COLUMN</div>
+                        <div style="padding:10px;font-weight:800;">SIZE</div>
+                        <div style="padding:12px;border-top:1px solid var(--border-color,#ddd);">${escapeHtml(x.serial)}</div>
+                        <div style="padding:12px;border-top:1px solid var(--border-color,#ddd);font-weight:700;">${escapeHtml(x.column || '-')}</div>
+                        <div style="padding:12px;border-top:1px solid var(--border-color,#ddd);font-weight:700;">${escapeHtml(x.size || '-')}</div>
+                    </div>`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeColumnModal(){
+            const modal = document.getElementById('columnDataModal');
+            if (modal) modal.style.display = 'none';
         }
 
         function toggleMoreDetails(btn){
@@ -1369,120 +1496,231 @@
         function importFromExcel(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
+
             if (typeof XLSX === 'undefined') {
                 alert('Excel Import library is not loaded. Please open the app with internet access once and try again.');
                 event.target.value = '';
                 return;
             }
+
             const reader = new FileReader();
+
             reader.onload = async function(e) {
                 try {
-                    const wb = XLSX.read(e.target.result, {type:'array', cellDates:true});
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    const matrix = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-                    if (!matrix.length) throw new Error('Empty sheet');
-
-                    const rawHeaders = matrix[0] || [];
-                    const headers = rawHeaders.map((h,i) => {
-                        const t = String(h ?? '').trim();
-                        return t || `Column ${i+1}`;
+                    const wb = XLSX.read(e.target.result, {
+                        type: 'array',
+                        cellDates: true,
+                        raw: false
                     });
-                    const norm = v => String(v ?? '').trim().toLowerCase().replace(/[^a-z0-9]/g,'');
-                    const headerNorm = headers.map(norm);
-                    const findCol = names => {
-                        for (const n of names) {
-                            const i = headerNorm.indexOf(n);
-                            if (i >= 0) return i;
+
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const matrix = XLSX.utils.sheet_to_json(ws, {
+                        header: 1,
+                        defval: '',
+                        raw: false
+                    });
+
+                    if (!matrix.length) throw new Error('Empty Excel sheet.');
+
+                    const norm = v => String(v ?? '')
+                        .trim()
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]/g, '');
+
+                    const rowHas = (r, names) => {
+                        const row = matrix[r] || [];
+                        const wanted = names.map(norm);
+                        for (let c = 0; c < row.length; c++) {
+                            if (wanted.includes(norm(row[c]))) return c;
                         }
                         return -1;
                     };
 
-                    const noCol = findCol(['no','serial','serialno','serialnumber','sl','slno','sno']);
-                    if (noCol < 0) throw new Error('No/Serial column not found');
+                    // This file has a two-row header.
+                    // We search both header rows, then use the known Excel positions
+                    // as a safe fallback for this exact Pcol Summary layout.
+                    const findHeader = (names, fallbackCol = -1) => {
+                        for (let r = 0; r < Math.min(4, matrix.length); r++) {
+                            const c = rowHas(r, names);
+                            if (c >= 0) return c;
+                        }
+                        return fallbackCol;
+                    };
 
-                    const fflCol = findCol(['ffl']);
-                    const topcCol = findCol(['topc','top','topofpilecap']);
-                    const pcolCol = findCol(['pcol','col','column','pilecaplevel']);
-                    const zoneCol = findCol(['zone']);
-                    const sizeCol = findCol(['size']);
-                    const remarksCol = findCol(['remarks','remark','notes','note']);
-                    const statusCol = findCol(['status']);
-                    const pilecapDCol = findCol(['pilecapd','pilecapdepth']);
-                    const sflCol = findCol(['sfl']);
-                    const beamRefCol = findCol(['beamref','beamreference']);
-                    const beamDepthCol = findCol(['beamdepth']);
+                    // Actual k2.xlsx positions (0-based):
+                    // A No., H Ref., G Zone, I Column, J/K Size,
+                    // R Thickness, W Remarks, X FFL, Y SFL,
+                    // Z Beam Ref, AA Beam Depth, AB TOPC, AC PCOL.
+                    const noCol        = findHeader(['No.','No','Serial','Serial No','Serial Number'], 0);
+                    const refCol       = findHeader(['REF','Ref','Ref.','Reference'], 7);
+                    const zoneCol      = findHeader(['ZONE','Zone'], 6);
+                    const columnCol    = findHeader(['COLUMN','Column'], 8);
+                    const sizeCol      = findHeader(['SIZE','Size'], 9);
+                    const thicknessCol = findHeader(['THICKNESS','Thickness'], 17);
+                    const remarksCol   = findHeader(['REMARKS','Remarks','Remark'], 22);
+                    const fflCol       = findHeader(['FFL'], 23);
+                    const sflCol       = findHeader(['SFL'], 24);
+                    const beamRefCol   = findHeader(['BEAM REF','Beam Ref','Beam Reference'], 25);
+                    const beamDepthCol = findHeader(['BEAM DEPTH','Beam Depth','BEAMDEPTH'], 26);
+                    const topcCol      = findHeader(['TOPC'], 27);
+                    const pcolCol      = findHeader(['PCOL'], 28);
 
-                    const get = (row, i) => i >= 0 ? row[i] : '';
+                    if (noCol < 0) throw new Error('No. column not found.');
 
-                    const map = new Map(dataList.map(x => [String(x.serial||'').trim().toLowerCase(), x]));
-                    let imported = 0, updated = 0;
+                    const get = (row, col) => col >= 0 ? (row[col] ?? '') : '';
+                    const clean = v => String(v ?? '').trim();
 
-                    for (let r = 1; r < matrix.length; r++) {
+                    const makeSize = (row) => {
+                        const a = clean(get(row, sizeCol));
+                        const b = clean(get(row, sizeCol + 1));
+
+                        // For this Excel, Size is J + K.
+                        if (a && b) return `${a} x ${b}`;
+                        return a || b || '';
+                    };
+
+                    // Keep existing records and update them by No.
+                    const map = new Map(
+                        (dataList || []).map(x => [
+                            clean(x.serial).toLowerCase(),
+                            x
+                        ])
+                    );
+
+                    let imported = 0;
+                    let updated = 0;
+                    let skipped = 0;
+                    let columnCount = 0;
+                    let sizeCount = 0;
+
+                    // Data starts on Excel row 3 (array index 2).
+                    for (let r = 2; r < matrix.length; r++) {
                         const row = matrix[r] || [];
-                        const serial = String(get(row, noCol) ?? '').trim();
-                        if (!serial) continue;
+                        const serial = clean(get(row, noCol));
 
-                        let status = String(get(row, statusCol) ?? '').trim();
-                        const sk = status.toLowerCase();
-                        status = sk==='complete' ? 'Complete' : sk==='processing'||sk==='process' ? 'Processing' : sk==='hold'||sk==='on hold' ? 'Hold' : 'Pending';
+                        // Blank Excel rows are intentionally skipped.
+                        if (!serial) {
+                            skipped++;
+                            continue;
+                        }
 
-                        const extra = {};
-                        headers.forEach((h, i) => {
-                            if (i===noCol||i===fflCol||i===topcCol||i===pcolCol||i===zoneCol||i===sizeCol||i===pilecapDCol||i===sflCol||i===beamRefCol||i===beamDepthCol||i===remarksCol||i===statusCol) return;
-                            const v = get(row, i);
-                            if (String(v??'').trim() !== '') extra[h] = String(v).trim();
-                        });
+                        const old = map.get(serial.toLowerCase());
 
-                        const key = serial.toLowerCase();
-                        const old = map.get(key);
+                        const columnValue = clean(get(row, columnCol));
+                        const sizeValue = makeSize(row);
+
+                        if (columnValue) columnCount++;
+                        if (sizeValue) sizeCount++;
+
                         const item = {
-                            id: old ? old.id : Date.now() + r,
+                            id: old?.id || null,
                             serial,
-                            zone: String(get(row, zoneCol) ?? '').trim(),
-                            ffl: String(get(row, fflCol) ?? '').trim(),
-                            topc: String(get(row, topcCol) ?? '').trim(),
-                            pcol: String(get(row, pcolCol) ?? '').trim(),
-                            size: String(get(row, sizeCol) ?? '').trim(),
-                            pilecapD: String(get(row, pilecapDCol) ?? '').trim(),
-                            sfl: String(get(row, sflCol) ?? '').trim(),
-                            beamRef: String(get(row, beamRefCol) ?? '').trim(),
-                            beamDepth: String(get(row, beamDepthCol) ?? '').trim(),
-                            remarks: String(get(row, remarksCol) ?? '').trim(),
-                            status,
-                            extra
+                            ref: clean(get(row, refCol)),
+                            ffl: clean(get(row, fflCol)),
+                            topc: clean(get(row, topcCol)),
+                            pcol: clean(get(row, pcolCol)),
+                            thickness: clean(get(row, thicknessCol)),
+                            sfl: clean(get(row, sflCol)),
+                            zone: clean(get(row, zoneCol)),
+                            beamDepth: clean(get(row, beamDepthCol)),
+                            beamRef: clean(get(row, beamRefCol)),
+                            column: columnValue,
+                            size: sizeValue,
+                            remarks: clean(get(row, remarksCol)),
+                            status: old?.status || 'Pending'
                         };
-                        map.set(key, item);
-                        old ? updated++ : imported++;
+
+                        map.set(serial.toLowerCase(), item);
+
+                        if (old) updated++;
+                        else imported++;
                     }
 
-                    if (!roleIsAdmin()) throw new Error('Only Admin can import Excel data.');
+                    if (!roleIsAdmin()) {
+                        throw new Error('Only Admin can import Excel data.');
+                    }
+
                     const f = window.firebaseFns;
                     const batch = f.writeBatch(window.firebaseDB);
-                    const finalItems = Array.from(map.values()).sort((a,b) => String(a.serial).localeCompare(String(b.serial), undefined, {numeric:true, sensitivity:'base'}));
+                    const finalItems = Array.from(map.values());
+
                     finalItems.forEach(item => {
-                        const ref = item.id && String(item.id).length > 10
+                        const ref = item.id
                             ? f.doc(window.firebaseDB, 'pilecaps', String(item.id))
                             : f.doc(f.collection(window.firebaseDB, 'pilecaps'));
+
                         const copy = {...item};
                         delete copy.id;
-                        batch.set(ref, copy, {merge:true});
+
+                        // merge:true keeps any other existing fields in the document.
+                        batch.set(ref, copy, {merge: true});
                     });
+
                     await batch.commit();
                     await loadFirebaseData();
                     updateSerialDropdown();
+                    if (typeof populateSerialDropdown === 'function') {
+                        populateSerialDropdown();
+                    }
+
                     event.target.value = '';
-                    document.getElementById('searchInput').value = '';
-                    document.getElementById('resultContainer').style.display = 'none';
-                    document.getElementById('searchResultCard').style.display = 'none';
-                    alert(`Excel Import Complete!\nNew entries: ${imported}\nUpdated entries: ${updated}\nTotal entries: ${dataList.length}`);
-                } catch(err) {
-                    console.error(err);
+                    const si = document.getElementById('searchInput');
+                    if (si) si.value = '';
+
+                    const rc = document.getElementById('resultContainer');
+                    if (rc) rc.style.display = 'none';
+
+                    const sc = document.getElementById('searchResultCard');
+                    if (sc) {
+                        sc.style.display = 'none';
+                        sc.innerHTML = '';
+                    }
+
+                    alert(
+                        `Excel Import Complete!\n\n` +
+                        `New entries: ${imported}\n` +
+                        `Updated entries: ${updated}\n` +
+                        `COLUMN found: ${columnCount}\n` +
+                        `SIZE found: ${sizeCount}\n` +
+                        `Blank rows skipped: ${skipped}\n` +
+                        `Total records: ${dataList.length}`
+                    );
+
+                } catch (err) {
+                    console.error('Excel Import Error:', err);
                     event.target.value = '';
-                    alert('Excel Import failed. The first row must contain a No/Serial column.');
+                    alert('Excel Import failed: ' + (err.message || 'Please check the Excel file.'));
                 }
             };
+
             reader.readAsArrayBuffer(file);
         }
-    </script>
+
+</script>
+
+<script id="requested-header-user-script">
+(function(){
+  function updateHeaderUser(){
+    var el = document.getElementById('headerUserName');
+    if (!el) return;
+    var u = window.firebaseAuth && window.firebaseAuth.currentUser;
+    if (u && u.email) {
+      el.textContent = u.email;
+      el.style.display = 'block';
+    } else {
+      el.textContent = '';
+      el.style.display = 'none';
+    }
+  }
+  window.addEventListener('firebase-ready', function(){
+    updateHeaderUser();
+    if (window.firebaseAuth && window.firebaseFns && window.firebaseFns.onAuthStateChanged) {
+      window.firebaseFns.onAuthStateChanged(window.firebaseAuth, updateHeaderUser);
+    }
+  });
+  document.addEventListener('DOMContentLoaded', updateHeaderUser);
+})();
+</script>
+
 </body>
 </html>
