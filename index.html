@@ -542,6 +542,43 @@
 }
 </style>
 
+
+<style id="admin-edit-2column">
+#formView .form-box .edit-fields-grid{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    gap:10px 12px !important;
+    width:100% !important;
+}
+#formView .form-box .edit-field{
+    min-width:0 !important;
+    width:100% !important;
+    margin:0 !important;
+}
+#formView .form-box .edit-field.full{
+    grid-column:1 / -1 !important;
+}
+#formView .form-box .edit-field label{
+    display:block !important;
+    margin-bottom:5px !important;
+}
+#formView .form-box .edit-field input{
+    width:100% !important;
+    box-sizing:border-box !important;
+}
+@media (max-width:520px){
+    #formView .form-box .edit-fields-grid{
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+        gap:8px !important;
+    }
+}
+@media (max-width:350px){
+    #formView .form-box .edit-fields-grid{
+        grid-template-columns:1fr !important;
+    }
+}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -667,25 +704,62 @@
         <div id="formView" style="display: none;">
             <h3 id="formTitle">New Pile Cap Level Entry</h3>
             <div class="form-box">
-                <input type="hidden" id="editId"> 
-                
-                <label>Serial / No:</label>
-                <input type="text" id="serial" placeholder="Enter Serial / No (e.g., PG011)" autocomplete="off">
+                <input type="hidden" id="editId">
+                <div class="edit-fields-grid">
+                <div class="edit-field">
+                    <label>No.:</label>
+                <input type="text" id="serial" placeholder="Enter No. (e.g., PG001)" autocomplete="off">
+                </div>
+                <div class="edit-field">
+                    <label>Zone:</label>
+                <input type="text" id="zone" placeholder="Enter Zone..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Column:</label>
+                <input type="text" id="column" placeholder="Enter Column..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Size:</label>
+                <input type="text" id="size" placeholder="Enter Size..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Thickness:</label>
+                <input type="text" id="thickness" placeholder="Enter Thickness..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field full">
+                    <label>Remarks / Notes:</label>
+                <input type="text" id="remarks" placeholder="Enter Remarks..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>FFL:</label>
+                <input type="text" id="ffl" placeholder="Enter FFL..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>SFL:</label>
+                <input type="text" id="sfl" placeholder="Enter SFL..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Beam Ref:</label>
+                <input type="text" id="beamRef" placeholder="Enter Beam Ref..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Beam Depth:</label>
+                <input type="text" id="beamDepth" placeholder="Enter Beam Depth..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>TOPC:</label>
+                <input type="text" id="topc" placeholder="Enter TOPC..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>PCOL:</label>
+                <input type="text" id="pcol" placeholder="Enter PCOL..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Ref:</label>
+                <input type="text" id="ref" placeholder="Enter Ref..." onfocus="scrollToElement(this)">
+                </div>
+            </div>
 
-                <label>Zone:</label>
-                <input type="text" id="zone" placeholder="Enter Zone (e.g., Zone A)" onfocus="scrollToElement(this)">
-                
-                <label>FFL:</label>
-                <input type="text" id="ffl" placeholder="Enter FFL level..." onfocus="scrollToElement(this)">
-                
-                <label>TOPC:</label>
-                <input type="text" id="topc" placeholder="Enter TOPC level..." onfocus="scrollToElement(this)">
-                
-                <label>PCOL (Pilecap Level):</label>
-                <input type="text" id="pcol" placeholder="Enter Pilecap level..." onfocus="scrollToElement(this)">
-
-                <label>Remarks / Notes:</label>
-                <input type="text" id="remarks" placeholder="Enter any issues or special notes..." onfocus="scrollToElement(this)">
 
                 <label>Status:</label>
                 <select id="status" onfocus="scrollToElement(this)">
@@ -1089,14 +1163,24 @@
             const editId = document.getElementById('editId').value;
             const serial = document.getElementById('serial').value.trim();
             const zone = document.getElementById('zone').value.trim();
+            const column = document.getElementById('column').value.trim();
+            const size = document.getElementById('size').value.trim();
+            const thickness = document.getElementById('thickness').value.trim();
+            const remarks = document.getElementById('remarks').value.trim();
             const ffl = document.getElementById('ffl').value.trim();
+            const sfl = document.getElementById('sfl').value.trim();
+            const beamRef = document.getElementById('beamRef').value.trim();
+            const beamDepth = document.getElementById('beamDepth').value.trim();
             const topc = document.getElementById('topc').value.trim();
             const pcol = document.getElementById('pcol').value.trim();
-            const remarks = document.getElementById('remarks').value.trim();
+            const ref = document.getElementById('ref').value.trim();
             const status = document.getElementById('status').value;
-            if (!serial) return alert('Please enter a Serial / No.');
+            if (!serial) return alert('Please enter a No.');
 
-            const item = { serial, zone, ffl, topc, pcol, remarks, status };
+            const item = {
+                serial, zone, column, size, thickness, remarks,
+                ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status
+            };
             try {
                 const id = await upsertPilecap(item, editId || null);
                 if (editId) {
@@ -1116,12 +1200,19 @@
             const item = dataList.find(d => d.id === id);
             if (item) {
                 document.getElementById('editId').value = item.id;
-                document.getElementById('serial').value = item.serial;
+                document.getElementById('serial').value = item.serial || '';
                 document.getElementById('zone').value = item.zone || '';
+                document.getElementById('column').value = item.column || '';
+                document.getElementById('size').value = item.size || '';
+                document.getElementById('thickness').value = item.thickness || '';
+                document.getElementById('remarks').value = item.remarks || '';
                 document.getElementById('ffl').value = item.ffl || '';
+                document.getElementById('sfl').value = item.sfl || '';
+                document.getElementById('beamRef').value = item.beamRef || '';
+                document.getElementById('beamDepth').value = item.beamDepth || '';
                 document.getElementById('topc').value = item.topc || '';
                 document.getElementById('pcol').value = item.pcol || '';
-                document.getElementById('remarks').value = item.remarks || '';
+                document.getElementById('ref').value = item.ref || '';
                 document.getElementById('status').value = item.status || 'Pending';
 
                 document.getElementById('formTitle').innerText = "Edit or Delete Data";
@@ -1152,10 +1243,17 @@
             document.getElementById('editId').value = '';
             document.getElementById('serial').value = '';
             document.getElementById('zone').value = '';
+            document.getElementById('column').value = '';
+            document.getElementById('size').value = '';
+            document.getElementById('thickness').value = '';
+            document.getElementById('remarks').value = '';
             document.getElementById('ffl').value = '';
+            document.getElementById('sfl').value = '';
+            document.getElementById('beamRef').value = '';
+            document.getElementById('beamDepth').value = '';
             document.getElementById('topc').value = '';
             document.getElementById('pcol').value = '';
-            document.getElementById('remarks').value = '';
+            document.getElementById('ref').value = '';
             document.getElementById('status').value = 'Pending';
         }
 
@@ -1292,7 +1390,7 @@
                                         <td>${item.remarks || '-'}</td>
                                         <td style="text-align:center;">
                                             <div class="action-btns">
-                                                <button class="icon-edit-btn" onclick="editData(${item.id})">Edit</button>
+                                                <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">Edit</button>
                                             </div>
                                         </td>
                                     </tr>
