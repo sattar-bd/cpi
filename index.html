@@ -579,6 +579,66 @@
 }
 </style>
 
+
+<style id="search-result-compact-style">
+/* Search Result only: compact icons + single-line text */
+.search-result-card .search-result-grid{
+    gap:10px !important;
+}
+.search-result-card .search-result-field{
+    min-height:82px !important;
+    padding:8px 10px !important;
+    gap:8px !important;
+}
+.search-result-card .search-result-icon{
+    flex:0 0 44px !important;
+    width:44px !important;
+    height:44px !important;
+    border-radius:9px !important;
+    font-size:23px !important;
+}
+.search-result-card .search-result-content{
+    min-width:0 !important;
+    overflow:hidden !important;
+}
+.search-result-card .search-result-label{
+    font-size:14px !important;
+    line-height:1.1 !important;
+    margin:0 0 4px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+}
+.search-result-card .search-result-value{
+    font-size:21px !important;
+    line-height:1.05 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    word-break:normal !important;
+}
+@media (max-width:600px){
+    .search-result-card .search-result-field{
+        min-height:76px !important;
+        padding:8px !important;
+        gap:7px !important;
+    }
+    .search-result-card .search-result-icon{
+        flex-basis:42px !important;
+        width:42px !important;
+        height:42px !important;
+        font-size:21px !important;
+        border-radius:8px !important;
+    }
+    .search-result-card .search-result-label{
+        font-size:13px !important;
+    }
+    .search-result-card .search-result-value{
+        font-size:20px !important;
+    }
+}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
