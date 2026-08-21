@@ -416,6 +416,17 @@
         .auth-primary { background:#007bff; color:#fff; border:none; font-weight:bold; }
         .auth-danger { background:#dc3545; color:#fff; border:none; font-weight:bold; }
         .auth-message { min-height:20px; font-size:12px; font-weight:bold; margin:6px 0; text-align:center; }
+        .default-login-info {
+            margin: 6px 0 10px;
+            padding: 8px 10px;
+            border: 1px dashed #198754;
+            border-radius: 6px;
+            background: rgba(25,135,84,.08);
+            color: var(--text-color);
+            font-size: 12px;
+            line-height: 1.45;
+            text-align: left;
+        }
         .user-bar { display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-bottom:6px; font-size:11px; }
         .role-badge { padding:3px 7px; border-radius:10px; background:#6f42c1; color:#fff; font-weight:bold; }
         .hidden-by-role { display:none !important; }
@@ -669,8 +680,13 @@
                     <button id="registerTab" onclick="showAuthMode('register')">Register</button>
                 </div>
                 <input type="text" id="authName" placeholder="Name (for Register)" autocomplete="name" style="display:none;">
-                <input type="email" id="authEmail" placeholder="Email address" autocomplete="email">
-                <input type="password" id="authPassword" placeholder="Password (minimum 6 characters)" autocomplete="current-password">
+                <input type="email" id="authEmail" placeholder="Email address" autocomplete="email" value="user@gmail.com">
+                <input type="password" id="authPassword" placeholder="Password (minimum 6 characters)" autocomplete="current-password" value="123456">
+                <div class="default-login-info">
+                    <b>Default User</b><br>
+                    ID: user@gmail.com<br>
+                    Password: 123456
+                </div>
                 <input type="password" id="authPassword2" placeholder="Confirm password" autocomplete="new-password" style="display:none;">
                 <button id="authSubmit" class="auth-primary" onclick="submitAuth()">Login</button>
                 <button type="button" id="forgotPasswordBtn" style="background:none;border:none;color:#007bff;font-weight:bold;font-size:12px;" onclick="resetPassword()">Forgot Password?</button>
