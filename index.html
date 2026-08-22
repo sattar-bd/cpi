@@ -278,7 +278,28 @@
             margin: 8px 0 14px;
             box-shadow: 0 3px 12px rgba(0,0,0,.18);
         }
-        .search-result-title {
+         .input-date-badge{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:0 4px 8px;
+    padding:7px 9px;
+    border-radius:8px;
+    background:#eef6ff;
+    border:1px solid #b9dcff;
+    color:#145a96;
+    font-size:13px;
+    line-height:1.2;
+}
+.input-date-badge b{font-weight:800;}
+@media(max-width:600px){
+    .input-date-badge{
+        margin:0 3px 6px;
+        padding:6px 8px;
+        font-size:12px;
+    }
+}
+.search-result-title {
             font-size: 25px;
             font-weight: 900;
             margin: 2px 8px 14px;
@@ -382,12 +403,14 @@
         }
 
         /* Clean Settings Panel */
-        .settings-btn { background:#343a40; color:#fff; border:none; width:auto; margin:0; padding:7px 10px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; }
+        .settings-btn { background:#343a40; color:#fff; border:none; width:auto; margin:0; padding:7px 10px; border-radius:8px; font-size:14px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:6px; }
+        .settings-btn-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block;}
         .settings-panel { display:none; margin:6px 0 10px; border:1px solid var(--border-color); border-radius:12px; background:var(--container-bg); box-shadow:0 4px 16px rgba(0,0,0,.12); overflow:hidden; }
         .settings-panel.open { display:block; }
         .settings-head { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid var(--border-color); }
         .settings-head strong { font-size:16px; }
-        .settings-close { width:auto; margin:0; padding:3px 9px; background:none; border:1px solid var(--border-color); color:var(--text-color); }
+        .settings-close { width:34px; height:34px; margin:0; padding:7px; background:none; border:1px solid var(--border-color); color:var(--text-color); display:flex; align-items:center; justify-content:center; }
+        .settings-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;}
         .settings-user { padding:10px 12px; background:rgba(127,127,127,.08); }
         .settings-user-name { font-weight:800; font-size:15px; }
         .settings-user-email { font-size:12px; opacity:.8; margin-top:2px; }
@@ -404,7 +427,115 @@
         .settings-admin-title { font-weight:800; font-size:14px; margin-bottom:7px; }
         .settings-admin-list { border:1px solid var(--border-color); border-radius:8px; padding:7px; }
         .settings-admin-list .user-row { grid-template-columns:1fr 1.4fr .7fr 1.2fr; }
+/* Settings actions: one row, icon-only */
+.settings-actions{
+    display:grid !important;
+    grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+    gap:7px !important;
+    padding:10px 12px !important;
+}
+.settings-action{
+    margin:0 !important;
+    padding:9px 4px !important;
+    min-width:0 !important;
+    min-height:46px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:0 !important;
+    line-height:1 !important;
+}
+.settings-action-label{display:none !important;}
+.settings-action::first-letter{font-size:26px !important;}
+@media(max-width:600px){
+    .settings-actions{
+        grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+        gap:5px !important;
+        padding:9px 8px !important;
+    }
+    .settings-action{
+        min-height:48px !important;
+        padding:8px 2px !important;
+        border-radius:9px !important;
+    }
+    .settings-action::first-letter{font-size:24px !important;}
+}
         @media(max-width:600px){ .settings-actions{grid-template-columns:1fr 1fr;} .settings-admin-list .user-row{grid-template-columns:1fr 1fr;} }
+
+        /* Settings actions: compact icons + English labels, one row, no boxes */
+        .settings-actions{
+            display:grid !important;
+            grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+            gap:2px !important;
+            padding:8px 5px !important;
+            align-items:center !important;
+        }
+        .settings-action{
+            width:100% !important;
+            min-width:0 !important;
+            min-height:48px !important;
+            height:48px !important;
+            margin:0 !important;
+            padding:2px 0 !important;
+            border:0 !important;
+            border-radius:0 !important;
+            background:transparent !important;
+            box-shadow:none !important;
+            display:flex !important;
+            flex-direction:column !important;
+            align-items:center !important;
+            justify-content:center !important;
+            gap:2px !important;
+            color:inherit !important;
+            line-height:1 !important;
+        }
+        .settings-action svg{
+            width:18px !important;
+            height:18px !important;
+            flex:0 0 18px !important;
+            display:block !important;
+            fill:none !important;
+            stroke:currentColor !important;
+            stroke-width:2 !important;
+            stroke-linecap:round !important;
+            stroke-linejoin:round !important;
+        }
+        .settings-input{color:#007bff !important;}
+        .settings-excel{color:#198754 !important;}
+        .settings-reset{color:#dc3545 !important;}
+        .settings-dark{color:#ffc107 !important;}
+        .settings-users{color:#6f42c1 !important;}
+        .settings-logout{color:#dc3545 !important;}
+        .settings-action-label{
+            display:block !important;
+            color:var(--text-color) !important;
+            font-size:7px !important;
+            font-weight:700 !important;
+            line-height:1.05 !important;
+            white-space:normal !important;
+            text-align:center !important;
+            max-width:58px !important;
+        }
+        .settings-input .settings-action-label{color:#007bff !important;}
+        .settings-excel .settings-action-label{color:#198754 !important;}
+        .settings-reset .settings-action-label{color:#dc3545 !important;}
+        .settings-dark .settings-action-label{color:#ffc107 !important;}
+        .settings-users .settings-action-label{color:#6f42c1 !important;}
+        .settings-logout .settings-action-label{color:#dc3545 !important;}
+        .settings-action:hover,.settings-action:focus,.settings-action:active{
+            background:transparent !important;
+            box-shadow:none !important;
+        }
+        @media(max-width:600px){
+            .settings-actions{
+                grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+                gap:1px !important;
+                padding:7px 3px !important;
+            }
+            .settings-action{min-height:42px !important;height:42px !important;}
+            .settings-action svg{width:18px !important;height:18px !important;flex-basis:18px !important;}
+            .settings-action-label{font-size:6.5px !important;max-width:55px !important;}
+        }
 
         /* Firebase Authentication */
         #authView { min-height: 90vh; display:flex; align-items:center; justify-content:center; }
@@ -692,7 +823,7 @@
                 <h2>PileCap Lavel</h2>
             </div>
             <div class="top-actions">
-                <button class="settings-btn" onclick="toggleSettings()" id="settingsBtn">⚙ Settings</button>
+                <button class="settings-btn" onclick="toggleSettings()" id="settingsBtn" aria-label="Settings"><svg class="settings-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.2 1.9 2.2.2.8 2.1 2 1-0.7 2.1.7 2.1-2 1-.8 2.1-2.2.2L12 21l-1.2-1.9-2.2-.2-.8-2.1-2-1 .7-2.1-.7-2.1 2-1 .8-2.1 2.2-.2L12 3z"/><circle cx="12" cy="12" r="3"/></svg><span>Settings</span></button>
                 <div id="headerUserName" class="header-user-name"></div>
             </div>
         </div>
@@ -726,22 +857,40 @@
             <div class="user-bar"><span id="currentUserName"></span><span id="currentUserEmail"></span><span id="roleBadge" class="role-badge"></span></div>
 
             <div id="settingsPanel" class="settings-panel">
-                <div class="settings-head"><strong>Settings & Management</strong><button class="settings-close" onclick="toggleSettings(false)">✕</button></div>
+                <div class="settings-head"><strong>Settings & Management</strong><button class="settings-close" onclick="toggleSettings(false)" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
                 <div class="settings-user">
                     <div class="settings-user-name" id="settingsUserName">User</div>
                     <div class="settings-user-email" id="settingsUserEmail"></div>
                 </div>
                 <div class="settings-actions">
-                    <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" onclick="toggleSettings(false);openAddForm()">➕ New Input</button>
-                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" onclick="document.getElementById('excelInput').click()">📊 Import Excel</button>
-                    <button id="settingsResetBtn" class="settings-action settings-reset hidden-by-role" onclick="resetAllData()">🗑 Reset Data</button>
-                    <button class="settings-action settings-dark" onclick="toggleTheme()" id="themeToggleBtn">🌙 Dark Mode</button>
-                    <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" onclick="toggleAdminPanel()">👥 User List</button>
-                    <button class="settings-action settings-logout" onclick="logoutFirebase()">🚪 Logout</button>
+                    <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" title="New Input" aria-label="New Input" onclick="toggleSettings(false);openAddForm()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                        <span class="settings-action-label">New Input</span>
+                    </button>
+                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="document.getElementById('excelInput').click()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v5h4M9 12h6M9 16h6"/></svg>
+                        <span class="settings-action-label">Import Excel</span>
+                    </button>
+                    <button id="settingsResetBtn" class="settings-action settings-reset hidden-by-role" title="Reset Data" aria-label="Reset Data" onclick="resetAllData()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v8M12 10v8M16 10v8M6 7l1 14h10l1-14"/></svg>
+                        <span class="settings-action-label">Reset Data</span>
+                    </button>
+                    <button class="settings-action settings-dark" onclick="toggleTheme()" id="themeToggleBtn" title="Dark Mode" aria-label="Dark Mode">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg>
+                        <span class="settings-action-label">Dark Mode</span>
+                    </button>
+                    <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" title="User List" aria-label="User List" onclick="toggleAdminPanel()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg>
+                        <span class="settings-action-label">User List</span>
+                    </button>
+                    <button class="settings-action settings-logout" title="Logout" aria-label="Logout" onclick="logoutFirebase()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h9"/></svg>
+                        <span class="settings-action-label">Logout</span>
+                    </button>
                 </div>
                 <input type="file" id="excelInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none" onchange="importFromExcel(event)">
                 <div id="settingsAdminBox" class="settings-admin-box">
-                    <div class="settings-admin-title">👑 Admin Panel — User Management</div>
+                    <div class="settings-admin-title">&#128081; Admin Panel &mdash; User Management</div>
                     <div class="settings-admin-list"><div id="userListContainer"></div></div>
                 </div>
             </div>
@@ -1054,10 +1203,10 @@
 
             currentRole = role;
             document.getElementById('currentUserEmail').innerText = user.email || '';
-            document.getElementById('currentUserName').innerText = user.displayName ? (user.displayName + ' •') : '';
+            document.getElementById('currentUserName').innerText = user.displayName ? (user.displayName + ' &bull;') : '';
             document.getElementById('roleBadge').innerText = currentRole.toUpperCase();
             document.getElementById('settingsUserName').innerText = user.displayName || 'User';
-            document.getElementById('settingsUserEmail').innerText = (user.email || '') + ' • ' + currentRole.toUpperCase();
+            document.getElementById('settingsUserEmail').innerText = (user.email || '') + ' &bull; ' + currentRole.toUpperCase();
 
             authView.style.display = 'none';
             appShell.style.display = 'block';
@@ -1086,7 +1235,7 @@
             panel.classList.toggle('open', open);
             if (open && currentUser) {
                 document.getElementById('settingsUserName').innerText = currentUser.displayName || 'User';
-                document.getElementById('settingsUserEmail').innerText = (currentUser.email || '') + ' • ' + currentRole.toUpperCase();
+                document.getElementById('settingsUserEmail').innerText = (currentUser.email || '') + ' 👤; ' + currentRole.toUpperCase();
             }
         }
 
@@ -1215,7 +1364,8 @@
             const savedTheme = localStorage.getItem('siteTheme');
             if(savedTheme === 'dark') {
                 document.getElementById('pageBody').classList.add('dark-mode');
-                document.getElementById('themeToggleBtn').innerText = '☀️ Light Mode';
+                document.getElementById('themeToggleBtn').title = 'Light Mode';
+                document.getElementById('themeToggleBtn').setAttribute('aria-label', 'Light Mode');
             }
         };
 
@@ -1231,10 +1381,12 @@
             const btn = document.getElementById('themeToggleBtn');
             if(body.classList.contains('dark-mode')) {
                 localStorage.setItem('siteTheme', 'dark');
-                btn.innerText = '☀️ Light Mode';
+                btn.title = 'Light Mode';
+                btn.setAttribute('aria-label', 'Light Mode');
             } else {
                 localStorage.setItem('siteTheme', 'light');
-                btn.innerText = '🌙 Dark Mode';
+                btn.title = 'Dark Mode';
+                btn.setAttribute('aria-label', 'Dark Mode');
             }
         }
 
@@ -1261,6 +1413,19 @@
             window.scrollTo(0, 0);
         }
 
+        function formatInputDate(value) {
+            if (!value) return 'Not available';
+            let d;
+            if (value && typeof value.toDate === 'function') d = value.toDate();
+            else if (value instanceof Date) d = value;
+            else if (typeof value === 'number') d = new Date(value);
+            else d = new Date(value);
+            if (Number.isNaN(d.getTime())) return 'Not available';
+            return d.toLocaleDateString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+        }
+
         async function saveData() {
             if (!roleIsAdmin()) return alert('Only Admin can modify data.');
             const editId = document.getElementById('editId').value;
@@ -1280,9 +1445,11 @@
             const status = document.getElementById('status').value;
             if (!serial) return alert('Please enter a No.');
 
+            const existingItem = editId ? dataList.find(x => x.id === editId) : null;
             const item = {
                 serial, zone, column, size, thickness, remarks,
-                ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status
+                ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status,
+                inputDate: existingItem?.inputDate || Date.now()
             };
             try {
                 const id = await upsertPilecap(item, editId || null);
@@ -1567,16 +1734,17 @@
             }
 
             const fields = [
-                ['No.','↕',item.serial],
-                ['REF','▤',item.ref],
-                ['FFL','↕',item.ffl],
-                ['TOPC','◈',item.topc],
-                ['PCOL','▦',item.pcol],
-                ['THICKNESS','◫',item.thickness]
+                ['No.','&#8597;',item.serial],
+                ['REF','&#9644;',item.ref],
+                ['FFL','&#8597;',item.ffl],
+                ['TOPC','&#9672;',item.topc],
+                ['PCOL','&#9646;',item.pcol],
+                ['THICKNESS','&#9707;',item.thickness]
             ];
             card.innerHTML = `
                 <div class="search-result-card">
-                    <div class="search-result-title">Search Result — ${escapeHtml(item.serial)}</div>
+                    <div class="search-result-title">Search Result &mdash; ${escapeHtml(item.serial)}</div>
+                    <div class="input-date-badge">&#128197; <span>Input Date:</span> <b>${escapeHtml(formatInputDate(item.inputDate))}</b></div>
                     <div class="search-result-grid">
                         ${fields.map(([k,icon,v]) => `
                             <div class="search-result-field">
@@ -1591,11 +1759,11 @@
                     <div class="view-all-details" style="display:none;">
                         <div class="search-result-grid">
                             ${[
-                                ['SFL','↕',item.sfl],
-                                ['ZONE','⌖',item.zone],
-                                ['BEAM DEPTH','▤',item.beamDepth],
-                                ['BEAM REF','▰',item.beamRef],
-                                ['REMARKS','≡',item.remarks]
+                                ['SFL','&#8597;',item.sfl],
+                                ['ZONE','&#8982;',item.zone],
+                                ['BEAM DEPTH','&#9644;',item.beamDepth],
+                                ['BEAM REF','&#9650;',item.beamRef],
+                                ['REMARKS','&#8801;',item.remarks]
                             ].map(([k,icon,v]) => `
                                 <div class="search-result-field">
                                     <span class="search-result-icon">${icon}</span>
@@ -1608,7 +1776,7 @@
                         <button type="button" class="view-all-btn" onclick="openColumnModalForSearch()" style="margin-top:8px;">COLUMN</button>
                     </div>
                     <div class="search-result-actions">
-                        <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">✎ &nbsp;Edit</button>
+                        <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">&#9998; &nbsp;Edit</button>
                     </div>
                 </div>`;
         }
@@ -1639,7 +1807,7 @@
                     <div style="width:min(560px,100%);max-height:84vh;overflow:hidden;background:var(--container-bg,#fff);color:var(--text-color,#111);border-radius:14px;padding:16px;box-shadow:0 10px 35px rgba(0,0,0,.3);">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
                             <b style="font-size:20px;">COLUMN</b>
-                            <button type="button" onclick="closeColumnModal()" style="width:auto;margin:0;padding:5px 10px;border:0;border-radius:7px;">✕</button>
+                            <button type="button" onclick="closeColumnModal()" style="width:auto;margin:0;padding:5px 10px;border:0;border-radius:7px;">&#10005;</button>
                         </div>
                         <div id="columnChoiceBody" style="max-height:70vh;overflow:auto;"></div>
                     </div>`;
@@ -1815,7 +1983,8 @@
                             column: columnValue,
                             size: sizeValue,
                             remarks: clean(get(row, remarksCol)),
-                            status: old?.status || 'Pending'
+                            status: old?.status || 'Pending',
+                            inputDate: old?.inputDate || Date.now()
                         };
 
                         map.set(serial.toLowerCase(), item);
