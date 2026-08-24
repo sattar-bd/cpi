@@ -2798,6 +2798,264 @@
 }
 </style>
 
+
+<style id="premium-ui-refresh">
+/* ==========================================================
+   PREMIUM UI REFRESH — CSS ONLY
+   Firebase/Auth/Firestore/CRUD/Excel/role logic untouched.
+   ========================================================== */
+:root{
+  --p-bg:#eef4fb;
+  --p-surface:#ffffff;
+  --p-surface-2:#f7faff;
+  --p-text:#10243e;
+  --p-muted:#647991;
+  --p-border:#d8e4f1;
+  --p-primary:#1769ff;
+  --p-primary-2:#4b91ff;
+  --p-green:#12a968;
+  --p-orange:#f59e0b;
+  --p-purple:#7650dc;
+  --p-red:#ef3f61;
+  --p-shadow:0 10px 30px rgba(24,55,92,.09);
+  --p-shadow-lg:0 18px 50px rgba(24,55,92,.14);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body#pageBody{
+  min-height:100vh;
+  padding:10px!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(23,105,255,.10),transparent 28%),
+    radial-gradient(circle at 100% 20%,rgba(118,80,220,.08),transparent 25%),
+    linear-gradient(180deg,#f7faff 0%,var(--p-bg) 100%)!important;
+  color:var(--p-text)!important;
+}
+body#pageBody.dark-mode{
+  --p-bg:#0b1220;--p-surface:#121c2b;--p-surface-2:#172235;--p-text:#edf5ff;--p-muted:#9eb1c7;--p-border:#293b53;
+  background:radial-gradient(circle at 10% 0%,rgba(23,105,255,.18),transparent 30%),linear-gradient(180deg,#0b1220,#0e1726)!important;
+}
+.container{
+  max-width:760px!important;
+  margin:0 auto!important;
+  padding:10px!important;
+  background:transparent!important;
+}
+#appShell{width:100%}
+#homeView{padding:0 0 100px!important}
+
+/* Auth */
+#authView{min-height:calc(100vh - 20px)!important;padding:10px!important}
+.auth-card{
+  width:min(430px,100%)!important;padding:26px 22px!important;border:1px solid rgba(255,255,255,.75)!important;
+  border-radius:24px!important;background:rgba(255,255,255,.82)!important;backdrop-filter:blur(18px)!important;
+  box-shadow:var(--p-shadow-lg)!important;
+}
+.dark-mode .auth-card{background:rgba(18,28,43,.88)!important;border-color:#30445d!important}
+.auth-card h2{font-size:26px!important;font-weight:950!important;margin:4px 0 20px!important;letter-spacing:-.5px}
+.auth-tabs{padding:4px!important;border-radius:12px!important;background:#edf3fb!important;gap:4px!important}
+.dark-mode .auth-tabs{background:#1a2739!important}
+.auth-tabs button{border:0!important;background:transparent!important;color:var(--p-muted)!important;border-radius:9px!important;font-weight:800!important}
+.auth-tabs .active{background:linear-gradient(135deg,var(--p-primary),var(--p-primary-2))!important;color:#fff!important;box-shadow:0 5px 12px rgba(23,105,255,.22)!important}
+.auth-card input{height:46px!important;border-radius:12px!important;border:1px solid var(--p-border)!important;background:var(--p-surface)!important;padding:0 13px!important;outline:none!important;transition:.18s!important}
+.auth-card input:focus{border-color:#70a7ff!important;box-shadow:0 0 0 4px rgba(23,105,255,.10)!important}
+.auth-primary,.auth-danger{min-height:46px!important;border-radius:12px!important}
+.default-login-info{border:1px solid #b9dfcc!important;border-radius:12px!important;background:#effbf5!important;padding:11px 13px!important}
+
+/* Search + counters */
+.counter-box{gap:8px!important;margin:0 0 12px!important}
+.counter-card{
+  min-height:68px!important;padding:10px 6px!important;border-radius:16px!important;border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:0 7px 18px rgba(28,62,102,.10)!important;font-size:10px!important;letter-spacing:.1px!important;
+  transition:transform .18s,box-shadow .18s!important
+}
+.counter-card:hover{transform:translateY(-2px) scale(1.01)!important;box-shadow:0 12px 25px rgba(28,62,102,.14)!important}
+.counter-card span{font-size:20px!important;margin-top:4px!important}
+.card-total{background:linear-gradient(135deg,#1769ff,#4d93ff)!important}
+.card-complete{background:linear-gradient(135deg,#0c9f5c,#20c477)!important}
+.card-pending{background:linear-gradient(135deg,#e79a00,#ffbd32)!important}
+.search-box{margin:0 0 8px!important}
+.search-box input,.search-box select{
+  height:46px!important;margin:0!important;padding:0 14px!important;border:1px solid var(--p-border)!important;
+  border-radius:13px!important;background:rgba(255,255,255,.9)!important;color:var(--p-text)!important;
+  box-shadow:0 4px 14px rgba(28,62,102,.06)!important;outline:none!important
+}
+.dark-mode .search-box input,.dark-mode .search-box select{background:#121c2b!important;color:#edf5ff!important}
+.search-box input:focus,.search-box select:focus{border-color:#72a8ff!important;box-shadow:0 0 0 4px rgba(23,105,255,.09)!important}
+
+/* Result cards */
+.search-result-card{
+  border:1px solid #cfe0f5!important;border-radius:20px!important;padding:13px!important;margin:8px 0 12px!important;
+  background:linear-gradient(180deg,#fff,#f7fbff)!important;box-shadow:var(--p-shadow)!important
+}
+.dark-mode .search-result-card{background:linear-gradient(180deg,#172235,#121c2b)!important;border-color:#314760!important}
+.search-result-title{font-size:21px!important;font-weight:950!important;color:#0d65d7!important;margin:2px 5px 9px!important}
+.search-result-field{min-height:74px!important;border:1px solid #dce7f2!important;border-radius:14px!important;padding:8px 10px!important;background:rgba(255,255,255,.9)!important;box-shadow:0 3px 10px rgba(24,55,92,.06)!important}
+.dark-mode .search-result-field{background:#121c2b!important;border-color:#304257!important}
+.search-result-icon{flex-basis:42px!important;width:42px!important;height:42px!important;border-radius:11px!important;font-size:21px!important;box-shadow:0 5px 10px rgba(0,0,0,.10)!important}
+.search-result-label{font-size:12px!important;color:var(--p-muted)!important;font-weight:800!important}
+.search-result-value{font-size:19px!important;color:var(--p-text)!important;font-weight:950!important}
+.search-result-actions button{min-height:44px!important;border-radius:12px!important}
+
+/* Forms */
+#formView{padding:6px 0 110px!important}
+#formTitle{font-size:20px!important;font-weight:950!important;text-align:left!important;margin:4px 2px 12px!important;color:var(--p-text)!important}
+.form-box{
+  padding:16px!important;border:1px solid var(--p-border)!important;border-radius:20px!important;
+  background:rgba(255,255,255,.88)!important;box-shadow:var(--p-shadow)!important
+}
+.dark-mode .form-box{background:#121c2b!important}
+.edit-fields-grid{gap:11px 12px!important}
+.edit-field label{font-size:10px!important;font-weight:900!important;color:var(--p-muted)!important;text-transform:uppercase;letter-spacing:.4px}
+.edit-field input,.form-box select,.form-box textarea{
+  min-height:44px!important;border:1px solid var(--p-border)!important;border-radius:11px!important;padding:9px 12px!important;
+  background:var(--p-surface)!important;color:var(--p-text)!important;outline:none!important
+}
+.edit-field input:focus,.form-box select:focus,.form-box textarea:focus{border-color:#72a8ff!important;box-shadow:0 0 0 4px rgba(23,105,255,.08)!important}
+.save-btn,.delete-form-btn,.back-btn,.add-btn,.excel-btn,.reset-btn{min-height:44px!important;border-radius:11px!important;box-shadow:0 5px 12px rgba(0,0,0,.08)!important}
+
+/* Settings / pages */
+.nav-page{padding:4px 0 105px!important}
+.nav-page-head{border-radius:17px!important;padding:12px 13px!important;box-shadow:var(--p-shadow)!important;background:linear-gradient(135deg,#eef6ff,#fff)!important}
+.dark-mode .nav-page-head{background:linear-gradient(135deg,#17273b,#121c2b)!important;border-color:#334962!important}
+.nav-page-head h3{font-size:18px!important}
+.nav-page-back{min-height:36px!important;border-radius:10px!important}
+#settingsPage .settings-user{border-radius:17px!important;box-shadow:var(--p-shadow)!important;padding:15px 15px 15px 61px!important}
+#settingsPage .settings-actions{gap:10px!important}
+#settingsPage .settings-action{min-height:76px!important;height:76px!important;border-radius:16px!important;box-shadow:0 7px 18px rgba(24,55,92,.09)!important}
+#settingsPage .settings-action svg{width:28px!important;height:28px!important}
+#settingsPage .settings-action-label{font-size:10px!important}
+#settingsPage .settings-action:hover{transform:translateY(-2px)!important}
+
+/* Admin */
+#adminPage .settings-admin-title{border-radius:16px!important;box-shadow:var(--p-shadow)!important}
+#adminPage #userListContainer .user-row{border-radius:16px!important;box-shadow:0 6px 16px rgba(24,55,92,.07)!important;padding:14px!important}
+#adminPage .user-actions button{min-height:40px!important;border-radius:10px!important}
+
+/* Profile */
+#profilePage .profile-card{border-radius:21px!important;box-shadow:var(--p-shadow-lg)!important}
+#profilePage .profile-avatar{width:84px!important;height:84px!important}
+#profilePage .profile-logout-page{border-radius:12px!important}
+
+/* Others */
+#othersPage{background:transparent!important}
+.others-menu{gap:10px!important}
+.others-data-btn{min-height:94px!important;border-radius:17px!important;box-shadow:0 7px 18px rgba(24,55,92,.08)!important}
+.others-data-btn:hover{transform:translateY(-2px)!important;box-shadow:0 12px 24px rgba(24,55,92,.13)!important}
+.other-data-head,.other-input-card{border-radius:17px!important;box-shadow:var(--p-shadow)!important}
+.other-input-grid input,.other-input-grid select{min-height:42px!important;border-radius:11px!important}
+
+/* Bottom navigation */
+#bottomNav.bottom-nav{
+  position:fixed!important;left:50%!important;bottom:10px!important;transform:translateX(-50%)!important;
+  width:min(740px,calc(100% - 20px))!important;height:68px!important;padding:7px!important;
+  display:flex!important;align-items:stretch!important;gap:5px!important;z-index:9999!important;
+  border:1px solid rgba(255,255,255,.78)!important;border-radius:20px!important;
+  background:rgba(255,255,255,.84)!important;backdrop-filter:blur(18px)!important;
+  box-shadow:0 16px 40px rgba(17,45,78,.18)!important
+}
+.dark-mode #bottomNav.bottom-nav{background:rgba(18,28,43,.90)!important;border-color:#30445c!important;box-shadow:0 16px 40px rgba(0,0,0,.35)!important}
+#bottomNav button{
+  flex:1!important;width:auto!important;margin:0!important;border:0!important;border-radius:14px!important;background:transparent!important;
+  color:#6e8298!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:4px!important;font-size:9px!important;font-weight:900!important;padding:4px!important;transition:.18s!important
+}
+#bottomNav button svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#bottomNav button.active{color:#1769ff!important;background:#eaf3ff!important;box-shadow:inset 0 0 0 1px #cfe2ff!important}
+.dark-mode #bottomNav button{color:#9aacc0!important}
+.dark-mode #bottomNav button.active{color:#79b2ff!important;background:#172b45!important;box-shadow:inset 0 0 0 1px #2d5681!important}
+
+/* General button polish */
+button{font-family:inherit!important;transition:transform .16s,box-shadow .16s,filter .16s!important}
+button:not(.settings-action):hover{filter:brightness(1.03)}
+button:active{transform:translateY(1px)}
+
+/* Mobile */
+@media(max-width:600px){
+  body#pageBody{padding:5px!important}
+  .container{padding:6px!important}
+  .counter-box{gap:5px!important}
+  .counter-card{min-height:62px!important;font-size:8.5px!important;border-radius:13px!important}
+  .counter-card span{font-size:17px!important}
+  .search-result-grid{gap:6px!important}
+  .search-result-field{min-height:67px!important;padding:7px!important}
+  #settingsPage .settings-actions{gap:8px!important}
+  #settingsPage .settings-action{min-height:70px!important;height:70px!important}
+  #bottomNav.bottom-nav{bottom:6px!important;width:calc(100% - 12px)!important;height:64px!important;border-radius:18px!important}
+  #bottomNav button{font-size:8px!important}
+  #bottomNav button svg{width:20px!important;height:20px!important}
+}
+@media(max-width:360px){
+  .counter-card{min-height:58px!important;font-size:7.5px!important}
+  .counter-card span{font-size:15px!important}
+  #settingsPage .settings-actions{gap:6px!important}
+  #settingsPage .settings-action-label{font-size:8px!important}
+}
+</style>
+
+
+<style id="radius-sharp-premium">
+:root{--radius-box:8px;--radius-btn:7px;--radius-input:7px;--radius-modal:10px}
+.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{border-radius:var(--radius-box)!important}
+button,.btn,.button,.primary-btn,.secondary-btn,.save-btn,[class*="btn"]{border-radius:var(--radius-btn)!important}
+input,select,textarea{border-radius:var(--radius-input)!important}
+table{border-radius:var(--radius-box)!important}
+#otherInputModal .other-modal-box{border-radius:var(--radius-modal)!important}
+</style>
+<style id="radius-v3">
+.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{border-radius:4px!important}
+button,.btn,.button,.primary-btn,.save-btn,[class*="btn"]{border-radius:4px!important}
+input,select,textarea{border-radius:4px!important}
+.other-modal-box{border-radius:6px!important}
+table{border-radius:6px!important}
+@media(max-width:700px){.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{border-radius:4px!important}button,.btn,.button,.primary-btn,.save-btn,[class*="btn"]{border-radius:4px!important}}
+</style>
+
+<style id="verified-low-radius-final">
+/* VERIFIED LOW-RADIUS OVERRIDE: visual CSS only */
+.card,.panel,.section-card,.settings-card,.profile-card,.form-card,
+.stat-card,.data-card,.table-card,.admin-card,
+[class*="card"],[class*="panel"],[class*="section"],
+[class*="container"],[class*="box"]{border-radius:4px !important;}
+button,.btn,.button,.primary-btn,.secondary-btn,.save-btn,
+input,select,textarea,
+input[type="button"],input[type="submit"],input[type="file"]{border-radius:4px !important;}
+table{border-radius:4px !important;}
+.modal,.modal-box,.other-modal-box,#otherInputModal{border-radius:6px !important;}
+nav,.bottom-nav,.top-nav{border-radius:4px !important;}
+</style>
+<style id="bottom-nav-position-fix">
+#bottomNav,.bottom-nav,.bottom-navigation,nav.bottom-nav,[class*="bottom-nav"]{bottom:0!important;}
+</style>
+<style id="perfect-spacing-v2">
+*{box-sizing:border-box}
+body{margin:0!important}
+#appShell{margin:0!important;padding:0!important}
+.main-content,.content,.page-content,.container,.app-content{margin-left:0!important;margin-right:0!important;padding-left:6px!important;padding-right:6px!important}
+.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{margin:4px 0!important;padding:8px!important}
+.header-flex{margin-bottom:3px!important}.counter-box{gap:4px!important;margin-bottom:4px!important}.counter-card{padding:5px!important}.action-main-btns{gap:4px!important;margin-bottom:4px!important}.search-box{margin-bottom:4px!important}.table-box{margin-bottom:5px!important}.section-title{margin:4px 0 2px!important;padding-bottom:2px!important}
+.settings-panel{margin:4px 0 5px!important}.settings-head,.settings-user{padding:7px 8px!important}.settings-admin-box{padding:7px 8px!important}.settings-admin-list{padding:5px!important}
+.other-data-head,.other-input-card{margin:4px 0!important;padding:7px!important}.other-input-grid{gap:5px!important}.other-input-grid input,.other-input-grid select{min-height:40px!important}
+#formView{padding-bottom:76px!important}#bottomNav.bottom-nav{bottom:0!important;margin:0!important}
+@media(max-width:700px){.main-content,.content,.page-content,.container,.app-content{padding-left:4px!important;padding-right:4px!important}.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{margin:3px 0!important;padding:7px!important}}
+</style>
+
+<style id="margin-1px-final">
+*{box-sizing:border-box}body{margin:0!important}
+#appShell{margin:0!important;padding:0!important}
+.main-content,.content,.page-content,.container,.app-content{margin:0!important;padding-left:1px!important;padding-right:1px!important}
+.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{margin:1px 0!important;padding:4px!important}
+.header-flex{margin-bottom:1px!important}.counter-box{gap:1px!important;margin-bottom:1px!important}.counter-card{padding:3px!important}
+.action-main-btns{gap:1px!important;margin-bottom:1px!important}.search-box{margin-bottom:1px!important}.table-box{margin-bottom:1px!important}
+.section-title{margin:2px 0 1px!important;padding-bottom:1px!important}.settings-panel{margin:1px 0!important}
+.settings-head,.settings-user{padding:4px 5px!important}.settings-admin-box{padding:4px 5px!important}.settings-admin-list{padding:2px!important}
+.other-data-head,.other-input-card{margin:1px 0!important;padding:4px!important}.other-input-grid{gap:2px!important}
+.other-input-grid input,.other-input-grid select{min-height:37px!important}
+#formView{padding-bottom:70px!important}#bottomNav.bottom-nav{bottom:0!important;margin:0!important}
+@media(max-width:700px){.main-content,.content,.page-content,.container,.app-content{padding-left:1px!important;padding-right:1px!important}.card,.panel,.section-card,.settings-card,.profile-card,.form-card,.stat-card,.data-card,.table-card,.admin-card{margin:1px 0!important;padding:4px!important}}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -4730,3 +4988,39 @@ document.getElementById('otherInputModal')?.addEventListener('click',function(e)
 </script>
 
 </body></html>
+<style id="bottom-nav-clean-v2">
+/* Bottom navigation: no separate white nav buttons; flush to bottom */
+#bottomNav.bottom-nav{
+  bottom:0 !important;
+  border-radius:0 !important;
+  width:100% !important;
+  max-width:none !important;
+  left:0 !important;
+  transform:none !important;
+  padding:4px 6px !important;
+  background:rgba(255,255,255,.96) !important;
+  box-shadow:0 -4px 16px rgba(17,45,78,.10) !important;
+}
+#bottomNav button,
+#bottomNav button.active{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:0 !important;
+  border-radius:4px !important;
+}
+#bottomNav button.active{
+  color:#1769ff !important;
+}
+.dark-mode #bottomNav.bottom-nav{
+  background:rgba(18,28,43,.98) !important;
+  box-shadow:0 -4px 16px rgba(0,0,0,.28) !important;
+}
+.dark-mode #bottomNav button,
+.dark-mode #bottomNav button.active{
+  background:transparent !important;
+  box-shadow:none !important;
+}
+@media(max-width:700px){
+  #bottomNav.bottom-nav{bottom:0 !important;border-radius:0 !important;width:100% !important;padding:3px 4px !important;height:62px !important}
+}
+</style>
