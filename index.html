@@ -2853,7 +2853,7 @@
                     <div class="settings-user-email" id="settingsUserEmail"></div>
                 </div>
                 <div class="settings-actions">
-                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="document.getElementById('excelInput').click()">
+                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="if (typeof roleIsAdmin === 'function' && roleIsAdmin()) document.getElementById('excelInput').click(); else return false;">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v5h4M9 12h6M9 16h6"/></svg>
                         <span class="settings-action-label">Import Excel</span>
                     </button>
@@ -3857,6 +3857,12 @@
         }
 
         function importFromExcel(event) {
+            if (typeof roleIsAdmin === 'function' && !roleIsAdmin()) {
+                if (event && event.target) event.target.value = '';
+                alert('Only Admin can import Excel data.');
+                return;
+            }
+
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
