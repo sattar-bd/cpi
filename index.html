@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- FIREBASE-SAFE FINAL: Existing Firebase config, Auth, Firestore paths and CRUD logic preserved. UI-only overrides follow. -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PileCap Level Management</title>
@@ -676,7 +678,7 @@
     opacity:.95;
 }
 </style>
-
+<style id="hide-top-controls">.header-flex{display:none!important}.top-actions{display:none!important}</style>
 
 <style id="hide-old-login-bar">
 .user-bar {
@@ -842,7 +844,7 @@
 .settings-reset{color:#f01f3d !important;background:#fff0f2 !important;border-color:#ffc4cc !important;}
 .settings-dark{color:#f2a900 !important;background:#fff9e8 !important;border-color:#ffe09a !important;}
 .settings-users{color:#7441d9 !important;background:#f6f0ff !important;border-color:#d8c6ff !important;}
-.settings-logout{color:#ef2450 !important;background:#fff0f4 !important;border-color:#ffc2d1 !important;}
+.settings-logout{display:none !important;color:#ef2450 !important;background:#fff0f4 !important;border-color:#ffc2d1 !important;}
 .settings-input .settings-action-label{color:#0878ff !important;}
 .settings-excel .settings-action-label{color:#10a957 !important;}
 .settings-reset .settings-action-label{color:#f01f3d !important;}
@@ -860,12 +862,1940 @@
   .settings-action-label{font-size:6.5px !important;max-width:56px !important;}
 }
 </style>
+
+<style id="bright-admin-profile-settings">
+/* Bright UI refresh only: CSS overrides; existing HTML/JS/Firebase logic is untouched. */
+:root{
+  --bright-blue:#0878ff;
+  --bright-green:#10a957;
+  --bright-purple:#7441d9;
+  --bright-orange:#f09b00;
+  --bright-red:#ef2450;
+  --bright-cyan:#08a6d9;
+  --bright-surface:#ffffff;
+  --bright-soft:#f6f9ff;
+  --bright-border:#d7e5f5;
+}
+
+/* Page shells */
+.nav-page{
+  display:none;
+  padding:8px 0 80px !important;
+  animation:brightPageIn .18s ease-out;
+}
+.nav-page.open{display:block !important;}
+@keyframes brightPageIn{
+  from{opacity:.35;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.nav-page-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  margin:0 0 10px !important;
+  padding:10px 12px !important;
+  border:1px solid #cfe2ff !important;
+  border-radius:14px !important;
+  background:linear-gradient(135deg,#eef6ff,#ffffff) !important;
+  box-shadow:0 5px 16px rgba(8,120,255,.10) !important;
+}
+.nav-page-head h3{
+  margin:0 !important;
+  text-align:left !important;
+  font-size:17px !important;
+  font-weight:900 !important;
+  color:#0b63c7 !important;
+}
+.nav-page-back{
+  width:auto !important;
+  margin:0 !important;
+  padding:7px 11px !important;
+  border:1px solid #cfe2ff !important;
+  border-radius:9px !important;
+  background:#fff !important;
+  color:#0878ff !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  box-shadow:0 2px 7px rgba(8,120,255,.10) !important;
+}
+
+/* Settings page */
+#settingsPage .settings-panel{
+  display:block !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#settingsPage .settings-head{display:none !important;}
+#settingsPage .settings-user{
+  position:relative;
+  margin:0 0 10px !important;
+  padding:13px 14px 13px 58px !important;
+  border:1px solid #cfe2ff !important;
+  border-radius:14px !important;
+  background:linear-gradient(135deg,#eef6ff,#f9fcff) !important;
+  box-shadow:0 5px 16px rgba(8,120,255,.10) !important;
+}
+#settingsPage .settings-user:before{
+  content:"⚙";
+  position:absolute;
+  left:14px; top:50%; transform:translateY(-50%);
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:#0878ff;color:#fff;font-size:19px;font-weight:900;
+  box-shadow:0 4px 10px rgba(8,120,255,.25);
+}
+#settingsPage .settings-user-name{
+  color:#12355b !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+}
+#settingsPage .settings-user-email{
+  color:#50708f !important;
+  opacity:1 !important;
+  font-size:11px !important;
+  margin-top:3px !important;
+}
+#settingsPage .settings-actions{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:9px !important;
+  padding:0 !important;
+}
+#settingsPage .settings-action{
+  min-height:68px !important;
+  height:68px !important;
+  padding:8px 7px !important;
+  border:1px solid transparent !important;
+  border-radius:13px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.08) !important;
+  font-size:0 !important;
+}
+#settingsPage .settings-action svg{
+  width:25px !important;height:25px !important;flex:0 0 25px !important;
+  stroke-width:2.5 !important;
+}
+#settingsPage .settings-action-label{
+  display:block !important;
+  max-width:120px !important;
+  font-size:10px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+}
+#settingsPage .settings-input{
+  color:#0878ff !important;background:#eaf4ff !important;border-color:#b8d9ff !important;
+}
+#settingsPage .settings-excel{
+  color:#0b9e52 !important;background:#eafaf1 !important;border-color:#b9e7cd !important;
+}
+#settingsPage .settings-reset{
+  color:#ed2144 !important;background:#fff0f3 !important;border-color:#ffc5cf !important;
+}
+#settingsPage .settings-dark{
+  color:#d58b00 !important;background:#fff8df !important;border-color:#ffe09a !important;
+}
+#settingsPage .settings-users{
+  color:#7441d9 !important;background:#f4efff !important;border-color:#d7c5ff !important;
+}
+#settingsPage .settings-logout{display:flex !important;color:#ef2450 !important;background:#fff0f4 !important;border-color:#ffc3d0 !important;}
+#settingsPage .settings-action:hover{
+  transform:translateY(-1px) !important;
+  box-shadow:0 7px 16px rgba(0,0,0,.12) !important;
+}
+
+/* Admin content moved from Settings into Admin page */
+#adminPage .settings-admin-box{
+  display:block !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#adminPage .settings-admin-title{
+  margin:0 0 10px !important;
+  padding:12px 14px !important;
+  border:1px solid #dbcfff !important;
+  border-radius:14px !important;
+  background:linear-gradient(135deg,#f4efff,#fff) !important;
+  color:#5b2bb2 !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  box-shadow:0 5px 16px rgba(116,65,217,.10) !important;
+}
+#adminPage .admin-panel-actions{margin:0 0 10px !important;padding:0 !important;}
+#adminPage .admin-panel-new{
+  width:100% !important;
+  min-height:48px !important;
+  padding:10px 12px !important;
+  border:1px solid #b9d9ff !important;
+  border-radius:12px !important;
+  background:linear-gradient(135deg,#0878ff,#3c9cff) !important;
+  color:#fff !important;
+  box-shadow:0 5px 14px rgba(8,120,255,.20) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+}
+#adminPage .settings-admin-list{
+  border:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+}
+#adminPage #userListContainer{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+#adminPage #userListContainer .user-row{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:7px !important;
+  padding:12px !important;
+  border:1px solid #dbe7f3 !important;
+  border-radius:13px !important;
+  background:#fff !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.07) !important;
+}
+#adminPage #userListContainer .user-row > div:first-child{
+  color:#163b61 !important;
+  font-size:14px !important;
+}
+#adminPage #userListContainer .user-row > div:nth-child(2){
+  color:#66809a !important;
+  font-size:11px !important;
+  overflow-wrap:anywhere;
+}
+#adminPage .user-role{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:58px !important;
+  padding:5px 9px !important;
+  border-radius:999px !important;
+  background:#f1eaff !important;
+  color:#6b35c5 !important;
+  border:1px solid #d6c4ff !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+}
+#adminPage .user-actions{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:7px !important;
+  width:100% !important;
+}
+#adminPage .user-actions button{
+  width:100% !important;
+  min-height:38px !important;
+  margin:0 !important;
+  padding:7px 8px !important;
+  border:0 !important;
+  border-radius:9px !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  box-shadow:0 2px 7px rgba(0,0,0,.08) !important;
+}
+#adminPage .user-reset{background:#eaf4ff !important;color:#0878ff !important;border:1px solid #b9d9ff !important;}
+#adminPage .user-role-btn{background:#fff7d9 !important;color:#a66b00 !important;border:1px solid #ffe09a !important;}
+#adminPage .user-delete{background:#fff0f3 !important;color:#e51d43 !important;border:1px solid #ffc3cf !important;}
+
+/* Profile page */
+#profilePage .profile-card{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:24px 16px 17px !important;
+  border:1px solid #cfe2ff !important;
+  border-radius:17px !important;
+  background:linear-gradient(180deg,#eef6ff 0,#fff 45%,#fff 100%) !important;
+  box-shadow:0 7px 22px rgba(8,120,255,.12) !important;
+}
+#profilePage .profile-card:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:5px;
+  background:linear-gradient(90deg,#0878ff,#10a957,#7441d9,#f09b00);
+}
+#profilePage .profile-avatar{
+  width:78px !important;height:78px !important;
+  margin:2px auto 12px !important;
+  border:4px solid #fff !important;
+  background:linear-gradient(135deg,#0878ff,#4ba1ff) !important;
+  color:#fff !important;
+  box-shadow:0 7px 18px rgba(8,120,255,.24) !important;
+}
+#profilePage .profile-avatar svg{width:40px !important;height:40px !important;stroke-width:2 !important;}
+#profilePage .profile-name{
+  font-size:20px !important;
+  color:#123b63 !important;
+  font-weight:900 !important;
+}
+#profilePage .profile-email{
+  margin-top:6px !important;
+  color:#58738e !important;
+  font-size:12px !important;
+}
+#profilePage .profile-role{
+  margin-top:11px !important;
+  padding:6px 14px !important;
+  background:#eafaf1 !important;
+  color:#0b9e52 !important;
+  border:1px solid #b9e7cd !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+}
+#profilePage .profile-logout-page{
+  min-height:46px !important;
+  margin:20px 0 0 !important;
+  border:1px solid #ffc3d0 !important;
+  border-radius:11px !important;
+  background:#fff0f4 !important;
+  color:#e51d43 !important;
+  font-size:12px !important;
+  box-shadow:0 4px 10px rgba(229,29,67,.08) !important;
+}
+
+/* Existing Admin page fallback, if it is opened by legacy code */
+#adminView .user-list-card{
+  border:1px solid #d8caff !important;
+  border-radius:14px !important;
+  background:linear-gradient(180deg,#faf8ff,#fff) !important;
+  box-shadow:0 5px 16px rgba(116,65,217,.09) !important;
+}
+#adminView .admin-head h3{color:#5b2bb2 !important;font-weight:900 !important;}
+#adminView .user-role{background:#f1eaff !important;color:#6b35c5 !important;}
+
+/* Dark mode: retain bright accents while keeping text readable */
+.dark-mode #settingsPage .nav-page-head,
+.dark-mode #adminPage .nav-page-head,
+.dark-mode #profilePage .nav-page-head{
+  background:linear-gradient(135deg,#1d2a3a,#20252d) !important;
+  border-color:#38516d !important;
+}
+.dark-mode #settingsPage .nav-page-head h3,
+.dark-mode #adminPage .nav-page-head h3{color:#79b7ff !important;}
+.dark-mode #settingsPage .settings-user{
+  background:linear-gradient(135deg,#182b40,#20252d) !important;
+  border-color:#38516d !important;
+}
+.dark-mode #settingsPage .settings-user-name{color:#eaf4ff !important;}
+.dark-mode #settingsPage .settings-user-email{color:#a9c0d8 !important;}
+.dark-mode #settingsPage .settings-action{box-shadow:0 4px 12px rgba(0,0,0,.28) !important;}
+.dark-mode #settingsPage .settings-input{background:#102b49 !important;border-color:#245f99 !important;}
+.dark-mode #settingsPage .settings-excel{background:#103525 !important;border-color:#276b46 !important;}
+.dark-mode #settingsPage .settings-reset,
+.dark-mode #settingsPage .settings-logout{background:#3a1820 !important;border-color:#733040 !important;}
+.dark-mode #settingsPage .settings-dark{background:#3b3015 !important;border-color:#725e22 !important;}
+.dark-mode #settingsPage .settings-users{background:#2c2147 !important;border-color:#5a4291 !important;}
+.dark-mode #adminPage .settings-admin-title{background:linear-gradient(135deg,#2a2142,#20252d) !important;border-color:#5b4390 !important;color:#c7adff !important;}
+.dark-mode #adminPage #userListContainer .user-row{
+  background:#20252d !important;border-color:#3a4652 !important;box-shadow:0 4px 12px rgba(0,0,0,.3) !important;
+}
+.dark-mode #adminPage #userListContainer .user-row > div:first-child{color:#f0f6fc !important;}
+.dark-mode #adminPage #userListContainer .user-row > div:nth-child(2){color:#aab9c7 !important;}
+.dark-mode #profilePage .profile-card{
+  background:linear-gradient(180deg,#182b40 0,#20252d 55%,#20252d 100%) !important;
+  border-color:#38516d !important;
+}
+.dark-mode #profilePage .profile-name{color:#f2f7fc !important;}
+.dark-mode #profilePage .profile-email{color:#a9c0d8 !important;}
+.dark-mode #profilePage .nav-page-back{background:#20252d !important;color:#79b7ff !important;border-color:#38516d !important;}
+
+/* Small screens */
+@media(max-width:420px){
+  #settingsPage .settings-action{min-height:64px !important;height:64px !important;}
+  #settingsPage .settings-action-label{font-size:9px !important;}
+  #profilePage .profile-card{padding:22px 13px 15px !important;}
+}
+@media(min-width:600px){
+  #settingsPage .settings-actions{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+  #adminPage #userListContainer .user-row{grid-template-columns:1.1fr 1.5fr .6fr 1.5fr !important;}
+  #adminPage #userListContainer .user-actions{grid-column:auto !important;}
+}
+</style>
+
+
+<style id="others-page-style">
+/* Others UI refresh: compact, less-white, mobile-safe. Firebase/data logic unchanged. */
+#othersPage{
+  padding-bottom:88px!important;
+  background:#f3f7fc!important;
+}
+#othersPage .nav-page-head{
+  margin-bottom:10px!important;
+  background:linear-gradient(135deg,#eaf3ff,#f8fbff)!important;
+  border-color:#c7ddf5!important;
+}
+.others-menu{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+.others-data-btn{
+  position:relative;
+  min-height:86px;
+  padding:10px 8px;
+  border:1px solid transparent;
+  border-radius:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(35,75,115,.08);
+  transition:.15s ease;
+}
+.others-data-btn:hover{transform:translateY(-1px);}
+.others-pda{background:#e7f2ff;color:#086edc;border-color:#b8d6fa;}
+.others-pit{background:#e7f8ef;color:#0a9950;border-color:#b8e3ca;}
+.others-mlt{background:#f1ebff;color:#6c39c8;border-color:#d5c5f5;}
+.others-icon{
+  display:flex;align-items:center;justify-content:center;
+  width:48px;height:27px;border-radius:8px;
+  background:rgba(255,255,255,.8);
+  font-size:11px;font-weight:1000;
+}
+.others-btn-label{font-size:10px;line-height:1;}
+.others-count{
+  position:absolute;
+  top:7px;right:7px;
+  min-width:21px;height:21px;
+  padding:0 5px;
+  border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  background:#0878ff;color:#fff;
+  font-size:9px;font-weight:1000;
+  box-shadow:0 2px 6px rgba(8,120,255,.2);
+}
+.others-pit .others-count{background:#0b9e52;}
+.others-mlt .others-count{background:#7441d9;}
+
+.other-data-page{animation:brightPageIn .18s ease-out;}
+.other-data-head{
+  display:flex;align-items:center;gap:9px;
+  margin-bottom:9px;padding:9px;
+  border:1px solid #c9dff4;border-radius:13px;
+  background:#eaf3ff;
+}
+.other-back-btn{
+  width:auto!important;margin:0!important;
+  padding:7px 10px!important;border:1px solid #bcd6f2!important;
+  border-radius:9px!important;background:#f8fbff!important;color:#0878ff!important;
+  font-weight:900!important;font-size:10px!important;
+}
+.other-data-title{font-size:16px;font-weight:950;color:#123b63;}
+.other-data-subtitle{font-size:9px;font-weight:900;color:#68819a;margin-top:2px;}
+
+.other-input-card{
+  margin-bottom:9px;padding:11px;
+  border:1px solid #c9dff4;border-radius:14px;
+  background:#f8fbff;
+  box-shadow:0 4px 12px rgba(35,75,115,.06);
+}
+.other-input-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.other-input-grid label{display:block;}
+.other-input-grid label span{
+  display:block;margin-bottom:4px;font-size:9px;
+  font-weight:950;color:#58738e;
+}
+.other-input-grid input{
+  width:100%;box-sizing:border-box;
+  min-height:40px;padding:8px 10px;
+  border:1px solid #c7d9e9;border-radius:9px;
+  background:#fff;color:#173b5e;font-size:12px;outline:none;
+}
+.other-input-grid input:focus{
+  border-color:#0878ff;
+  box-shadow:0 0 0 3px rgba(8,120,255,.08);
+}
+.other-coordinate-field{grid-column:1/-1;}
+.other-form-actions{display:flex;gap:8px;margin-top:9px;}
+.other-form-actions button{
+  flex:1;min-height:40px;border:0;border-radius:9px;
+  font-size:11px;font-weight:900;cursor:pointer;
+}
+#otherSaveBtn{
+  background:linear-gradient(135deg,#0878ff,#3c9cff);color:#fff;
+  box-shadow:0 4px 10px rgba(8,120,255,.18);
+}
+#otherCancelBtn{background:#fff0f3;color:#e51d43;border:1px solid #ffc3cf!important;}
+.other-permission-note{
+  margin-top:7px;padding:6px 8px;
+  border-radius:7px;background:#edf4fa;
+  font-size:8px;color:#71879a;text-align:center;
+}
+
+.other-list-card{
+  width:100%;box-sizing:border-box;
+  border:1px solid #c9dff4;border-radius:14px;
+  overflow:hidden;background:#f8fbff;
+  box-shadow:0 4px 12px rgba(35,75,115,.06);
+}
+.other-list-head{
+  display:grid;
+  grid-template-columns:.8fr 1fr 1.45fr 1.25fr;
+  align-items:center;
+  padding:9px 8px;background:#e6f2ff;
+  color:#1765ad;font-size:9px;font-weight:950;
+}
+.other-row{
+  display:grid;
+  grid-template-columns:.8fr 1fr 1.45fr 1.25fr;
+  align-items:center;
+  padding:8px;
+  border-top:1px solid #dce9f4;
+  color:#274764;font-size:10px;min-height:43px;
+}
+.other-row:nth-child(even){background:#f1f6fb;}
+.other-cell{
+  min-width:0;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  padding-right:5px;
+}
+.other-actions{
+  min-width:0;
+  display:flex;
+  gap:4px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+.other-actions button{
+  flex:0 1 auto;
+  min-width:48px;
+  max-width:100%;
+  height:31px;
+  padding:0 7px;
+  border:0;border-radius:8px;
+  font-size:9px;font-weight:950;cursor:pointer;
+  white-space:nowrap;
+}
+.other-edit{background:#e5f1ff;color:#0878ff;border:1px solid #c1dbf7!important;}
+.other-delete{background:#ffecef;color:#dc2345;border:1px solid #ffc5cf!important;}
+.other-empty{padding:18px;text-align:center;color:#8195a8;font-size:10px;}
+
+.dark-mode #othersPage{background:#151b22!important;}
+.dark-mode #othersPage .nav-page-head{background:linear-gradient(135deg,#1b2b3e,#202831)!important;border-color:#38516d!important;}
+.dark-mode .others-pda{background:#102b49!important;}
+.dark-mode .others-pit{background:#103525!important;}
+.dark-mode .others-mlt{background:#2c2147!important;}
+.dark-mode .other-data-head{background:#1b2b3e!important;border-color:#38516d!important;}
+.dark-mode .other-data-title{color:#eaf4ff!important;}
+.dark-mode .other-input-card,.dark-mode .other-list-card{background:#1d242c!important;border-color:#3a4652!important;}
+.dark-mode .other-input-grid input{background:#151b22!important;border-color:#3a4652!important;color:#f0f6fc!important;}
+.dark-mode .other-row{color:#e5edf5!important;border-color:#3a4652!important;}
+.dark-mode .other-row:nth-child(even){background:#202831!important;}
+.dark-mode .other-list-head{background:#182b40!important;color:#79b7ff!important;}
+.dark-mode .other-permission-note{background:#202831!important;color:#9aabba!important;}
+
+@media(max-width:430px){
+  #othersPage{padding-bottom:94px!important;}
+  .others-menu{grid-template-columns:1fr;gap:7px;}
+  .others-data-btn{
+    min-height:57px;
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:7px 12px;
+    gap:9px;
+  }
+  .others-icon{width:55px;flex:0 0 55px;height:29px;}
+  .others-btn-label{font-size:11px;}
+  .others-count{right:10px;top:50%;transform:translateY(-50%);}
+  .other-input-grid{grid-template-columns:1fr;}
+  .other-coordinate-field{grid-column:auto;}
+  .other-list-head,.other-row{
+    grid-template-columns:.72fr .9fr 1.25fr 1.55fr;
+  }
+  .other-list-head{font-size:8px;padding:8px 5px;}
+  .other-row{padding:7px 5px;min-height:43px;}
+  .other-actions{
+    justify-content:flex-start;
+    gap:4px;
+  }
+  .other-actions button{
+    min-width:43px;
+    height:29px;
+    padding:0 5px;
+    font-size:8px;
+  }
+}
+</style>
+
+
+<style id="others-table-final-style">
+.other-list-card{overflow:hidden!important;}
+.other-list-head,.other-row{
+  grid-template-columns:.75fr .85fr 1.25fr .9fr!important;
+}
+.other-list-head{
+  min-height:42px!important;
+  padding:8px 7px!important;
+  text-align:left!important;
+  letter-spacing:.2px;
+}
+.other-row{
+  min-height:58px!important;
+  padding:7px!important;
+  background:#f9fcff!important;
+}
+.other-row:nth-child(even){background:#f1f7fc!important;}
+.other-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  flex-wrap:nowrap!important;
+}
+.other-actions button{
+  flex:0 0 38px!important;
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  height:38px!important;
+  padding:0!important;
+  border-radius:10px!important;
+  font-size:0!important;
+  line-height:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.other-actions button::before{
+  display:block;
+  font-size:17px;
+  line-height:1;
+}
+.other-edit::before{content:"✎";}
+.other-delete::before{content:"♜";transform:rotate(180deg);}
+.other-edit{
+  background:#e9f3ff!important;
+  color:#0878ff!important;
+  border:1px solid #bcd9fb!important;
+}
+.other-delete{
+  background:#fff0f3!important;
+  color:#e51d43!important;
+  border:1px solid #ffc5cf!important;
+}
+.other-actions button:active{transform:scale(.94);}
+@media(max-width:430px){
+  .other-list-head,.other-row{
+    grid-template-columns:.72fr .75fr 1.15fr .78fr!important;
+  }
+  .other-row{min-height:56px!important;}
+  .other-actions{gap:5px!important;}
+  .other-actions button{
+    flex-basis:34px!important;
+    width:34px!important;
+    min-width:34px!important;
+    max-width:34px!important;
+    height:34px!important;
+    border-radius:9px!important;
+  }
+  .other-actions button::before{font-size:15px;}
+}
+</style>
+
+
+<style id="others-action-icon-style">
+.other-actions button svg{
+  width:18px!important;
+  height:18px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:2.2!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+</style>
+
+
+<style id="others-black-table-final">
+.other-list-card{border:1px solid #111!important;border-radius:10px!important;background:#fff!important;overflow:hidden!important;box-shadow:none!important}
+.other-list-head{grid-template-columns:.78fr .82fr 1.25fr .95fr!important;min-height:38px!important;padding:6px 7px!important;background:#edf3f8!important;color:#111!important;border-bottom:2px solid #111!important}
+.other-row{grid-template-columns:.78fr .82fr 1.25fr .95fr!important;min-height:48px!important;padding:5px 7px!important;background:#fff!important;color:#111!important;border-top:1px solid #111!important}
+.other-row:nth-child(even){background:#fafafa!important}
+.other-cell{padding:3px 5px!important;line-height:1.15!important;color:#111!important}
+.other-actions{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;flex-wrap:nowrap!important}
+.other-actions button{flex:0 0 32px!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;padding:0!important;border-radius:7px!important;font-size:0!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#fff!important}
+.other-edit{color:#0878ff!important;border:1.5px solid #0878ff!important}
+.other-delete{color:#e51d43!important;border:1.5px solid #e51d43!important}
+.other-actions button svg{width:17px!important;height:17px!important;fill:none!important;stroke:currentColor!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+@media(max-width:430px){
+  .other-list-card{border-radius:9px!important}
+  .other-list-head{grid-template-columns:.72fr .75fr 1.15fr .78fr!important;min-height:36px!important;padding:5px!important;font-size:8px!important}
+  .other-row{grid-template-columns:.72fr .75fr 1.15fr .78fr!important;min-height:46px!important;padding:4px 5px!important;font-size:10px!important}
+  .other-cell{padding:2px 3px!important}
+  .other-actions{gap:5px!important}
+  .other-actions button{flex-basis:30px!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;border-radius:7px!important}
+  .other-actions button svg{width:16px!important;height:16px!important}
+}
+</style>
+
+
+<style id="others-modal-layout">
+/* Others menu: PDA / PIT / MLT always side-by-side */
+.others-menu{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.others-data-btn{
+  min-height:72px!important;
+  padding:8px 5px!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+.others-icon{
+  width:48px!important;
+  height:25px!important;
+  flex:0 0 auto!important;
+}
+.others-btn-label{font-size:10px!important;}
+.others-count{
+  top:6px!important;
+  right:6px!important;
+  transform:none!important;
+}
+@media(max-width:430px){
+  .others-menu{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;}
+  .others-data-btn{min-height:72px!important;padding:8px 4px!important;}
+  .others-icon{width:44px!important;height:24px!important;}
+  .others-btn-label{font-size:9px!important;}
+  .others-count{min-width:20px!important;height:20px!important;top:5px!important;right:5px!important;font-size:8px!important;}
+}
+
+/* Modal input system */
+#otherInputModal{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:rgba(8,18,30,.58);
+  backdrop-filter:blur(3px);
+}
+#otherInputModal.open{display:flex;}
+.other-modal-box{
+  width:min(420px,100%);
+  max-height:88vh;
+  overflow:auto;
+  box-sizing:border-box;
+  padding:17px;
+  border:1px solid #b9d4ec;
+  border-radius:17px;
+  background:#f7fbff;
+  box-shadow:0 18px 45px rgba(0,0,0,.25);
+  animation:otherModalIn .16s ease-out;
+}
+.other-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:13px;
+}
+.other-modal-title{
+  font-size:18px;
+  font-weight:950;
+  color:#123d64;
+}
+.other-modal-close{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  border:1px solid #c8d9e8!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#536a7c!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+.other-modal-form label{display:block;margin-bottom:10px;}
+.other-modal-form label span{
+  display:block;
+  margin-bottom:5px;
+  color:#55728b;
+  font-size:10px;
+  font-weight:950;
+}
+.other-modal-form input{
+  width:100%;
+  min-height:44px;
+  box-sizing:border-box;
+  padding:9px 11px;
+  border:1px solid #c4d7e7;
+  border-radius:10px;
+  background:#fff;
+  color:#173d5e;
+  font-size:13px;
+  outline:none;
+}
+.other-modal-form input:focus{
+  border-color:#0878ff;
+  box-shadow:0 0 0 3px rgba(8,120,255,.09);
+}
+.other-modal-actions{
+  display:flex;
+  gap:8px;
+  margin-top:4px;
+}
+.other-modal-actions button{
+  flex:1;
+  min-height:43px;
+  border:0;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:950;
+}
+#otherModalSave{
+  background:linear-gradient(135deg,#0878ff,#3c9cff);
+  color:#fff;
+}
+#otherModalCancel{
+  background:#fff;
+  color:#536a7c;
+  border:1px solid #c4d7e7;
+}
+@keyframes otherModalIn{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.dark-mode #otherInputModal{background:rgba(0,0,0,.7);}
+.dark-mode .other-modal-box{background:#1d252e;border-color:#3a526a;}
+.dark-mode .other-modal-title{color:#e8f2fc;}
+.dark-mode .other-modal-close,.dark-mode #otherModalCancel{background:#202a34!important;color:#d8e5ef!important;border-color:#40505e!important;}
+.dark-mode .other-modal-form input{background:#151b22;color:#eef6fc;border-color:#40505e;}
+</style>
+
+
+<style id="other-form-hide">
+#otherInputCard{
+  display:none!important;
+}
+</style>
+
+
+<style id="others-inline-status-final">
+/* Compact Others buttons: one line, e.g. PDA 12 */
+.others-data-btn{
+  min-height:58px!important;
+  height:58px!important;
+  flex-direction:row!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:7px 10px!important;
+}
+.others-icon{display:none!important;}
+.others-btn-label{
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+}
+.others-count{
+  position:static!important;
+  min-width:30px!important;
+  height:30px!important;
+  padding:0 8px!important;
+  border-radius:999px!important;
+  font-size:13px!important;
+  font-weight:1000!important;
+  box-shadow:none!important;
+}
+.other-status-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:56px!important;
+  height:24px!important;
+  padding:0 8px!important;
+  border-radius:999px!important;
+  font-size:9px!important;
+  font-weight:1000!important;
+  border:1px solid transparent!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+}
+.other-status-pending{
+  color:#9a6200!important;
+  background:#fff4d6!important;
+  border-color:#e7bd58!important;
+}
+.other-status-complete{
+  color:#087a42!important;
+  background:#dcf8e9!important;
+  border-color:#6fca99!important;
+}
+.other-status-unknown{
+  color:#5c6b78!important;
+  background:#eef2f5!important;
+  border-color:#c8d2da!important;
+}
+.other-list-head,.other-row{
+  grid-template-columns:.72fr .72fr 1.05fr .78fr .9fr!important;
+}
+@media(max-width:430px){
+  .others-data-btn{
+    min-height:55px!important;height:55px!important;
+    padding:6px 4px!important;gap:5px!important;
+  }
+  .others-btn-label{font-size:15px!important;}
+  .others-count{min-width:27px!important;height:27px!important;font-size:12px!important;padding:0 6px!important;}
+  .other-status-badge{min-width:50px!important;height:22px!important;font-size:8px!important;padding:0 6px!important;}
+  .other-list-head,.other-row{
+    grid-template-columns:.65fr .65fr 1fr .78fr .72fr!important;
+  }
+}
+.other-modal-status-label span{display:block;margin-bottom:5px;color:#55728b;font-size:10px;font-weight:950;}
+#modalOtherStatus{
+  width:100%;min-height:44px;box-sizing:border-box;padding:9px 11px;
+  border:1px solid #c4d7e7;border-radius:10px;background:#fff;color:#173d5e;
+  font-size:13px;font-weight:700;outline:none;
+}
+
+
+<style id="other-modal-status-style">
+#modalOtherStatus{
+  width:100%;min-height:44px;box-sizing:border-box;padding:9px 11px;
+  border:1px solid #c4d7e7;border-radius:10px;background:#fff;color:#173d5e;
+  font-size:13px;font-weight:700;outline:none;
+}
+#otherStatusInput{display:none!important;}
+</style>
+
+
+<style id="others-edit-icon-final-fix">
+/* Remove old pseudo-icons; show only the real SVG icon. */
+.other-actions button::before,
+.other-actions button::after{
+  content:none!important;
+  display:none!important;
+}
+.other-actions{
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+}
+.other-actions button{
+  position:relative!important;
+  flex:0 0 34px!important;
+  width:34px!important;
+  min-width:34px!important;
+  max-width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.other-actions button svg{
+  display:block!important;
+  width:18px!important;
+  height:18px!important;
+  margin:0!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:2.2!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.other-edit{
+  color:#0878ff!important;
+  background:#edf6ff!important;
+  border:1.5px solid #0878ff!important;
+}
+.other-delete{
+  color:#e31d43!important;
+  background:#fff1f4!important;
+  border:1.5px solid #e31d43!important;
+}
+.other-edit svg path:first-child{fill:none!important;}
+@media(max-width:430px){
+  .other-actions{gap:5px!important;}
+  .other-actions button{
+    flex-basis:32px!important;
+    width:32px!important;
+    min-width:32px!important;
+    max-width:32px!important;
+    height:32px!important;
+  }
+  .other-actions button svg{width:17px!important;height:17px!important;}
+}
+</style>
+
+
+<style id="admin-compact-table-final">
+/* Compact Admin User Management table */
+.settings-admin-list{
+  padding:0!important;
+  overflow:hidden!important;
+  border:1px solid #111!important;
+  border-radius:9px!important;
+  background:#fff!important;
+}
+.admin-table-head,
+.settings-admin-list .user-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.7fr) .65fr minmax(145px,1.25fr)!important;
+  align-items:center!important;
+  column-gap:6px!important;
+}
+.admin-table-head{
+  min-height:34px!important;
+  padding:5px 7px!important;
+  background:#eaf3fb!important;
+  color:#111!important;
+  border-bottom:2px solid #111!important;
+  font-size:10px!important;
+  font-weight:950!important;
+}
+.settings-admin-list .user-row{
+  min-height:44px!important;
+  padding:4px 7px!important;
+  margin:0!important;
+  border:0!important;
+  border-bottom:1px solid #111!important;
+  border-radius:0!important;
+  background:#fff!important;
+  font-size:11px!important;
+  color:#111!important;
+}
+.settings-admin-list .user-row:last-child{
+  border-bottom:0!important;
+}
+.settings-admin-list .user-email-cell{
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  font-weight:800!important;
+}
+.settings-admin-list .user-role{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:48px!important;
+  height:24px!important;
+  padding:2px 6px!important;
+  box-sizing:border-box!important;
+  border-radius:7px!important;
+  font-size:9px!important;
+  font-weight:950!important;
+}
+.settings-admin-list .user-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:4px!important;
+  min-width:0!important;
+  flex-wrap:nowrap!important;
+}
+.settings-admin-list .user-actions button{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  height:28px!important;
+  margin:0!important;
+  padding:3px 7px!important;
+  border-radius:7px!important;
+  border:1px solid transparent!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.settings-admin-list .user-reset{
+  background:#eaf4ff!important;
+  color:#0878ff!important;
+  border-color:#b8d9f8!important;
+}
+.settings-admin-list .user-role-btn{
+  background:#fff6d9!important;
+  color:#8a6200!important;
+  border-color:#efd98a!important;
+}
+.settings-admin-list .user-delete{
+  background:#fff0f3!important;
+  color:#d9234b!important;
+  border-color:#f3b8c5!important;
+}
+.settings-admin-list .admin-super-label{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  height:26px!important;
+  padding:0 6px!important;
+  border-radius:7px!important;
+  background:#eee7ff!important;
+  color:#6f42c1!important;
+  font-size:8px!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+@media(max-width:430px){
+  .admin-table-head,
+  .settings-admin-list .user-row{
+    grid-template-columns:minmax(0,1.35fr) .55fr minmax(142px,1.3fr)!important;
+  }
+  .admin-table-head{
+    min-height:32px!important;
+    padding:4px 5px!important;
+    font-size:9px!important;
+  }
+  .settings-admin-list .user-row{
+    min-height:42px!important;
+    padding:4px 5px!important;
+    font-size:10px!important;
+  }
+  .settings-admin-list .user-actions{gap:3px!important;}
+  .settings-admin-list .user-actions button{
+    height:26px!important;
+    padding:2px 6px!important;
+    font-size:8px!important;
+    border-radius:6px!important;
+  }
+  .settings-admin-list .user-role{
+    min-width:42px!important;
+    height:22px!important;
+    font-size:8px!important;
+  }
+}
+</style>
+
+
+<style id="admin-one-line-final-fix">
+/* FINAL OVERRIDE: every user stays on ONE compact table row */
+#adminPage #userListContainer{
+  display:block!important;
+  gap:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:1px solid #111!important;
+  border-radius:8px!important;
+  background:#fff!important;
+}
+#adminPage #userListContainer .admin-table-head,
+#adminPage #userListContainer .user-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.65fr) .62fr minmax(145px,1.25fr)!important;
+  align-items:center!important;
+  column-gap:5px!important;
+  box-sizing:border-box!important;
+}
+#adminPage #userListContainer .admin-table-head{
+  min-height:32px!important;
+  padding:4px 7px!important;
+  background:#eaf3fb!important;
+  color:#111!important;
+  border:0!important;
+  border-bottom:2px solid #111!important;
+  border-radius:0!important;
+  font-size:9px!important;
+  font-weight:950!important;
+}
+#adminPage #userListContainer .user-row{
+  min-height:44px!important;
+  padding:4px 7px!important;
+  margin:0!important;
+  gap:5px!important;
+  border:0!important;
+  border-bottom:1px solid #111!important;
+  border-radius:0!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  font-size:10px!important;
+}
+#adminPage #userListContainer .user-row:last-child{
+  border-bottom:0!important;
+}
+#adminPage #userListContainer .user-row > div:first-child,
+#adminPage #userListContainer .user-email-cell{
+  min-width:0!important;
+  color:#163b61!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#adminPage #userListContainer .user-row > div:nth-child(2){
+  min-width:0!important;
+  color:#111!important;
+  font-size:9px!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+#adminPage #userListContainer .user-role{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:44px!important;
+  height:23px!important;
+  padding:2px 5px!important;
+  box-sizing:border-box!important;
+  border-radius:7px!important;
+  background:#f1eaff!important;
+  color:#6b35c5!important;
+  border:1px solid #d6c4ff!important;
+  font-size:8px!important;
+  font-weight:950!important;
+}
+#adminPage #userListContainer .user-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:4px!important;
+  width:auto!important;
+  min-width:0!important;
+  flex-wrap:nowrap!important;
+}
+#adminPage #userListContainer .user-actions button{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  height:27px!important;
+  min-height:27px!important;
+  margin:0!important;
+  padding:3px 7px!important;
+  border-radius:7px!important;
+  border:1px solid transparent!important;
+  font-size:8px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+}
+#adminPage #userListContainer .user-reset{
+  background:#eaf4ff!important;
+  color:#0878ff!important;
+  border-color:#b9d9ff!important;
+}
+#adminPage #userListContainer .user-role-btn{
+  background:#fff7d9!important;
+  color:#a66b00!important;
+  border-color:#ffe09a!important;
+}
+#adminPage #userListContainer .user-delete{
+  background:#fff0f3!important;
+  color:#e51d43!important;
+  border-color:#ffc3cf!important;
+}
+#adminPage #userListContainer .admin-super-label{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  height:25px!important;
+  padding:0 5px!important;
+  border-radius:6px!important;
+  background:#eee7ff!important;
+  color:#6f42c1!important;
+  font-size:7px!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+
+/* Override the old mobile rule that was forcing buttons below the user. */
+@media(max-width:600px){
+  #adminPage #userListContainer .admin-table-head,
+  #adminPage #userListContainer .user-row{
+    grid-template-columns:minmax(0,1.35fr) .55fr minmax(142px,1.3fr)!important;
+  }
+  #adminPage #userListContainer .user-row{
+    min-height:42px!important;
+    padding:4px 5px!important;
+  }
+  #adminPage #userListContainer .user-actions{
+    grid-column:auto!important;
+    width:auto!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+  }
+  #adminPage #userListContainer .user-actions button{
+    height:25px!important;
+    min-height:25px!important;
+    padding:3px 6px!important;
+    font-size:8px!important;
+  }
+}
+@media(max-width:360px){
+  #adminPage #userListContainer .admin-table-head,
+  #adminPage #userListContainer .user-row{
+    grid-template-columns:minmax(0,1.2fr) .5fr minmax(130px,1.35fr)!important;
+  }
+  #adminPage #userListContainer .user-actions{gap:3px!important;}
+  #adminPage #userListContainer .user-actions button{
+    padding:3px 5px!important;
+    font-size:7px!important;
+  }
+}
+</style>
+
+
+<style id="others-pda-pit-mlt-table-final">
+/* PDA / PIT / MLT — spreadsheet-style compact table */
+#othersPage .other-list-card{
+  width:100%!important;
+  box-sizing:border-box!important;
+  border:2px solid #111!important;
+  border-radius:4px!important;
+  background:#fff!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+#othersPage .other-list-head,
+#othersPage .other-row{
+  display:grid!important;
+  grid-template-columns:
+    minmax(54px,.82fr)
+    minmax(48px,.72fr)
+    minmax(82px,1.18fr)
+    minmax(70px,.9fr)
+    minmax(92px,1.28fr)!important;
+  align-items:center!important;
+  column-gap:0!important;
+}
+#othersPage .other-list-head{
+  min-height:38px!important;
+  padding:0!important;
+  background:#eef5fb!important;
+  color:#111!important;
+  border:0!important;
+  border-bottom:2px solid #111!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  text-align:center!important;
+}
+#othersPage .other-list-head span,
+#othersPage .other-row > .other-cell,
+#othersPage .other-row > .other-actions{
+  min-width:0!important;
+  box-sizing:border-box!important;
+  border-right:1px solid #111!important;
+}
+#othersPage .other-list-head span:last-child,
+#othersPage .other-row > .other-actions{
+  border-right:0!important;
+}
+#othersPage .other-list-head span{
+  height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 4px!important;
+}
+#othersPage .other-row{
+  min-height:48px!important;
+  padding:0!important;
+  background:#fff!important;
+  color:#222!important;
+  border:0!important;
+  border-bottom:1px solid #111!important;
+  font-size:10px!important;
+}
+#othersPage .other-row:last-child{
+  border-bottom:0!important;
+}
+#othersPage .other-row:nth-child(even){
+  background:#fbfbfb!important;
+}
+#othersPage .other-cell{
+  height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 7px!important;
+  overflow:hidden!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  line-height:1.15!important;
+}
+#othersPage .other-row > .other-cell:nth-child(-n+3){
+  justify-content:flex-start!important;
+}
+#othersPage .other-row > .other-cell:nth-child(4){
+  justify-content:center!important;
+}
+#othersPage .other-actions{
+  height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  padding:0 4px!important;
+  flex-wrap:nowrap!important;
+}
+#othersPage .other-actions button{
+  position:relative!important;
+  flex:0 0 32px!important;
+  width:32px!important;
+  min-width:32px!important;
+  max-width:32px!important;
+  height:32px!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:7px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:0!important;
+  line-height:1!important;
+}
+#othersPage .other-actions button::before,
+#othersPage .other-actions button::after{
+  content:none!important;
+  display:none!important;
+}
+#othersPage .other-actions button svg{
+  width:17px!important;
+  height:17px!important;
+  display:block!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:2.2!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+#othersPage .other-edit{
+  color:#0878ff!important;
+  background:#eaf4ff!important;
+  border:1px solid #0878ff!important;
+}
+#othersPage .other-delete{
+  color:#e51d43!important;
+  background:#fff0f3!important;
+  border:1px solid #e51d43!important;
+}
+#othersPage .other-status-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:54px!important;
+  height:24px!important;
+  padding:0 6px!important;
+  border-radius:6px!important;
+  box-sizing:border-box!important;
+  font-size:8px!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+#othersPage .other-status-pending{
+  background:#fff4d6!important;
+  color:#9a6500!important;
+  border:1px solid #e6c56b!important;
+}
+#othersPage .other-status-complete{
+  background:#e6f8ed!important;
+  color:#08783f!important;
+  border:1px solid #78c99b!important;
+}
+#othersPage .other-empty{
+  padding:16px 8px!important;
+  text-align:center!important;
+  color:#68798a!important;
+  font-size:10px!important;
+}
+@media(max-width:430px){
+  #othersPage .other-list-card{
+    border-radius:4px!important;
+  }
+  #othersPage .other-list-head,
+  #othersPage .other-row{
+    grid-template-columns:
+      minmax(46px,.78fr)
+      minmax(42px,.68fr)
+      minmax(68px,1.12fr)
+      minmax(62px,.9fr)
+      minmax(82px,1.25fr)!important;
+  }
+  #othersPage .other-list-head{
+    min-height:35px!important;
+    font-size:8px!important;
+  }
+  #othersPage .other-list-head span{
+    height:35px!important;
+    padding:0 2px!important;
+  }
+  #othersPage .other-row{
+    min-height:44px!important;
+    font-size:9px!important;
+  }
+  #othersPage .other-cell{
+    height:44px!important;
+    padding:0 5px!important;
+  }
+  #othersPage .other-actions{
+    height:44px!important;
+    gap:3px!important;
+    padding:0 3px!important;
+  }
+  #othersPage .other-actions button{
+    flex-basis:29px!important;
+    width:29px!important;
+    min-width:29px!important;
+    max-width:29px!important;
+    height:29px!important;
+    border-radius:6px!important;
+  }
+  #othersPage .other-actions button svg{
+    width:15px!important;
+    height:15px!important;
+  }
+  #othersPage .other-status-badge{
+    min-width:48px!important;
+    height:22px!important;
+    padding:0 4px!important;
+    font-size:7px!important;
+  }
+}
+</style>
+
+
+<style id="bright-others-final">
+/* =========================================================
+   FINAL BRIGHT UI — PDA / PIT / MLT
+   Firebase / Auth / Firestore / data logic untouched.
+   Only visual sizing, spacing, borders and colors are changed.
+   ========================================================= */
+
+#othersPage{
+  background:#f4f9ff!important;
+  color:#102a43!important;
+  padding-bottom:92px!important;
+}
+
+#othersPage .nav-page-head{
+  background:linear-gradient(135deg,#ffffff 0%,#eaf5ff 100%)!important;
+  border:2px solid #b9d9f7!important;
+  box-shadow:0 3px 12px rgba(24,100,170,.10)!important;
+  min-height:62px!important;
+}
+
+#othersPage .nav-page-head h2,
+#othersPage .nav-page-head .page-title{
+  color:#075fbe!important;
+  font-size:22px!important;
+  font-weight:950!important;
+}
+
+#othersPage .others-menu{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-bottom:12px!important;
+}
+
+#othersPage .others-data-btn{
+  min-height:72px!important;
+  height:72px!important;
+  border-width:2px!important;
+  border-radius:14px!important;
+  box-shadow:0 4px 14px rgba(30,100,170,.10)!important;
+  background:#fff!important;
+}
+
+#othersPage .others-pda{
+  background:linear-gradient(135deg,#eaf5ff,#f8fcff)!important;
+  color:#0567d6!important;
+  border-color:#9fcafa!important;
+}
+#othersPage .others-pit{
+  background:linear-gradient(135deg,#eafbf2,#f8fffb)!important;
+  color:#078c4a!important;
+  border-color:#a9e4c4!important;
+}
+#othersPage .others-mlt{
+  background:linear-gradient(135deg,#f4edff,#fcf9ff)!important;
+  color:#6631c7!important;
+  border-color:#d4bff7!important;
+}
+
+#othersPage .others-icon{
+  width:auto!important;
+  min-width:58px!important;
+  height:32px!important;
+  padding:0 10px!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  font-size:16px!important;
+  font-weight:1000!important;
+  box-shadow:0 1px 5px rgba(0,0,0,.06)!important;
+}
+
+#othersPage .others-btn-label{
+  font-size:16px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+}
+
+#othersPage .others-count{
+  top:8px!important;
+  right:8px!important;
+  min-width:28px!important;
+  height:28px!important;
+  padding:0 7px!important;
+  font-size:13px!important;
+  font-weight:1000!important;
+}
+
+#othersPage .other-data-head{
+  background:linear-gradient(135deg,#ffffff,#eaf5ff)!important;
+  border:2px solid #b9d9f7!important;
+  border-radius:14px!important;
+  box-shadow:0 3px 12px rgba(24,100,170,.08)!important;
+  padding:11px!important;
+}
+
+#othersPage .other-data-title{
+  color:#075fbe!important;
+  font-size:21px!important;
+  font-weight:1000!important;
+}
+
+#othersPage .other-data-subtitle{
+  color:#52718e!important;
+  font-size:11px!important;
+  font-weight:900!important;
+}
+
+#othersPage .other-back-btn{
+  min-height:40px!important;
+  padding:7px 13px!important;
+  background:#fff!important;
+  color:#0878ff!important;
+  border:2px solid #b9d9f7!important;
+  font-size:12px!important;
+  font-weight:950!important;
+}
+
+/* Add button */
+#othersPage #openOtherModalBtn{
+  min-height:50px!important;
+  border-radius:11px!important;
+  font-size:15px!important;
+  font-weight:1000!important;
+  background:linear-gradient(135deg,#0878ff,#3e9fff)!important;
+  box-shadow:0 5px 14px rgba(8,120,255,.20)!important;
+}
+
+/* Main table — larger and brighter */
+#othersPage .other-list-card{
+  width:100%!important;
+  border:2px solid #111!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  overflow:hidden!important;
+  box-shadow:0 3px 12px rgba(20,50,80,.08)!important;
+}
+
+#othersPage .other-list-head,
+#othersPage .other-row{
+  grid-template-columns:
+    minmax(52px,.78fr)
+    minmax(50px,.72fr)
+    minmax(82px,1.15fr)
+    minmax(78px,.86fr)
+    minmax(96px,1.28fr)!important;
+  column-gap:0!important;
+}
+
+#othersPage .other-list-head{
+  min-height:48px!important;
+  height:48px!important;
+  padding:0!important;
+  background:linear-gradient(180deg,#dceeff,#edf7ff)!important;
+  color:#075fbe!important;
+  border-bottom:2px solid #111!important;
+  font-size:12px!important;
+  font-weight:1000!important;
+}
+
+#othersPage .other-list-head span{
+  height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 5px!important;
+  border-right:1px solid #111!important;
+  box-sizing:border-box!important;
+}
+
+#othersPage .other-row{
+  min-height:62px!important;
+  height:62px!important;
+  padding:0!important;
+  background:#fff!important;
+  color:#111!important;
+  border-bottom:1px solid #111!important;
+  font-size:13px!important;
+  font-weight:750!important;
+}
+
+#othersPage .other-row:nth-child(even){
+  background:#f7fbff!important;
+}
+
+#othersPage .other-cell{
+  height:62px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 9px!important;
+  color:#102a43!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  border-right:1px solid #111!important;
+  box-sizing:border-box!important;
+}
+
+#othersPage .other-row > .other-cell:nth-child(1),
+#othersPage .other-row > .other-cell:nth-child(2){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+#othersPage .other-row > .other-cell:nth-child(3){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+#othersPage .other-row > .other-cell:nth-child(4){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+#othersPage .other-actions{
+  height:62px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  padding:0 5px!important;
+  flex-wrap:nowrap!important;
+}
+
+#othersPage .other-actions button{
+  flex:0 0 39px!important;
+  width:39px!important;
+  min-width:39px!important;
+  max-width:39px!important;
+  height:39px!important;
+  padding:0!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  font-size:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+}
+
+#othersPage .other-edit{
+  color:#006fe6!important;
+  border:2px solid #75b7ff!important;
+  background:#eef7ff!important;
+}
+#othersPage .other-delete{
+  color:#e21e45!important;
+  border:2px solid #ff9caf!important;
+  background:#fff1f4!important;
+}
+
+#othersPage .other-actions button svg{
+  width:20px!important;
+  height:20px!important;
+  stroke-width:2.5!important;
+}
+
+/* Status badges — larger and high contrast */
+#othersPage .other-status-badge{
+  min-width:64px!important;
+  height:28px!important;
+  padding:0 9px!important;
+  border-radius:8px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:11px!important;
+  font-weight:1000!important;
+  white-space:nowrap!important;
+}
+#othersPage .other-status-pending{
+  color:#9a5c00!important;
+  background:#fff1c7!important;
+  border:2px solid #f0c65a!important;
+}
+#othersPage .other-status-complete{
+  color:#087b43!important;
+  background:#dff8e9!important;
+  border:2px solid #65ca91!important;
+}
+#othersPage .other-status-unknown{
+  color:#526170!important;
+  background:#edf2f6!important;
+  border:2px solid #b9c6d1!important;
+}
+
+#othersPage .other-empty{
+  padding:22px 10px!important;
+  color:#58728a!important;
+  font-size:13px!important;
+  font-weight:700!important;
+}
+
+/* Modal text/input also brighter and easier to read */
+#otherInputModal .modal-content{
+  background:#fff!important;
+  border:2px solid #b9d9f7!important;
+  box-shadow:0 12px 35px rgba(20,70,120,.20)!important;
+}
+#otherInputModal input,
+#otherInputModal select{
+  min-height:46px!important;
+  font-size:14px!important;
+  font-weight:650!important;
+  background:#fff!important;
+  color:#173d5e!important;
+  border:2px solid #c2d8ea!important;
+}
+#otherInputModal label,
+#otherInputModal label span{
+  font-size:11px!important;
+  font-weight:950!important;
+  color:#42627f!important;
+}
+
+/* Mobile: keep table compact but readable */
+@media(max-width:430px){
+  #othersPage .others-menu{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  #othersPage .others-data-btn{
+    min-height:58px!important;
+    height:58px!important;
+    padding:5px 3px!important;
+    border-radius:11px!important;
+  }
+  #othersPage .others-icon{
+    min-width:44px!important;
+    height:25px!important;
+    padding:0 6px!important;
+    font-size:12px!important;
+  }
+  #othersPage .others-btn-label{
+    font-size:14px!important;
+  }
+  #othersPage .others-count{
+    top:4px!important;
+    right:4px!important;
+    min-width:24px!important;
+    height:24px!important;
+    font-size:11px!important;
+  }
+
+  #othersPage .other-list-card{
+    border-width:2px!important;
+    border-radius:6px!important;
+  }
+  #othersPage .other-list-head,
+  #othersPage .other-row{
+    grid-template-columns:
+      minmax(42px,.72fr)
+      minmax(42px,.68fr)
+      minmax(68px,1.05fr)
+      minmax(62px,.78fr)
+      minmax(82px,1.22fr)!important;
+  }
+  #othersPage .other-list-head{
+    min-height:42px!important;
+    height:42px!important;
+    font-size:9px!important;
+  }
+  #othersPage .other-list-head span{
+    height:42px!important;
+    padding:0 2px!important;
+  }
+  #othersPage .other-row{
+    min-height:56px!important;
+    height:56px!important;
+    font-size:11px!important;
+  }
+  #othersPage .other-cell{
+    height:56px!important;
+    padding:0 4px!important;
+    font-size:11px!important;
+  }
+  #othersPage .other-actions{
+    height:56px!important;
+    gap:4px!important;
+    padding:0 3px!important;
+  }
+  #othersPage .other-actions button{
+    flex-basis:34px!important;
+    width:34px!important;
+    min-width:34px!important;
+    max-width:34px!important;
+    height:34px!important;
+    border-radius:8px!important;
+  }
+  #othersPage .other-actions button svg{
+    width:18px!important;
+    height:18px!important;
+  }
+  #othersPage .other-status-badge{
+    min-width:52px!important;
+    height:25px!important;
+    padding:0 5px!important;
+    font-size:8px!important;
+    border-radius:7px!important;
+  }
+}
+
+/* Keep this screen bright even if the rest of the app is dark mode. */
+.dark-mode #othersPage{
+  background:#f4f9ff!important;
+  color:#102a43!important;
+}
+.dark-mode #othersPage .other-data-head{
+  background:linear-gradient(135deg,#fff,#eaf5ff)!important;
+  border-color:#b9d9f7!important;
+}
+.dark-mode #othersPage .other-data-title{color:#075fbe!important;}
+.dark-mode #othersPage .other-list-card{background:#fff!important;}
+.dark-mode #othersPage .other-list-head{
+  background:linear-gradient(180deg,#dceeff,#edf7ff)!important;
+  color:#075fbe!important;
+}
+.dark-mode #othersPage .other-row,
+.dark-mode #othersPage .other-cell{
+  color:#102a43!important;
+  background:#fff!important;
+}
+.dark-mode #othersPage .other-row:nth-child(even){background:#f7fbff!important;}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
 
     <div class="container">
-        <div class="header-flex">
+        <div class="header-flex" style="display:none!important;">
             <div class="logo-title-box">
                 <div class="app-logo">
                     <svg viewBox="0 0 24 24">
@@ -915,10 +2845,6 @@
                     <div class="settings-user-email" id="settingsUserEmail"></div>
                 </div>
                 <div class="settings-actions">
-                    <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" title="New Input" aria-label="New Input" onclick="toggleSettings(false);openAddForm()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                        <span class="settings-action-label">New Input</span>
-                    </button>
                     <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="document.getElementById('excelInput').click()">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v5h4M9 12h6M9 16h6"/></svg>
                         <span class="settings-action-label">Import Excel</span>
@@ -931,10 +2857,6 @@
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg>
                         <span class="settings-action-label">Dark Mode</span>
                     </button>
-                    <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" title="User List" aria-label="User List" onclick="toggleAdminPanel()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg>
-                        <span class="settings-action-label">User List</span>
-                    </button>
                     <button class="settings-action settings-logout" title="Logout" aria-label="Logout" onclick="logoutFirebase()">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h9"/></svg>
                         <span class="settings-action-label">Logout</span>
@@ -942,6 +2864,12 @@
                 </div>
                 <input type="file" id="excelInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none" onchange="importFromExcel(event)">
                 <div id="settingsAdminBox" class="settings-admin-box">
+                    <div class="admin-panel-actions">
+                        <button class="admin-panel-new" onclick="toggleSettings(false);openAddForm()">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                            <span>New Input</span>
+                        </button>
+                    </div>
                     <div class="settings-admin-title">&#128081; Admin Panel &mdash; User Management</div>
                     <div class="settings-admin-list"><div id="userListContainer"></div></div>
                 </div>
@@ -1000,7 +2928,7 @@
             </div>
             <div class="user-list-card">
                 <div style="font-weight:bold;margin-bottom:6px;">Registered Users</div>
-                <div id="userListContainer"></div>
+                <div id="legacyUserListContainer"></div>
             </div>
         </div>
 
@@ -1157,7 +3085,15 @@
         async function loadFirebaseData() {
             const f = window.firebaseFns;
             const snap = await f.getDocs(f.collection(window.firebaseDB, 'pilecaps'));
-            dataList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            // IMPORTANT: PDA / PIT / MLT records are stored in the same
+            // Firestore `pilecaps` collection, but they are separate from
+            // the main PileCap list. Keep them out of dataList so the main
+            // Total Pilecap / status counters never include Others records.
+            dataList = snap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .filter(item => !String(item.otherType || '').trim());
+
             updateCounters();
             populateSerialDropdown();
         }
@@ -1336,21 +3272,25 @@
                     return;
                 }
 
-                box.innerHTML = users.map(u => {
+                box.innerHTML = `
+                    <div class="admin-table-head">
+                        <div>EMAIL</div>
+                        <div>ROLE</div>
+                        <div style="text-align:right;">ACTION</div>
+                    </div>
+                ` + users.map(u => {
                     const email = escapeHtml(u.email || '-');
-                    const name = escapeHtml(u.name || u.displayName || u.email || 'User');
                     const role = String(u.role || 'user').toLowerCase() === 'admin' ? 'admin' : 'user';
                     const isSuper = String(u.email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
                     return `
                         <div class="user-row">
-                            <div><b>${name}</b></div>
-                            <div>${email}</div>
+                            <div class="user-email-cell" title="${email}">${email}</div>
                             <div><span class="user-role">${role.toUpperCase()}</span></div>
                             <div class="user-actions">
-                                <button class="user-reset" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>
-                                ${isSuper ? '<span style="font-size:10px;font-weight:bold;">Super Admin</span>' : `
-                                    <button class="user-role-btn" onclick="adminToggleRole('${escapeJs(u.uid)}','${escapeJs(u.email)}','${role}')">${role === 'admin' ? 'Make User' : 'Make Admin'}</button>
-                                    <button class="user-delete" onclick="adminDeleteUser('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Delete</button>
+                                <button class="user-reset" title="Reset password" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>
+                                ${isSuper ? '<span class="admin-super-label">SUPER ADMIN</span>' : `
+                                    <button class="user-role-btn" title="${role === 'admin' ? 'Make User' : 'Make Admin'}" onclick="adminToggleRole('${escapeJs(u.uid)}','${escapeJs(u.email)}','${role}')">${role === 'admin' ? 'User' : 'Admin'}</button>
+                                    <button class="user-delete" title="Delete user" onclick="adminDeleteUser('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Delete</button>
                                 `}
                             </div>
                         </div>`;
@@ -1640,11 +3580,18 @@
         }
 
         function updateCounters() {
-            document.getElementById('totalCount').innerText = dataList.length;
-            document.getElementById('completeCount').innerText = dataList.filter(item => item.status === 'Complete').length;
-            document.getElementById('pendingCount').innerText = dataList.filter(item => (item.status || 'Pending') === 'Pending').length;
-            document.getElementById('processingCount').innerText = dataList.filter(item => item.status === 'Processing').length;
-            document.getElementById('holdCount').innerText = dataList.filter(item => item.status === 'Hold').length;
+            // dataList contains ONLY main PileCap records.
+            // PDA/PIT/MLT have an `otherType` field and are intentionally
+            // excluded in loadFirebaseData().
+            const mainPilecaps = Array.isArray(dataList)
+                ? dataList.filter(item => !String(item.otherType || '').trim())
+                : [];
+
+            document.getElementById('totalCount').innerText = mainPilecaps.length;
+            document.getElementById('completeCount').innerText = mainPilecaps.filter(item => item.status === 'Complete').length;
+            document.getElementById('pendingCount').innerText = mainPilecaps.filter(item => (item.status || 'Pending') === 'Pending').length;
+            document.getElementById('processingCount').innerText = mainPilecaps.filter(item => item.status === 'Processing').length;
+            document.getElementById('holdCount').innerText = mainPilecaps.filter(item => item.status === 'Hold').length;
         }
 
         function filterByStatus(statusType) {
@@ -2129,4 +4076,643 @@
   });
   document.addEventListener('DOMContentLoaded', updateHeaderUser);
 })();
-</script></body></html>
+</script>
+<style id="reorganized-nav-style">
+.settings-actions{grid-template-columns:repeat(3,1fr)!important;}
+.admin-panel-actions{display:flex;gap:7px;margin:8px 0 10px;}
+.admin-panel-new{flex:1!important;display:flex!important;align-items:center;justify-content:center;gap:6px;background:#eef6ff!important;color:#0878ff!important;border:1px solid #cfe5ff!important;border-radius:9px!important;padding:7px 10px!important;font-size:11px!important;font-weight:800!important;}
+.admin-panel-new svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;}
+.profile-popup-backdrop{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.38);display:flex;align-items:flex-end;justify-content:center;padding:12px;}
+.profile-popup{position:relative;width:min(340px,100%);background:#fff;border-radius:20px;padding:20px 18px 16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.25);}
+.profile-close{position:absolute!important;right:8px;top:8px;width:30px!important;height:30px!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;color:#777!important;font-size:24px!important;}
+.profile-avatar{width:52px;height:52px;border-radius:50%;margin:0 auto 8px;background:#eef6ff;color:#0878ff;display:flex;align-items:center;justify-content:center;}
+.profile-avatar svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.profile-name{font-size:16px;font-weight:800}.profile-email{font-size:11px;color:#777;margin-top:3px;word-break:break-all}.profile-role{display:inline-block;margin-top:7px;padding:3px 9px;border-radius:999px;background:#eef6ff;color:#0878ff;font-size:9px;font-weight:800}
+.profile-logout{width:100%!important;margin:14px 0 0!important;height:40px!important;border:0!important;border-radius:10px!important;background:#ffecef!important;color:#ef2450!important;font-weight:800!important;display:flex!important;align-items:center;justify-content:center;gap:7px;}
+.profile-logout svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+@media(max-width:600px){.settings-actions{grid-template-columns:repeat(3,1fr)!important;}.settings-action-label{font-size:7px!important;}}
+</style>
+<style id="separate-nav-pages-style">
+  .nav-page{display:none;min-height:calc(100vh - 70px);padding:8px 0 80px;}
+  .nav-page.open{display:block;}
+  .nav-page-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--container-bg);border:1px solid var(--border-color);box-shadow:0 3px 12px rgba(0,0,0,.06);}
+  .nav-page-head h3{margin:0;font-size:17px;color:var(--text-color);}
+  .nav-page-back{width:auto!important;margin:0!important;padding:6px 10px!important;border:1px solid var(--border-color)!important;border-radius:8px!important;background:var(--container-bg)!important;color:var(--text-color)!important;font-weight:700!important;}
+  #settingsPage .settings-panel,#adminPage .settings-admin-box{display:block!important;margin:0!important;box-shadow:none!important;border-radius:12px!important;}
+  #settingsPage .settings-panel{border:1px solid var(--border-color)!important;}
+  #adminPage .settings-admin-box{border:1px solid var(--border-color)!important;}
+  #adminPage .admin-panel-actions{padding:0 0 10px!important;}
+  #profilePage .profile-card{background:var(--container-bg);border:1px solid var(--border-color);border-radius:14px;padding:20px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.08);}
+  #profilePage .profile-avatar{margin:0 auto 10px;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#eef6ff;color:#0878ff;}
+  #profilePage .profile-avatar svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  #profilePage .profile-name{font-size:18px;font-weight:800;color:var(--text-color);}
+  #profilePage .profile-email{font-size:12px;color:#777;margin-top:5px;word-break:break-all;}
+  #profilePage .profile-role{display:inline-block;margin-top:9px;padding:4px 10px;border-radius:999px;background:#eef6ff;color:#0878ff;font-size:10px;font-weight:800;}
+  #profilePage .profile-logout-page{width:100%!important;margin:18px 0 0!important;height:42px!important;border:0!important;border-radius:10px!important;background:#fff0f3!important;color:#ef2450!important;font-weight:800!important;display:flex!important;align-items:center;justify-content:center;gap:7px;}
+  #profilePage .profile-logout-page svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<style id="compact-bottom-nav-style">
+  body{padding-bottom:54px!important;}
+  #formView,#adminView{padding-bottom:75px!important;}
+  .bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(360px,calc(100vw - 18px));height:48px;z-index:10000;display:flex;align-items:center;justify-content:space-around;padding:3px 5px;border-radius:16px;background:rgba(255,255,255,.96);border:1px solid #d9e7f5;box-shadow:0 5px 20px rgba(0,90,170,.18);backdrop-filter:blur(10px);}
+  .bottom-nav button{width:auto!important;flex:1;margin:0!important;padding:2px 1px!important;height:42px;border:0!important;background:transparent!important;color:#6b7280!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:11px;font-size:9px;font-weight:800;line-height:1;cursor:pointer;}
+  .bottom-nav button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .bottom-nav button.active{color:#0878ff!important;background:#eef6ff!important;}
+  .bottom-nav .admin-nav{color:#7441d9!important;}
+  .bottom-nav .settings-nav{color:#f09b00!important;}
+  .bottom-nav .profile-nav{color:#10a957!important;}
+  .bottom-nav button span{font-size:8px;line-height:1;}
+  @media(max-width:360px){.bottom-nav{height:46px;bottom:0;border-radius:14px}.bottom-nav button{height:40px}.bottom-nav button svg{width:18px;height:18px}.bottom-nav button span{font-size:7px}}
+</style>
+<div id="settingsPage" class="nav-page">
+  <div class="nav-page-head"><h3>⚙️ Settings</h3><button class="nav-page-back" onclick="bottomNavHome()">Home</button></div>
+  <div id="settingsPageContent"></div>
+</div>
+<div id="adminPage" class="nav-page">
+  <div class="nav-page-head"><h3>👑 Admin</h3><button class="nav-page-back" onclick="bottomNavHome()">Home</button></div>
+  <div id="adminPageContent"></div>
+</div>
+<div id="profilePage" class="nav-page">
+  <div class="nav-page-head"><h3>👤 Profile</h3><button class="nav-page-back" onclick="bottomNavHome()">Home</button></div>
+  <div class="profile-card">
+    <div class="profile-avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></div>
+    <div class="profile-name" id="profilePageName">User</div>
+    <div class="profile-email" id="profilePageEmail"></div>
+    <div class="profile-role" id="profilePageRole">USER</div>
+    <button class="profile-logout-page" onclick="logoutFirebase()"><svg viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h9"/></svg> Logout</button>
+  </div>
+</div>
+
+<div id="othersPage" class="nav-page">
+  <div class="nav-page-head">
+    <h3>📁 Others</h3>
+    <button class="nav-page-back" onclick="bottomNavHome()">Home</button>
+  </div>
+
+  <div class="others-menu" id="othersMenu">
+    <button class="others-data-btn others-pda" onclick="openOtherDataPage('PDA')">
+      <span class="others-icon">PDA</span><span class="others-btn-label">PDA</span><span id="othersCountPDA" class="others-count">0</span>
+    </button>
+    <button class="others-data-btn others-pit" onclick="openOtherDataPage('PIT')">
+      <span class="others-icon">PIT</span><span class="others-btn-label">PIT</span><span id="othersCountPIT" class="others-count">0</span>
+    </button>
+    <button class="others-data-btn others-mlt" onclick="openOtherDataPage('MLT')">
+      <span class="others-icon">MLT</span><span class="others-btn-label">MLT</span><span id="othersCountMLT" class="others-count">0</span>
+    </button>
+  </div>
+
+  <div id="otherDataPage" class="other-data-page" style="display:none;">
+    <div class="other-data-head">
+      <button class="other-back-btn" onclick="showOthersMenu()">← Others</button>
+      <div>
+        <div id="otherDataTitle" class="other-data-title">PDA <span id="otherPageCount" class="other-page-count">0</span></div>
+        <div class="other-data-subtitle">NO. • POINT • COORDINATE</div>
+      </div>
+    </div>
+
+    <div id="otherInputCard" class="other-input-card">
+      <input type="hidden" id="otherEditId" value=""><input type="hidden" id="otherStatusInput" value="Pending">
+      <div class="other-input-grid">
+        <label>
+          <span>NO.</span>
+          <input id="otherNoInput" type="text" placeholder="Enter No.">
+        </label>
+        <label>
+          <span>POINT</span>
+          <input id="otherPointInput" type="text" placeholder="Enter Point">
+        </label>
+        <label class="other-coordinate-field">
+          <span>COORDINATE</span>
+          <input id="otherCoordinateInput" type="text" placeholder="Enter Coordinate">
+        </label>
+      </div>
+      <div class="other-form-actions">
+        <button id="otherSaveBtn" onclick="saveOtherData()">＋ Add Data</button>
+        <button id="otherCancelBtn" onclick="cancelOtherEdit()" style="display:none;">Cancel</button>
+      </div>
+      <div class="other-permission-note">Data entry/edit/delete follows the existing Admin permission model.</div>
+    </div>
+
+    
+<div class="other-modal-trigger-wrap" style="margin:0 0 9px;">
+  <button type="button" id="openOtherModalBtn" onclick="openOtherInputModal()" style="
+    width:100%;min-height:44px;border:0;border-radius:10px;
+    background:linear-gradient(135deg,#0878ff,#3c9cff);color:#fff;
+    font-size:12px;font-weight:950;box-shadow:0 4px 10px rgba(8,120,255,.16);
+  ">＋ Add Data</button>
+</div>
+<div class="other-list-card">
+      <div class="other-list-head">
+        <span>NO.</span><span>POINT</span><span>COORDINATE</span><span>STATUS</span><span>ACTION</span>
+      </div>
+      <div id="otherDataList"><div class="other-empty">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="bottomNav" class="bottom-nav" style="display:none;">
+  <button class="active" onclick="bottomNavHome()" aria-label="Home" title="Home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5M9 21v-6h6v6"/></svg><span>Home</span></button>
+  <button id="bottomAdminBtn" class="admin-nav hidden-by-role" onclick="bottomNavAdmin()" aria-label="Admin" title="Admin"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg><span>Admin</span></button>
+  <button class="profile-nav" onclick="bottomNavProfile()" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span></button>
+  <button class="settings-nav" onclick="bottomNavSettings()" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg><span>Settings</span></button>
+  <button class="others-nav" onclick="bottomNavOthers()" aria-label="Others" title="Others"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg><span>Others</span></button>
+</div>
+<script id="compact-bottom-nav-script">
+(function(){
+ function nav(){return document.getElementById('bottomNav');}
+ function pages(){return ['homeView','settingsPage','adminPage','profilePage','formView','adminView'];}
+ function hidePages(){pages().forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('open');});
+   var home=document.getElementById('homeView'); if(home) home.style.display='none';
+   var form=document.getElementById('formView'); if(form) form.style.display='none';
+   var admin=document.getElementById('adminView'); if(admin) admin.style.display='none';
+ }
+ function showPage(id){hidePages();var el=document.getElementById(id);if(el)el.classList.add('open');}
+ function setNavActive(i){var b=nav();if(!b)return;b.querySelectorAll('button').forEach(function(x,n){x.classList.toggle('active',n===i);});}
+ window.bottomNavHome=function(){
+   hidePages(); var home=document.getElementById('homeView'); if(home)home.style.display='block';
+   if(typeof toggleSettings==='function')toggleSettings(false); if(typeof closeAdminPage==='function')closeAdminPage();
+   setNavActive(0); window.scrollTo(0,0);
+ };
+ window.bottomNavAdmin=function(){
+   if(typeof roleIsAdmin==='function'&&!roleIsAdmin())return alert('Only Admin can view the Admin page.');
+   var src=document.getElementById('settingsAdminBox'), dst=document.getElementById('adminPageContent');
+   if(src&&dst){ dst.appendChild(src); src.classList.add('open'); src.style.display='block'; }
+   showPage('adminPage');setNavActive(1);window.scrollTo(0,0);
+   if(typeof loadUserList==='function')setTimeout(function(){loadUserList();},0);
+ };
+ window.bottomNavSettings=function(){
+   var src=document.getElementById('settingsPanel'),dst=document.getElementById('settingsPageContent');
+   if(src&&dst&&src.parentElement!==dst)dst.appendChild(src);
+   var box=document.getElementById('settingsAdminBox'); if(box){box.classList.remove('open');box.style.display='none';}
+   showPage('settingsPage');setNavActive(3);window.scrollTo(0,0);
+ };
+ window.bottomNavProfile=function(){
+   var u=typeof currentUser!=='undefined'?currentUser:null;
+   var name=u&&u.displayName?u.displayName:'User',email=u&&u.email?u.email:'',role=typeof currentRole!=='undefined'?currentRole:'user';
+   var n=document.getElementById('profilePageName'),e=document.getElementById('profilePageEmail'),r=document.getElementById('profilePageRole');
+   if(n)n.textContent=name;if(e)e.textContent=email;if(r)r.textContent=String(role).toUpperCase();
+   showPage('profilePage');setNavActive(2);window.scrollTo(0,0);
+ };
+ function apply(){var b=nav(),app=document.getElementById('appShell');if(!b)return;b.style.display=(app&&app.style.display!=='none')?'flex':'none';var a=document.getElementById('bottomAdminBtn');if(a&&typeof roleIsAdmin==='function')a.classList.toggle('hidden-by-role',!roleIsAdmin());}
+ document.addEventListener('DOMContentLoaded',function(){apply();});window.addEventListener('firebase-ready',apply);setInterval(apply,1000);
+})();
+</script>
+
+
+<script id="bright-profile-sync">
+(function(){
+  function syncProfile(){
+    try{
+      var u = window.firebaseAuth && window.firebaseAuth.currentUser;
+      var name = u && u.displayName ? u.displayName : 'User';
+      var email = u && u.email ? u.email : '';
+      var role = (typeof currentRole !== 'undefined' ? currentRole : 'user');
+      var n=document.getElementById('profilePageName');
+      var e=document.getElementById('profilePageEmail');
+      var r=document.getElementById('profilePageRole');
+      if(n) n.textContent=name;
+      if(e) e.textContent=email;
+      if(r) r.textContent=String(role).toUpperCase();
+    }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded',syncProfile);
+  window.addEventListener('firebase-ready',syncProfile);
+  setInterval(syncProfile,1500);
+})();
+</script>
+
+
+<script id="others-page-script">
+(function(){
+  var currentOtherType = 'PDA';
+  var otherCollections = {PDA:'pilecaps', PIT:'pilecaps', MLT:'pilecaps'};
+
+  function nav(){ return document.getElementById('bottomNav'); }
+  function pages(){
+    return ['homeView','settingsPage','adminPage','profilePage','othersPage','formView','adminView'];
+  }
+  function hideAll(){
+    pages().forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.classList.remove('open');
+    });
+    ['homeView','formView','adminView'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.style.display='none';
+    });
+  }
+  function setActive(i){
+    var b=nav(); if(!b)return;
+    b.querySelectorAll('button').forEach(function(x,n){x.classList.toggle('active',n===i);});
+  }
+  function show(id){ hideAll(); var el=document.getElementById(id); if(el)el.classList.add('open'); }
+
+  window.bottomNavOthers=function(){
+    show('othersPage');
+    loadOthersCounts();
+    var menu=document.getElementById('othersMenu'), data=document.getElementById('otherDataPage');
+    if(menu)menu.style.display='grid';
+    if(data)data.style.display='none';
+    setActive(4);
+    window.scrollTo(0,0);
+  };
+
+  window.showOthersMenu=function(){
+    var menu=document.getElementById('othersMenu'), data=document.getElementById('otherDataPage');
+    if(menu)menu.style.display='grid';
+    if(data)data.style.display='none';
+    cancelOtherEdit();
+    window.scrollTo(0,0);
+  };
+
+  window.loadOthersCounts=async function(){
+    try{
+      var f=window.firebaseFns;
+      if(!f || !window.firebaseDB)return;
+      var snap=await f.getDocs(f.collection(window.firebaseDB,'pilecaps'));
+      var counts={PDA:0,PIT:0,MLT:0};
+      snap.docs.forEach(function(ds){
+        var d=ds.data()||{};
+        var t=String(d.otherType||'').toUpperCase();
+        if(Object.prototype.hasOwnProperty.call(counts,t))counts[t]++;
+      });
+      Object.keys(counts).forEach(function(t){
+        var el=document.getElementById('othersCount'+t);
+        if(el)el.textContent=String(counts[t]);
+      });
+    }catch(err){ console.warn('Others count load failed:',err); }
+  };
+
+  window.openOtherDataPage=async function(type){
+    if(!otherCollections[type])return;
+    currentOtherType=type;
+    window.currentOtherType=type;
+    var menu=document.getElementById('othersMenu'), data=document.getElementById('otherDataPage');
+    if(menu)menu.style.display='none';
+    if(data)data.style.display='block';
+    var title=document.getElementById('otherDataTitle');
+    if(title)title.textContent=type;
+    cancelOtherEdit();
+    await loadOtherData();
+    window.scrollTo(0,0);
+  };
+
+  function esc(v){
+    if(typeof escapeHtml==='function')return escapeHtml(v);
+    return String(v==null?'':v).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];
+    });
+  }
+  function escAttr(v){
+    return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
+  }
+
+  function statusBadge(value){
+    var s=String(value||'Pending').trim().toLowerCase();
+    if(s==='complete'||s==='completed'||s==='কমপ্লিট'){
+      return '<span class="other-status-badge other-status-complete">Complete</span>';
+    }
+    return '<span class="other-status-badge other-status-pending">Pending</span>';
+  }
+
+  window.loadOtherData=async function(){
+    var body=document.getElementById('otherDataList');
+    if(!body)return;
+    body.innerHTML='<div class="other-empty">Loading '+currentOtherType+' data...</div>';
+    try{
+      var f=window.firebaseFns;
+      if(!f || !window.firebaseDB)throw new Error('Firebase is not ready.');
+      var snap=await f.getDocs(f.collection(window.firebaseDB,'pilecaps'));
+      var rows=snap.docs.map(function(ds){
+        return {id:ds.id,...(ds.data()||{})};
+      }).filter(function(r){
+        return String(r.otherType||'').toUpperCase()===currentOtherType;
+      });
+      rows.sort(function(a,b){return String(a.no||'').localeCompare(String(b.no||''),undefined,{numeric:true,sensitivity:'base'});});
+      var pageCount=document.getElementById('otherPageCount');
+      if(pageCount)pageCount.textContent=String(rows.length);
+      var badge=document.getElementById('othersCount'+currentOtherType);
+      if(badge)badge.textContent=String(rows.length);
+      if(!rows.length){
+        body.innerHTML='<div class="other-empty">No '+esc(currentOtherType)+' data found. Add the first entry above.</div>';
+        return;
+      }
+      body.innerHTML=rows.map(function(r){
+        return '<div class="other-row">'
+          +'<div class="other-cell">'+esc(r.no||'-')+'</div>'
+          +'<div class="other-cell">'+esc(r.point||'-')+'</div>'
+          +'<div class="other-cell">'+esc(r.coordinate||'-')+'</div>'
+          +'<div class="other-cell">'+statusBadge(r.status)+'</div>'
+          +'<div class="other-actions">'
+          +'<button class="other-edit" aria-label="Edit" title="Edit" onclick="editOtherData(\''+escAttr(r.id)+'\',\''+escAttr(r.no)+'\',\''+escAttr(r.point)+'\',\''+escAttr(r.coordinate)+'\',\''+escAttr(r.status||'Pending')+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m14 6 4 4"/></svg></button>'
+          +'<button class="other-delete" aria-label="Delete" title="Delete" onclick="deleteOtherData(\''+escAttr(r.id)+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>'
+          +'</div></div>';
+      }).join('');
+    }catch(err){
+      console.error(err);
+      body.innerHTML='<div class="other-empty" style="color:#e51d43;">Cannot load '+esc(currentOtherType)+' data: '+esc(err.message)+'</div>';
+    }
+  };
+
+  window.saveOtherData=async function(){
+    if(typeof roleIsAdmin==='function' && !roleIsAdmin()){
+      return alert('Only Admin can add or modify data.');
+    }
+    var f=window.firebaseFns;
+    if(!f || !window.firebaseDB)return alert('Firebase is not ready. Please try again.');
+    var id=document.getElementById('otherEditId').value;
+    var no=document.getElementById('otherNoInput').value.trim();
+    var point=document.getElementById('otherPointInput').value.trim();
+    var coordinate=document.getElementById('otherCoordinateInput').value.trim();
+    var statusEl=document.getElementById('otherStatusInput');
+    var status=statusEl ? statusEl.value : 'Pending';
+    if(!no)return alert('Please enter a No.');
+    if(!point)return alert('Please enter a Point.');
+    if(!coordinate)return alert('Please enter a Coordinate.');
+
+    var item={no:no,point:point,coordinate:coordinate,status:status,otherType:currentOtherType,updatedAt:Date.now()};
+    try{
+      if(id){
+        await f.setDoc(f.doc(window.firebaseDB,'pilecaps',id),item,{merge:true});
+      }else{
+        var ref=f.doc(f.collection(window.firebaseDB,'pilecaps'));
+        await f.setDoc(ref,{...item,inputDate:Date.now()},{merge:true});
+      }
+      cancelOtherEdit();
+      await loadOtherData();
+      await loadOthersCounts();
+    }catch(err){
+      console.error(err);
+      alert('Save failed: '+err.message);
+    }
+  };
+
+  window.editOtherData=function(id,no,point,coordinate,status){
+    if(typeof roleIsAdmin==='function' && !roleIsAdmin()){
+      return alert('Only Admin can edit data.');
+    }
+    document.getElementById('otherEditId').value=id;
+    document.getElementById('otherNoInput').value=no||'';
+    document.getElementById('otherPointInput').value=point||'';
+    document.getElementById('otherCoordinateInput').value=coordinate||'';
+    var statusEl=document.getElementById('otherStatusInput');
+    if(statusEl)statusEl.value=(String(status||'Pending').toLowerCase()==='complete'?'Complete':'Pending');
+    document.getElementById('otherSaveBtn').textContent='✓ Update Data';
+    document.getElementById('otherCancelBtn').style.display='block';
+    document.getElementById('otherInputCard')?.scrollIntoView?.({behavior:'smooth',block:'start'});
+  };
+
+  window.cancelOtherEdit=function(){
+    var a=document.getElementById('otherEditId'),n=document.getElementById('otherNoInput');
+    var p=document.getElementById('otherPointInput'),c=document.getElementById('otherCoordinateInput');
+    var st=document.getElementById('otherStatusInput');
+    if(st)st.value='Pending';
+    if(a)a.value='';
+    if(n)n.value='';
+    if(p)p.value='';
+    if(c)c.value='';
+    var s=document.getElementById('otherSaveBtn');
+    var x=document.getElementById('otherCancelBtn');
+    if(s)s.textContent='＋ Add Data';
+    if(x)x.style.display='none';
+  };
+
+  window.deleteOtherData=async function(id){
+    if(typeof roleIsAdmin==='function' && !roleIsAdmin()){
+      return alert('Only Admin can delete data.');
+    }
+    if(!confirm('Delete this '+currentOtherType+' data?'))return;
+    try{
+      var f=window.firebaseFns;
+      await f.deleteDoc(f.doc(window.firebaseDB,'pilecaps',id));
+      await loadOtherData();
+      await loadOthersCounts();
+    }catch(err){
+      console.error(err);
+      alert('Delete failed: '+err.message);
+    }
+  };
+
+  /* Override navigation functions only to add the Others page while preserving
+     the existing Home/Admin/Profile/Settings behavior. */
+  var originalHome=window.bottomNavHome;
+  var originalAdmin=window.bottomNavAdmin;
+  var originalSettings=window.bottomNavSettings;
+  var originalProfile=window.bottomNavProfile;
+
+  function closeOthersPage(){
+    var page=document.getElementById('othersPage');
+    if(page)page.classList.remove('open');
+  }
+  window.bottomNavHome=function(){
+    closeOthersPage();
+    if(typeof originalHome==='function')originalHome();
+    else {hideAll();var h=document.getElementById('homeView');if(h)h.style.display='block';setActive(0);}
+  };
+  window.bottomNavAdmin=function(){
+    closeOthersPage();
+    if(typeof originalAdmin==='function')originalAdmin();
+  };
+  window.bottomNavSettings=function(){
+    closeOthersPage();
+    if(typeof originalSettings==='function')originalSettings();
+  };
+  window.bottomNavProfile=function(){
+    closeOthersPage();
+    if(typeof originalProfile==='function')originalProfile();
+  };
+
+  window.addEventListener('firebase-ready',function(){});
+})();
+</script>
+
+
+<div id="otherInputModal" aria-hidden="true">
+  <div class="other-modal-box" role="dialog" aria-modal="true" aria-labelledby="otherModalTitle">
+    <div class="other-modal-head">
+      <div id="otherModalTitle" class="other-modal-title">Add PDA Data</div>
+      <button type="button" class="other-modal-close" onclick="closeOtherInputModal()" aria-label="Close">×</button>
+    </div>
+    <div class="other-modal-form">
+      <label>
+        <span>NO.</span>
+        <input id="modalOtherNo" type="text" placeholder="Enter No." autocomplete="off">
+      </label>
+      <label>
+        <span>POINT</span>
+        <input id="modalOtherPoint" type="text" placeholder="Enter Point" autocomplete="off">
+      </label>
+      <label>
+        <span>COORDINATE</span>
+        <input id="modalOtherCoordinate" type="text" placeholder="Enter Coordinate" autocomplete="off">
+      </label>
+      <label class="other-modal-status-label">
+        <span>STATUS</span>
+        <select id="modalOtherStatus">
+          <option value="Pending">Pending</option>
+          <option value="Complete">Complete</option>
+        </select>
+      </label>
+      <div class="other-modal-actions">
+        <button id="otherModalCancel" type="button" onclick="closeOtherInputModal()">Cancel</button>
+        <button id="otherModalSave" type="button" onclick="saveOtherFromModal()">+ Add Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script id="other-modal-js">
+window.openOtherInputModal=function(){
+  var modal=document.getElementById('otherInputModal');
+  if(!modal)return;
+  var title=document.getElementById('otherModalTitle');
+  var save=document.getElementById('otherModalSave');
+  var type=(window.currentOtherType||'PDA').toUpperCase();
+  if(title)title.textContent='Add '+type+' Data';
+  if(save)save.textContent='+ Add Data';
+  ['modalOtherNo','modalOtherPoint','modalOtherCoordinate'].forEach(function(id){
+    var el=document.getElementById(id); if(el)el.value='';
+  });
+  var ms=document.getElementById('modalOtherStatus'); if(ms)ms.value='Pending';
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+  setTimeout(function(){
+    var el=document.getElementById('modalOtherNo'); if(el)el.focus();
+  },80);
+};
+window.closeOtherInputModal=function(){
+  var modal=document.getElementById('otherInputModal');
+  if(!modal)return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+};
+window.saveOtherFromModal=async function(){
+  var no=(document.getElementById('modalOtherNo')||{}).value||'';
+  var point=(document.getElementById('modalOtherPoint')||{}).value||'';
+  var coordinate=(document.getElementById('modalOtherCoordinate')||{}).value||'';
+  var status=(document.getElementById('modalOtherStatus')||{}).value||'Pending';
+  no=no.trim();point=point.trim();coordinate=coordinate.trim();
+  if(!no||!point||!coordinate){
+    alert('Please fill No., Point and Coordinate.');
+    return;
+  }
+
+  // Use the existing form/save function to preserve Firebase logic.
+  var hiddenNo=document.getElementById('otherNo');
+  var hiddenPoint=document.getElementById('otherPoint');
+  var hiddenCoordinate=document.getElementById('otherCoordinate');
+  if(hiddenNo)hiddenNo.value=no;
+  if(hiddenPoint)hiddenPoint.value=point;
+  if(hiddenCoordinate)hiddenCoordinate.value=coordinate;
+  var hiddenStatus=document.getElementById('otherStatusInput');
+  if(hiddenStatus)hiddenStatus.value=status;
+
+  closeOtherInputModal();
+
+  if(typeof window.saveOtherData==='function'){
+    await window.saveOtherData();
+  }else{
+    var btn=document.getElementById('otherSaveBtn');
+    if(btn)btn.click();
+  }
+};
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeOtherInputModal();
+});
+document.getElementById('otherInputModal')?.addEventListener('click',function(e){
+  if(e.target===this)closeOtherInputModal();
+});
+</script>
+
+
+<script id="others-edit-modal-final-fix">
+(function(){
+  window.editOtherData=function(id,no,point,coordinate,status){
+    if(typeof roleIsAdmin==='function' && !roleIsAdmin()){
+      return alert('Only Admin can edit data.');
+    }
+
+    var modal=document.getElementById('otherInputModal');
+    if(!modal)return;
+
+    var type=(window.currentOtherType||'PDA').toUpperCase();
+    var title=document.getElementById('otherModalTitle');
+    var save=document.getElementById('otherModalSave');
+
+    document.getElementById('otherEditId').value=id||'';
+    document.getElementById('modalOtherNo').value=no||'';
+    document.getElementById('modalOtherPoint').value=point||'';
+    document.getElementById('modalOtherCoordinate').value=coordinate||'';
+    document.getElementById('modalOtherStatus').value=
+      String(status||'Pending').toLowerCase()==='complete' ? 'Complete' : 'Pending';
+
+    if(title)title.textContent='Edit '+type+' Data';
+    if(save)save.textContent='✓ Update Data';
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+
+    setTimeout(function(){
+      var el=document.getElementById('modalOtherNo');
+      if(el)el.focus();
+    },80);
+  };
+
+  window.openOtherInputModal=function(){
+    var modal=document.getElementById('otherInputModal');
+    if(!modal)return;
+
+    var title=document.getElementById('otherModalTitle');
+    var save=document.getElementById('otherModalSave');
+    var type=(window.currentOtherType||'PDA').toUpperCase();
+
+    document.getElementById('otherEditId').value='';
+    document.getElementById('modalOtherNo').value='';
+    document.getElementById('modalOtherPoint').value='';
+    document.getElementById('modalOtherCoordinate').value='';
+    document.getElementById('modalOtherStatus').value='Pending';
+
+    if(title)title.textContent='Add '+type+' Data';
+    if(save)save.textContent='+ Add Data';
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+
+    setTimeout(function(){
+      var el=document.getElementById('modalOtherNo');
+      if(el)el.focus();
+    },80);
+  };
+
+  window.saveOtherFromModal=async function(){
+    var no=(document.getElementById('modalOtherNo').value||'').trim();
+    var point=(document.getElementById('modalOtherPoint').value||'').trim();
+    var coordinate=(document.getElementById('modalOtherCoordinate').value||'').trim();
+    var status=document.getElementById('modalOtherStatus').value||'Pending';
+
+    if(!no||!point||!coordinate){
+      alert('Please fill No., Point and Coordinate.');
+      return;
+    }
+
+    // IMPORTANT: use the actual existing form IDs so Firebase save logic is preserved.
+    document.getElementById('otherNoInput').value=no;
+    document.getElementById('otherPointInput').value=point;
+    document.getElementById('otherCoordinateInput').value=coordinate;
+    document.getElementById('otherStatusInput').value=status;
+
+    var isEdit=!!document.getElementById('otherEditId').value;
+
+    try{
+      await window.saveOtherData();
+      // saveOtherData calls cancelOtherEdit(), so only close after successful save.
+      window.closeOtherInputModal();
+    }catch(err){
+      console.error(err);
+    }
+  };
+})();
+</script>
+
+</body></html>
