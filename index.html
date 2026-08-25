@@ -605,7 +605,8 @@
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         import {
-            getFirestore, collection, doc, getDoc, getDocs, setDoc, query, where,
+            getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+            collection, doc, getDoc, getDocs, setDoc, query, where,
             addDoc, updateDoc, deleteDoc, writeBatch
         } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -625,7 +626,19 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Firestore offline persistence: writes made while offline are queued
+        // locally and synchronized automatically when the connection returns.
+        let db;
+        try {
+            db = initializeFirestore(app, {
+                localCache: persistentLocalCache({
+                    tabManager: persistentMultipleTabManager()
+                })
+            });
+        } catch (e) {
+            // If another Firebase instance already initialized Firestore, reuse it.
+            db = getFirestore(app);
+        }
 
         window.firebaseApp = app;
         window.firebaseAuth = auth;
