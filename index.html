@@ -537,6 +537,29 @@
             .settings-action-label{font-size:6.5px !important;max-width:55px !important;}
         }
 
+        /* User Profile */
+        .profile-open-btn{
+            width:100%; margin:8px 0 0; padding:8px 10px;
+            border:1px solid #b9dcff; border-radius:8px;
+            background:#eef6ff; color:#0875d9; font-weight:800;
+            cursor:pointer; font-size:12px;
+        }
+        .profile-box{
+            display:none; border-top:1px solid var(--border-color);
+            padding:10px 12px; background:rgba(127,127,127,.04);
+        }
+        .profile-box.open{display:block;}
+        .profile-title{font-weight:800;font-size:14px;margin-bottom:7px;}
+        .profile-note{font-size:11px;opacity:.75;margin-bottom:7px;}
+        .profile-actions{display:flex;gap:6px;}
+        .profile-actions button{margin:0;font-size:12px;font-weight:800;}
+        .profile-save{background:#198754;color:#fff;border:none;}
+        .profile-cancel{background:#6c757d;color:#fff;border:none;}
+        .profile-password-title{font-size:12px;font-weight:800;margin-top:9px;}
+        @media(max-width:600px){
+            .profile-actions button{font-size:11px;padding:7px 5px;}
+        }
+
         /* Firebase Authentication */
         #authView { min-height: 90vh; display:flex; align-items:center; justify-content:center; }
         .auth-card { width:min(420px, 94vw); padding:20px; border:1px solid var(--border-color); border-radius:12px; background:var(--container-bg); box-shadow:0 4px 18px rgba(0,0,0,.12); }
@@ -574,10 +597,11 @@
         .user-row { display:grid; grid-template-columns: 1.4fr 1.8fr .8fr 1.1fr; gap:6px; align-items:center; padding:7px 0; border-bottom:1px solid var(--border-color); font-size:12px; }
         .user-row:last-child { border-bottom:none; }
         .user-role { font-weight:bold; padding:3px 6px; border-radius:10px; background:#6f42c1; color:#fff; text-align:center; }
-        .user-actions { display:flex; gap:4px; }
+        .user-actions { display:flex; gap:4px; flex-wrap:wrap; }
         .user-actions button { width:auto; margin:0; padding:5px 7px; font-size:11px; }
         .user-reset { background:#0d6efd; color:#fff; border:none; }
         .user-role-btn { background:#ffc107; color:#111; border:none; }
+        .user-edit { background:#0d6efd; color:#fff; border:none; }
         .user-delete { background:#dc3545; color:#fff; border:none; }
         @media(max-width:600px){ .user-row{grid-template-columns:1fr 1fr;} .user-actions{grid-column:1/-1;} .top-actions{gap:4px;} }
 
@@ -602,7 +626,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import {
             getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-            createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
+            createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
+            updateProfile, updatePassword, reauthenticateWithCredential,
+            EmailAuthProvider
         } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         import {
             getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
@@ -646,6 +672,8 @@
         window.firebaseFns = {
             onAuthStateChanged, signInWithEmailAndPassword,
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
+            updateProfile, updatePassword, reauthenticateWithCredential,
+            EmailAuthProvider,
             collection, doc, getDoc, getDocs, setDoc, query, where,
             addDoc, updateDoc, deleteDoc, writeBatch
         };
@@ -872,6 +900,8 @@
   .settings-action svg{width:16px !important;height:16px !important;flex-basis:16px !important;}
   .settings-action-label{font-size:6.5px !important;max-width:56px !important;}
 }
+/* User list safety: only the Settings-panel list is used by loadUserList(). */
+#adminPageUserListContainer{display:none!important;}
 </style>
 </head>
 <body id="pageBody">
@@ -924,8 +954,25 @@
             <div id="settingsPanel" class="settings-panel">
                 <div class="settings-head"><strong>Settings & Management</strong><button class="settings-close" onclick="toggleSettings(false)" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
                 <div class="settings-user">
-                    <div class="settings-user-name" id="settingsUserName">User</div>
-                    <div class="settings-user-email" id="settingsUserEmail"></div>
+                    <div class="settings-user-name">My Profile</div>
+                    <div class="settings-user-email">Manage your profile name and password</div>
+                    <button type="button" class="profile-open-btn" onclick="toggleProfileBox()">Profile Settings</button>
+                </div>
+                <div id="profileBox" class="profile-box">
+                    <div class="profile-title">User Profile</div>
+                    <div class="profile-note">Your login email is kept private here. Change only the information you need.</div>
+                    <label for="profileNameInput">Name</label>
+                    <input type="text" id="profileNameInput" placeholder="Enter your name" autocomplete="name">
+                    <button type="button" class="profile-save" onclick="saveProfileName()">Save Name</button>
+                    <div class="profile-password-title">Change Password</div>
+                    <input type="password" id="profileCurrentPassword" placeholder="Current password" autocomplete="current-password">
+                    <input type="password" id="profileNewPassword" placeholder="New password (minimum 6 characters)" autocomplete="new-password">
+                    <input type="password" id="profileConfirmPassword" placeholder="Confirm new password" autocomplete="new-password">
+                    <div class="profile-actions">
+                        <button type="button" class="profile-save" onclick="changeOwnPassword()">Change Password</button>
+                        <button type="button" class="profile-cancel" onclick="toggleProfileBox(false)">Close</button>
+                    </div>
+                    <div id="profileMessage" class="auth-message"></div>
                 </div>
                 <div class="settings-actions">
                     <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" title="New Input" aria-label="New Input" onclick="toggleSettings(false);openAddForm()">
@@ -1013,7 +1060,7 @@
             </div>
             <div class="user-list-card">
                 <div style="font-weight:bold;margin-bottom:6px;">Registered Users</div>
-                <div id="userListContainer"></div>
+                <div id="adminPageUserListContainer"></div>
             </div>
         </div>
 
@@ -1099,6 +1146,8 @@
         let dataList = [];
         let currentUser = null;
         let currentRole = 'user';
+        let currentProfileName = '';
+        let currentProfileData = {};
         let authMode = 'login';
         let firebaseInitialized = false;
         const SUPER_ADMIN_EMAIL = 'sattar124@gmail.com';
@@ -1134,7 +1183,7 @@
                 } else {
                     const cred = await f.createUserWithEmailAndPassword(window.firebaseAuth, email, password);
                     await f.updateProfile(cred.user, { displayName: name });
-                    const profileData = { name, displayName: name, email, role: 'user', createdAt: Date.now() };
+                    const profileData = { name, displayName: name, email, role: 'user', uid: cred.user.uid, createdAt: Date.now(), updatedAt: Date.now() };
                     await f.setDoc(f.doc(window.firebaseDB, 'user', cred.user.uid), profileData);
                     await f.setDoc(f.doc(window.firebaseDB, 'users', cred.user.uid), profileData);
                 }
@@ -1188,6 +1237,119 @@
             });
         }
 
+        async function loadCurrentUserProfile(user) {
+            const f = window.firebaseFns;
+            currentProfileData = {};
+            let profile = null;
+            for (const collectionName of ['users', 'user']) {
+                try {
+                    const snap = await f.getDoc(f.doc(window.firebaseDB, collectionName, user.uid));
+                    if (snap.exists()) {
+                        profile = snap.data() || {};
+                        break;
+                    }
+                } catch (e) {
+                    console.warn('Profile lookup failed:', collectionName, e);
+                }
+            }
+            currentProfileData = profile || {};
+            currentProfileName = String(
+                currentProfileData.name ||
+                currentProfileData.displayName ||
+                user.displayName ||
+                'User'
+            ).trim() || 'User';
+        }
+
+        function setProfileMessage(msg, error=false) {
+            const el = document.getElementById('profileMessage');
+            if (el) {
+                el.innerText = msg || '';
+                el.style.color = error ? '#dc3545' : '#198754';
+            }
+        }
+
+        function toggleProfileBox(force) {
+            const box = document.getElementById('profileBox');
+            if (!box || !currentUser) return;
+            const open = typeof force === 'boolean' ? force : !box.classList.contains('open');
+            box.classList.toggle('open', open);
+            if (open) {
+                const input = document.getElementById('profileNameInput');
+                if (input) input.value = currentProfileName || '';
+                setProfileMessage('');
+            }
+        }
+
+        async function saveProfileName() {
+            if (!currentUser) return;
+            const name = String(document.getElementById('profileNameInput')?.value || '').trim();
+            if (!name) return setProfileMessage('Enter your name.', true);
+            if (name.length > 80) return setProfileMessage('Name is too long.', true);
+
+            try {
+                const f = window.firebaseFns;
+                await f.updateProfile(currentUser, { displayName: name });
+
+                const profileUpdate = {
+                    name,
+                    displayName: name,
+                    email: currentUser.email || '',
+                    uid: currentUser.uid,
+                    updatedAt: Date.now()
+                };
+
+                for (const collectionName of ['users', 'user']) {
+                    await f.setDoc(
+                        f.doc(window.firebaseDB, collectionName, currentUser.uid),
+                        profileUpdate,
+                        { merge: true }
+                    );
+                }
+
+                currentProfileName = name;
+                currentProfileData = {...currentProfileData, ...profileUpdate};
+                setProfileMessage('Name updated successfully.');
+                alert('Your profile name has been updated.');
+            } catch (err) {
+                setProfileMessage('Name update failed: ' + (err.message || 'Please try again.'), true);
+            }
+        }
+
+        async function changeOwnPassword() {
+            if (!currentUser) return;
+            const currentPassword = String(document.getElementById('profileCurrentPassword')?.value || '');
+            const newPassword = String(document.getElementById('profileNewPassword')?.value || '');
+            const confirmPassword = String(document.getElementById('profileConfirmPassword')?.value || '');
+
+            if (!currentPassword) return setProfileMessage('Enter your current password.', true);
+            if (newPassword.length < 6) return setProfileMessage('New password must be at least 6 characters.', true);
+            if (newPassword !== confirmPassword) return setProfileMessage('New passwords do not match.', true);
+
+            try {
+                const f = window.firebaseFns;
+                if (!currentUser.email) return setProfileMessage('This account has no email/password sign-in.', true);
+
+                const credential = f.EmailAuthProvider.credential(currentUser.email, currentPassword);
+                await f.reauthenticateWithCredential(currentUser, credential);
+                await f.updatePassword(currentUser, newPassword);
+
+                document.getElementById('profileCurrentPassword').value = '';
+                document.getElementById('profileNewPassword').value = '';
+                document.getElementById('profileConfirmPassword').value = '';
+                setProfileMessage('Password changed successfully.');
+                alert('Password changed successfully.');
+            } catch (err) {
+                let msg = err.message || 'Please try again.';
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
+                    msg = 'Current password is incorrect.';
+                } else if (err.code === 'auth/requires-recent-login') {
+                    msg = 'Please log in again and try changing the password.';
+                }
+                setProfileMessage('Password change failed: ' + msg, true);
+            }
+        }
+
         async function handleFirebaseAuth(user) {
             currentUser = user;
             const authView = document.getElementById('authView');
@@ -1198,6 +1360,10 @@
                 authView.style.display = 'flex';
                 appShell.style.display = 'none';
                 dataList = [];
+                currentProfileName = '';
+                currentProfileData = {};
+                const profileBox = document.getElementById('profileBox');
+                if (profileBox) profileBox.classList.remove('open');
                 return;
             }
 
@@ -1267,11 +1433,10 @@
             }
 
             currentRole = role;
+            await loadCurrentUserProfile(user);
             document.getElementById('currentUserEmail').innerText = user.email || '';
-            document.getElementById('currentUserName').innerText = user.displayName ? (user.displayName + ' &bull;') : '';
+            document.getElementById('currentUserName').innerText = '';
             document.getElementById('roleBadge').innerText = currentRole.toUpperCase();
-            document.getElementById('settingsUserName').innerText = user.displayName || 'User';
-            document.getElementById('settingsUserEmail').innerText = (user.email || '') + ' &bull; ' + currentRole.toUpperCase();
 
             authView.style.display = 'none';
             appShell.style.display = 'block';
@@ -1299,8 +1464,7 @@
             const open = typeof force === 'boolean' ? force : !panel.classList.contains('open');
             panel.classList.toggle('open', open);
             if (open && currentUser) {
-                document.getElementById('settingsUserName').innerText = currentUser.displayName || 'User';
-                document.getElementById('settingsUserEmail').innerText = (currentUser.email || '') + ' : ' + currentRole.toUpperCase();
+                toggleProfileBox(false);
             }
         }
 
@@ -1326,23 +1490,65 @@
 
         async function loadUserList() {
             if (!roleIsAdmin()) return;
+
+            // The Settings panel is the active user-management list.
             const box = document.getElementById('userListContainer');
+            if (!box) return;
+
             box.innerHTML = '<div style="padding:10px;text-align:center;">Loading users...</div>';
+
             try {
                 const f = window.firebaseFns;
-                const byUid = new Map();
-                for (const collectionName of ['users']) {
-                    const snap = await f.getDocs(f.collection(window.firebaseDB, collectionName));
+
+                // Some older versions saved the same account in both `user`
+                // and `users`, and duplicate documents can also exist. Use
+                // normalized email as the unique key so one account appears once.
+                const byEmail = new Map();
+
+                for (const collectionName of ['users', 'user']) {
+                    const snap = await f.getDocs(
+                        f.collection(window.firebaseDB, collectionName)
+                    );
+
                     snap.docs.forEach(ds => {
                         const d = ds.data() || {};
-                        const key = ds.id || d.email || Math.random();
-                        const old = byUid.get(key) || {};
-                        byUid.set(key, {...old, ...d, uid: ds.id});
+                        const rawEmail = String(d.email || d.profile?.email || '').trim();
+                        if (!rawEmail) return;
+
+                        const emailKey = rawEmail.toLowerCase();
+                        const old = byEmail.get(emailKey);
+                        const oldRole = String(old?.role || '').trim().toLowerCase();
+                        const newRole = String(d.role || d.profile?.role || '').trim().toLowerCase();
+
+                        const merged = {
+                            ...(old || {}),
+                            ...d,
+                            email: old?.email || rawEmail,
+                            uid: old?.uid || ds.id,
+                            role: (oldRole === 'admin' || newRole === 'admin') ? 'admin' : 'user'
+                        };
+
+                        // Use the real Auth UID for the currently logged-in account.
+                        if (currentUser &&
+                            String(currentUser.email || '').trim().toLowerCase() === emailKey) {
+                            merged.uid = currentUser.uid;
+                        }
+
+                        // Super Admin is always shown as one ADMIN record.
+                        if (emailKey === SUPER_ADMIN_EMAIL.toLowerCase()) {
+                            merged.role = 'admin';
+                            if (currentUser &&
+                                String(currentUser.email || '').trim().toLowerCase() === emailKey) {
+                                merged.uid = currentUser.uid;
+                            }
+                        }
+
+                        byEmail.set(emailKey, merged);
                     });
                 }
 
-                const users = Array.from(byUid.values()).filter(u => u.email);
-                users.sort((a,b) => String(a.email).localeCompare(String(b.email)));
+                const users = Array.from(byEmail.values()).filter(u => u.email);
+                users.sort((a, b) => String(a.email).localeCompare(String(b.email)));
 
                 if (!users.length) {
                     box.innerHTML = '<div style="padding:10px;text-align:center;">No users found.</div>';
@@ -1361,8 +1567,12 @@
                             <div><span class="user-role">${role.toUpperCase()}</span></div>
                             <div class="user-actions">
                                 <button class="user-reset" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>
-                                ${isSuper ? '<span style="font-size:10px;font-weight:bold;">Super Admin</span>' : `
+                                ${isSuper ? `
+                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(u.email)}','${escapeJs(u.name || u.displayName || '')}')">Edit Name</button>
+                                    <span style="font-size:10px;font-weight:bold;">Super Admin</span>
+                                ` : `
                                     <button class="user-role-btn" onclick="adminToggleRole('${escapeJs(u.uid)}','${escapeJs(u.email)}','${role}')">${role === 'admin' ? 'Make User' : 'Make Admin'}</button>
+                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(u.email)}','${escapeJs(u.name || u.displayName || '')}')">Edit</button>
                                     <button class="user-delete" onclick="adminDeleteUser('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Delete</button>
                                 `}
                             </div>
@@ -1388,6 +1598,40 @@
             }
         }
 
+        async function adminEditUser(uid, email, currentName) {
+            if (!roleIsAdmin()) return alert('Only Admin can manage users.');
+            const newName = prompt('Edit user name:', currentName || '');
+            if (newName === null) return;
+            const name = newName.trim();
+            if (!name) return alert('Name cannot be empty.');
+            if (name.length > 80) return alert('Name is too long.');
+
+            try {
+                const f = window.firebaseFns;
+                const update = {
+                    name,
+                    displayName: name,
+                    email,
+                    uid,
+                    updatedAt: Date.now()
+                };
+                for (const collectionName of ['users', 'user']) {
+                    await f.setDoc(
+                        f.doc(window.firebaseDB, collectionName, uid),
+                        update,
+                        {merge:true}
+                    );
+                }
+                if (currentUser && currentUser.uid === uid) {
+                    currentProfileName = name;
+                    currentProfileData = {...currentProfileData, ...update};
+                }
+                await loadUserList();
+            } catch (err) {
+                alert('User edit failed: ' + (err.message || err));
+            }
+        }
+
         async function adminToggleRole(uid, email, currentRole) {
             if (!roleIsAdmin()) return alert('Only Admin can manage users.');
             if (String(email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return alert('Super Admin role cannot be changed.');
@@ -1395,10 +1639,10 @@
             if (!confirm(`Change ${email} role to ${newRole.toUpperCase()}?`)) return;
             try {
                 const f = window.firebaseFns;
-                // Keep both possible profile collections synchronized.
-                for (const collectionName of ['users']) {
+                // Keep both profile collections synchronized.
+                for (const collectionName of ['users', 'user']) {
                     await f.setDoc(f.doc(window.firebaseDB, collectionName, uid), {
-                        email, role: newRole, updatedAt: Date.now()
+                        email, role: newRole, uid, updatedAt: Date.now()
                     }, {merge:true});
                 }
                 await loadUserList();
@@ -1413,7 +1657,7 @@
             if (!confirm(`Delete profile for ${email}? This removes the user profile from the app database. The Firebase Authentication account itself must be deleted from Firebase Console/Admin SDK.`)) return;
             try {
                 const f = window.firebaseFns;
-                for (const collectionName of ['users']) {
+                for (const collectionName of ['users', 'user']) {
                     try { await f.deleteDoc(f.doc(window.firebaseDB, collectionName, uid)); } catch(e) {}
                 }
                 await loadUserList();
@@ -1514,7 +1758,9 @@
             const item = {
                 serial, zone, column, size, thickness, remarks,
                 ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status,
-                inputDate: existingItem?.inputDate || Date.now()
+                inputDate: existingItem?.inputDate || Date.now(),
+                inputBy: existingItem?.inputBy || currentUser?.uid || '',
+                inputByName: existingItem?.inputByName || currentProfileName || 'User'
             };
             try {
                 const id = await upsertPilecap(item, editId || null);
@@ -1809,7 +2055,7 @@
             card.innerHTML = `
                 <div class="search-result-card">
                     <div class="search-result-title">Search Result &mdash; ${escapeHtml(item.serial)}</div>
-                    <div class="input-date-badge">&#128197; <span>Input Date:</span> <b>${escapeHtml(formatInputDate(item.inputDate))}</b></div>
+                    <div class="input-date-badge">&#128197; <span>Input Date:</span> <b>${escapeHtml(formatInputDate(item.inputDate))}</b><span>&bull;</span><span>Input By:</span> <b>${escapeHtml(item.inputByName || 'Unknown')}</b></div>
                     <div class="search-result-grid">
                         ${fields.map(([k,icon,v]) => `
                             <div class="search-result-field">
@@ -2049,7 +2295,9 @@
                             size: sizeValue,
                             remarks: clean(get(row, remarksCol)),
                             status: old?.status || 'Pending',
-                            inputDate: old?.inputDate || Date.now()
+                            inputDate: old?.inputDate || Date.now(),
+                            inputBy: old?.inputBy || currentUser?.uid || '',
+                            inputByName: old?.inputByName || currentProfileName || 'User'
                         };
 
                         map.set(serial.toLowerCase(), item);
@@ -2125,14 +2373,8 @@
   function updateHeaderUser(){
     var el = document.getElementById('headerUserName');
     if (!el) return;
-    var u = window.firebaseAuth && window.firebaseAuth.currentUser;
-    if (u && u.email) {
-      el.textContent = u.email;
-      el.style.display = 'block';
-    } else {
-      el.textContent = '';
-      el.style.display = 'none';
-    }
+    el.textContent = '';
+    el.style.display = 'none';
   }
   window.addEventListener('firebase-ready', function(){
     updateHeaderUser();
