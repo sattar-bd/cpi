@@ -975,6 +975,144 @@
 .other-status-badge.pending{background:#fff3cd;color:#856404}.other-status-badge.processing{background:#ffe5cc;color:#b45f06}.other-status-badge.hold{background:#eee2ff;color:#6433a8}.other-status-badge.complete{background:#dff5e7;color:#16713a}
 </style>
 
+
+<style id="pda-pit-compact-final">
+/* PDA / PIT list — compact, clean view only */
+#othersListBox .others-list-box{margin-top:7px!important;}
+#othersListBox .others-list-head{margin:0 0 6px!important;padding:0 2px!important;min-height:28px;}
+#othersListBox .others-list-title{font-size:12px!important;font-weight:900!important;letter-spacing:.1px;}
+#othersListBox .others-close-list{padding:4px 7px!important;font-size:9px!important;border-radius:6px!important;}
+#othersListBox .others-table-wrap{overflow:auto!important;max-height:58vh;border:1px solid #d7dde5!important;border-radius:8px!important;background:var(--container-bg)!important;box-shadow:0 2px 8px rgba(0,0,0,.07)!important;}
+#othersListBox .others-table{width:100%!important;min-width:560px!important;table-layout:auto!important;border-collapse:separate!important;border-spacing:0!important;}
+#othersListBox .others-table th{position:sticky!important;top:0!important;z-index:2!important;background:#343a40!important;color:#fff!important;padding:5px!important;height:27px!important;border:0!important;border-right:1px solid rgba(255,255,255,.14)!important;font-size:9px!important;line-height:1.05!important;font-weight:800!important;text-align:center!important;white-space:nowrap!important;}
+#othersListBox .others-table td{padding:4px 5px!important;height:27px!important;border:0!important;border-bottom:1px solid #e7ebf0!important;border-right:1px solid #edf0f3!important;font-size:9px!important;line-height:1.05!important;white-space:nowrap!important;vertical-align:middle!important;text-align:center!important;}
+#othersListBox .others-table tbody tr:nth-child(even) td{background:rgba(127,127,127,.045)!important;}
+#othersListBox .others-table tbody tr:hover td{background:rgba(13,110,253,.07)!important;}
+#othersListBox .others-table td:nth-child(1){width:38px!important;color:#6b7280!important;}
+#othersListBox .others-table td:nth-child(2){text-align:left!important;font-weight:800!important;min-width:70px!important;}
+#othersListBox .others-table td:nth-child(3){min-width:48px!important;}
+#othersListBox .others-table td:nth-child(4){min-width:78px!important;}
+#othersListBox .others-table td:nth-child(5){min-width:58px!important;}
+#othersListBox .others-table td:nth-child(6){min-width:42px!important;font-weight:900!important;}
+#othersListBox .others-table td:nth-child(7){min-width:62px!important;}
+#othersListBox .others-table td:last-child{min-width:76px!important;}
+#othersListBox .others-table td:nth-child(2) b{display:inline-block!important;padding:2px 5px!important;border-radius:5px!important;background:rgba(13,110,253,.08)!important;color:inherit!important;}
+#othersListBox .other-status-badge{display:inline-block!important;min-width:48px!important;padding:2px 5px!important;border-radius:5px!important;font-size:8px!important;line-height:1.1!important;font-weight:900!important;text-align:center!important;}
+#othersListBox .others-action{gap:3px!important;justify-content:center!important;}
+#othersListBox .others-action button{width:auto!important;min-width:0!important;margin:0!important;padding:3px 5px!important;border-radius:5px!important;font-size:8px!important;line-height:1!important;}
+@media(max-width:600px){
+#othersListBox .others-table-wrap{max-height:55vh!important;border-radius:7px!important;}
+#othersListBox .others-table{min-width:540px!important;}
+#othersListBox .others-table th{padding:4px!important;height:25px!important;font-size:8px!important;}
+#othersListBox .others-table td{padding:3px 4px!important;height:25px!important;font-size:8px!important;}
+#othersListBox .others-table td:nth-child(1){width:34px!important;}
+#othersListBox .others-table td:nth-child(2){min-width:64px!important;}
+#othersListBox .others-table td:nth-child(3){min-width:42px!important;}
+#othersListBox .others-table td:nth-child(4){min-width:72px!important;}
+#othersListBox .others-table td:nth-child(5){min-width:52px!important;}
+#othersListBox .others-table td:nth-child(6){min-width:38px!important;}
+#othersListBox .others-table td:nth-child(7){min-width:58px!important;}
+#othersListBox .others-table td:last-child{min-width:70px!important;}
+#othersListBox .other-status-badge{min-width:44px!important;padding:2px 4px!important;font-size:7.5px!important;}
+}
+</style>
+
+
+<style id="pda-pit-wide-mobile-final">
+/* PDA/PIT: wider list + smaller summary boxes */
+#othersPanel{
+  padding:8px 4px 10px!important;
+}
+#othersPanel .others-head{
+  margin:0 0 6px!important;
+  padding:0 2px!important;
+}
+#othersPanel .others-title{font-size:14px!important;}
+#othersPanel .others-subtitle{font-size:9px!important;}
+#othersPanel .others-import-btn{padding:5px 8px!important;font-size:9px!important;border-radius:6px!important;}
+#othersPanel .others-buttons{gap:6px!important;margin:0 0 6px!important;}
+#othersPanel .others-test-btn{
+  min-height:38px!important;
+  height:38px!important;
+  padding:5px 8px!important;
+  border-radius:8px!important;
+}
+#othersPanel .others-test-btn span{font-size:12px!important;}
+#othersPanel .others-test-btn b{font-size:18px!important;}
+#othersListBox{
+  width:100%!important;
+  margin-top:5px!important;
+}
+#othersListBox .others-list-head{
+  padding:0 2px!important;
+  margin:0 0 5px!important;
+  min-height:25px!important;
+}
+#othersListBox .others-table-wrap{
+  width:100%!important;
+  box-sizing:border-box!important;
+  max-width:none!important;
+  border-radius:7px!important;
+}
+#othersListBox .others-table{
+  width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+}
+#othersListBox .others-table th,
+#othersListBox .others-table td{
+  padding:4px 2px!important;
+  font-size:8px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#othersListBox .others-table th{height:26px!important;line-height:1.05!important;}
+#othersListBox .others-table td{height:26px!important;}
+#othersListBox .others-table th:nth-child(1),#othersListBox .others-table td:nth-child(1){width:9%!important;}
+#othersListBox .others-table th:nth-child(2),#othersListBox .others-table td:nth-child(2){width:19%!important;}
+#othersListBox .others-table th:nth-child(3),#othersListBox .others-table td:nth-child(3){width:12%!important;}
+#othersListBox .others-table th:nth-child(4),#othersListBox .others-table td:nth-child(4){width:22%!important;}
+#othersListBox .others-table th:nth-child(5),#othersListBox .others-table td:nth-child(5){width:14%!important;}
+#othersListBox .others-table th:nth-child(6),#othersListBox .others-table td:nth-child(6){width:9%!important;}
+#othersListBox .others-table th:nth-child(7),#othersListBox .others-table td:nth-child(7){width:15%!important;}
+#othersListBox .others-table td:nth-child(2) b{padding:2px 4px!important;border-radius:4px!important;}
+/* Admin view: keep Edit/Delete inside the visible compact table */
+#othersListBox .others-table.admin-actions-table{
+  table-layout:fixed!important;
+  min-width:0!important;
+  width:100%!important;
+}
+#othersListBox .others-table.admin-actions-table th:nth-child(1),#othersListBox .others-table.admin-actions-table td:nth-child(1){width:7%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(2),#othersListBox .others-table.admin-actions-table td:nth-child(2){width:17%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(3),#othersListBox .others-table.admin-actions-table td:nth-child(3){width:10%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(4),#othersListBox .others-table.admin-actions-table td:nth-child(4){width:19%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(5),#othersListBox .others-table.admin-actions-table td:nth-child(5){width:12%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(6),#othersListBox .others-table.admin-actions-table td:nth-child(6){width:8%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(7),#othersListBox .others-table.admin-actions-table td:nth-child(7){width:13%!important;}
+#othersListBox .others-table.admin-actions-table th:nth-child(8),#othersListBox .others-table.admin-actions-table td:nth-child(8){width:14%!important;}
+#othersListBox .others-table.admin-actions-table .others-action{display:flex!important;align-items:center!important;justify-content:center!important;gap:2px!important;width:100%!important;}
+#othersListBox .others-table.admin-actions-table .others-action button{display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;cursor:pointer!important;flex:1 1 0!important;min-width:0!important;padding:4px 2px!important;}
+@media(max-width:600px){
+  #othersPanel{padding-left:2px!important;padding-right:2px!important;}
+  #othersPanel .others-buttons{gap:5px!important;}
+  #othersPanel .others-test-btn{min-height:36px!important;height:36px!important;padding:4px 7px!important;}
+  #othersPanel .others-test-btn span{font-size:11px!important;}
+  #othersPanel .others-test-btn b{font-size:17px!important;}
+  #othersListBox .others-table th,#othersListBox .others-table td{font-size:7.5px!important;padding:3px 2px!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(1),#othersListBox .others-table.admin-actions-table td:nth-child(1){width:7%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(2),#othersListBox .others-table.admin-actions-table td:nth-child(2){width:17%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(3),#othersListBox .others-table.admin-actions-table td:nth-child(3){width:9%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(4),#othersListBox .others-table.admin-actions-table td:nth-child(4){width:18%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(5),#othersListBox .others-table.admin-actions-table td:nth-child(5){width:11%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(6),#othersListBox .others-table.admin-actions-table td:nth-child(6){width:7%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(7),#othersListBox .others-table.admin-actions-table td:nth-child(7){width:13%!important;}
+  #othersListBox .others-table.admin-actions-table th:nth-child(8),#othersListBox .others-table.admin-actions-table td:nth-child(8){width:18%!important;}
+
+  #othersListBox .others-table th{height:25px!important;}
+  #othersListBox .others-table td{height:25px!important;}
+}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -2623,7 +2761,7 @@
             <div class="others-list-title">${type} Test List (${items.length})</div>
             <button type="button" class="others-close-list" onclick="closeOtherTestList()">Close List</button>
           </div>
-          ${items.length ? `<div class="others-table-wrap"><table class="others-table">
+          ${items.length ? `<div class="others-table-wrap"><table class="others-table${admin?" admin-actions-table":""}">
             <thead><tr>
               <th>SL No.</th><th>Pile Group</th><th>Pile No.</th><th>Pile Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}
             </tr></thead>
