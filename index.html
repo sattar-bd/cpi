@@ -903,6 +903,78 @@
 /* User list safety: only the Settings-panel list is used by loadUserList(). */
 #adminPageUserListContainer{display:none!important;}
 </style>
+
+
+<style>
+/* ============================================================
+   Others: PDA / PIT management
+   ============================================================ */
+.others-panel{display:none;border-top:1px solid var(--border-color);padding:10px 12px;background:rgba(127,127,127,.035);}
+.others-panel.open{display:block;}
+.others-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.others-title{font-size:15px;font-weight:900;}
+.others-subtitle{font-size:10px;opacity:.72;margin-top:2px;}
+.others-import-btn{width:auto!important;margin:0!important;padding:6px 9px!important;border:0!important;border-radius:7px!important;background:#198754!important;color:#fff!important;font-size:10px!important;font-weight:800!important;}
+.others-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.others-test-btn{margin:0!important;border:1px solid transparent!important;border-radius:10px!important;padding:8px 10px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;cursor:pointer!important;font-weight:900!important;min-height:48px!important;}
+.others-test-btn span{font-size:14px;}
+.others-test-btn b{font-size:22px;line-height:1;}
+.others-pda{background:#eef6ff!important;color:#0875d9!important;border-color:#b9dcff!important;}
+.others-pit{background:#effcf4!important;color:#198754!important;border-color:#b9e9cc!important;}
+.others-list-box{margin-top:9px;}
+.others-list-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;}
+.others-list-title{font-weight:900;font-size:13px;}
+.others-close-list{width:auto!important;margin:0!important;padding:4px 8px!important;font-size:10px!important;background:#6c757d!important;color:#fff!important;border:0!important;}
+.others-table-wrap{overflow-x:auto;border:1px solid var(--border-color);border-radius:8px;}
+.others-table{width:100%;border-collapse:collapse;min-width:650px;}
+.others-table th,.others-table td{padding:6px 5px;border:1px solid var(--border-color);font-size:10px;white-space:nowrap;}
+.others-table th{background:var(--th-bg);color:#fff;}
+.others-action{display:flex;gap:4px;justify-content:center;}
+.others-edit{background:#ffc107!important;color:#111!important;border:0!important;width:auto!important;margin:0!important;padding:4px 7px!important;font-size:10px!important;font-weight:800!important;}
+.others-delete{background:#dc3545!important;color:#fff!important;border:0!important;width:auto!important;margin:0!important;padding:4px 7px!important;font-size:10px!important;font-weight:800!important;}
+.others-empty{padding:12px;text-align:center;font-size:12px;border:1px solid var(--border-color);border-radius:8px;}
+.others-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:12px;}
+.others-modal.open{display:flex;}
+.others-modal-card{width:min(520px,96vw);max-height:92vh;overflow:auto;background:var(--container-bg);color:var(--text-color);border-radius:12px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.others-modal-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+.others-modal-head strong{font-size:15px;}
+.others-modal-close{width:auto!important;margin:0!important;padding:5px 9px!important;background:#6c757d!important;color:#fff!important;border:0!important;}
+.others-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.others-form-grid .full{grid-column:1/-1;}
+.others-form-grid label{margin-top:0!important;}
+.others-form-grid input{margin:2px 0 0!important;padding:7px!important;}
+.others-modal-actions{display:flex;gap:6px;margin-top:9px;}
+.others-modal-actions button{margin:0!important;font-weight:800!important;}
+.others-save{background:#198754!important;color:#fff!important;border:0!important;}
+.others-cancel{background:#6c757d!important;color:#fff!important;border:0!important;}
+@media(max-width:600px){
+  .others-test-btn{min-height:46px!important;padding:7px 8px!important;}
+  .others-test-btn span{font-size:13px;}
+  .others-test-btn b{font-size:20px;}
+  .others-table{min-width:610px;}
+  .others-form-grid{grid-template-columns:1fr 1fr;}
+}
+
+</style>
+
+
+<style id="profile-others-compact-style">
+.profile-others-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:8px 12px 9px;border-top:1px solid var(--border-color);}
+.profile-others-row .profile-open-btn,.profile-others-row .settings-action{width:100%!important;height:44px!important;min-height:44px!important;margin:0!important;box-sizing:border-box!important;border-radius:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;padding:5px 7px!important;}
+.profile-others-row .profile-open-btn{border:1px solid #b9dcff!important;background:#eef6ff!important;color:#0875d9!important;font-size:10px!important;font-weight:800!important;}
+.profile-others-row .profile-open-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.profile-others-row .settings-action{font-size:0!important;border:1px solid #d7d7d7!important;background:#f4f4f4!important;color:#222!important;box-shadow:0 1px 4px rgba(0,0,0,.10)!important;}
+.profile-others-row .settings-action svg{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important;}
+.profile-others-row .settings-action-label{display:block!important;font-size:10px!important;color:#222!important;font-weight:800!important;max-width:none!important;}
+@media(max-width:600px){.profile-others-row{gap:5px;padding:7px 8px 8px}.profile-others-row .profile-open-btn,.profile-others-row .settings-action{height:42px!important;min-height:42px!important}.profile-others-row .profile-open-btn{font-size:9px!important}.profile-others-row .settings-action-label{font-size:9px!important}.profile-others-row .profile-open-btn svg{width:16px;height:16px}.profile-others-row .settings-action svg{width:17px!important;height:17px!important;}}
+</style>
+
+
+<style id="others-status-style">
+.other-status-badge{display:inline-block;padding:3px 6px;border-radius:8px;font-size:9px;font-weight:800;}
+.other-status-badge.pending{background:#fff3cd;color:#856404}.other-status-badge.processing{background:#ffe5cc;color:#b45f06}.other-status-badge.hold{background:#eee2ff;color:#6433a8}.other-status-badge.complete{background:#dff5e7;color:#16713a}
+</style>
+
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -956,7 +1028,16 @@
                 <div class="settings-user">
                     <div class="settings-user-name">My Profile</div>
                     <div class="settings-user-email">Manage your profile name and password</div>
-                    <button type="button" class="profile-open-btn" onclick="toggleProfileBox()">Profile Settings</button>
+                    <div class="profile-others-row">
+                        <button type="button" class="profile-open-btn" onclick="toggleProfileBox()">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"></path></svg>
+                            <span>Profile Settings</span>
+                        </button>
+                        <button id="settingsOthersBtn" type="button" class="settings-action settings-others" title="Others - PDA / PIT" aria-label="Others - PDA / PIT" onclick="toggleOthersPanel()">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"></path><circle cx="12" cy="12" r="9"></circle></svg>
+                            <span class="settings-action-label">Others</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="profileBox" class="profile-box">
                     <div class="profile-title">User Profile</div>
@@ -1000,10 +1081,31 @@
                         <span class="settings-action-label">Logout</span>
                     </button>
                 </div>
-                <input type="file" id="excelInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" style="display:none" onchange="importFromExcel(event)">
+                <input type="file" id="excelInput" accept="*/*" style="display:none" onchange="importFromExcel(event)">
                 <div id="settingsAdminBox" class="settings-admin-box">
                     <div class="settings-admin-title">&#128081; Admin Panel &mdash; User Management</div>
                     <div class="settings-admin-list"><div id="userListContainer"></div></div>
+                </div>
+
+                <!-- Others: PDA / PIT Test Schedule -->
+                <div id="othersPanel" class="others-panel">
+                    <div class="others-head">
+                        <div>
+                            <div class="others-title">Others</div>
+                            <div class="others-subtitle">PDA &amp; PIT Test Schedule</div>
+                        </div>
+                        <button type="button" class="others-import-btn hidden-by-role" onclick="document.getElementById('othersExcelInput').click()">Import Excel</button>
+                    </div>
+                    <input type="file" id="othersExcelInput" accept="*/*" style="display:none" onchange="importPdaPitExcel(event)">
+                    <div class="others-buttons">
+                        <button type="button" class="others-test-btn others-pda" onclick="showOtherTestList('PDA')">
+                            <span>PDA</span><b id="pdaCount">0</b>
+                        </button>
+                        <button type="button" class="others-test-btn others-pit" onclick="showOtherTestList('PIT')">
+                            <span>PIT</span><b id="pitCount">0</b>
+                        </button>
+                    </div>
+                    <div id="othersListBox" class="others-list-box"></div>
                 </div>
             </div>
 
@@ -1219,7 +1321,7 @@
         async function loadFirebaseData() {
             const f = window.firebaseFns;
             const snap = await f.getDocs(f.collection(window.firebaseDB, 'pilecaps'));
-            dataList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            dataList = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(item => item.__otherTest !== true && String(item.recordType||'').toUpperCase() !== 'PDA_PIT');
             updateCounters();
             populateSerialDropdown();
         }
@@ -1700,14 +1802,17 @@
         }
 
         function openAddForm() {
-            document.getElementById('formTitle').innerText = "New Pile Cap Level Entry";
+            if (!currentUser) return alert('Please login first.');
+            if (!roleIsAdmin()) return alert('Only Admin can add new PileCap data.');
+            document.getElementById('formTitle').innerText = 'New Pile Cap Level Entry';
             document.getElementById('editId').value = '';
-            document.getElementById('deleteBtnInForm').style.display = 'none'; 
+            document.getElementById('deleteBtnInForm').style.display = 'none';
             clearForm();
-
+            document.getElementById('settingsPanel').classList.remove('open');
             document.getElementById('homeView').style.display = 'none';
             document.getElementById('formView').style.display = 'block';
             window.scrollTo(0, 0);
+            setTimeout(() => document.getElementById('serial')?.focus(), 80);
         }
 
         function goHome() {
@@ -2384,4 +2489,358 @@
   });
   document.addEventListener('DOMContentLoaded', updateHeaderUser);
 })();
-</script></body></html>
+</script>
+
+<!-- PDA/PIT Edit Modal -->
+<div id="othersEditModal" class="others-modal" aria-hidden="true">
+  <div class="others-modal-card">
+    <div class="others-modal-head">
+      <strong id="othersEditTitle">Edit PDA Data</strong>
+      <button type="button" class="others-modal-close" onclick="closeOtherEditModal()">Close</button>
+    </div>
+    <input type="hidden" id="otherEditId">
+    <div class="others-form-grid">
+      <div><label>SL No.</label><input id="otherSlNo" type="text"></div>
+      <div><label>Test</label><input id="otherTestType" type="text" readonly></div>
+      <div><label>Pile Group</label><input id="otherPileGroup" type="text"></div>
+      <div><label>Pile No.</label><input id="otherPileNumber" type="text"></div>
+      <div><label>Pile Penetration (m)</label><input id="otherPenetration" type="text"></div>
+      <div><label>Size (mm)</label><input id="otherSize" type="text"></div>
+      <div><label>Status</label><select id="otherStatus"><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Hold">Hold</option><option value="Complete">Complete</option></select></div>
+    </div>
+    <div class="others-modal-actions">
+      <button type="button" class="others-save" onclick="saveOtherEdit()">Save Changes</button>
+      <button type="button" class="others-cancel" onclick="closeOtherEditModal()">Cancel</button>
+    </div>
+    <div id="othersEditMessage" class="auth-message"></div>
+  </div>
+</div>
+
+
+<script id="others-pda-pit-management">
+(function(){
+    const EMBEDDED_PDA_PIT_DATA = [{"testType":"PDA","slNo":1,"pileGroup":"PG041","pileNumber":"6","pilePenetration":10.755,"size":450,"test":"PDA"},{"testType":"PDA","slNo":2,"pileGroup":"PG053","pileNumber":"1","pilePenetration":16.405,"size":450,"test":"PDA"},{"testType":"PDA","slNo":3,"pileGroup":"PG054","pileNumber":"5","pilePenetration":15.305,"size":450,"test":"PDA"},{"testType":"PDA","slNo":4,"pileGroup":"PG056","pileNumber":"1","pilePenetration":18.951,"size":450,"test":"PDA"},{"testType":"PDA","slNo":5,"pileGroup":"PG057","pileNumber":"4","pilePenetration":18.215,"size":450,"test":"PDA"},{"testType":"PDA","slNo":6,"pileGroup":"PG058","pileNumber":"5","pilePenetration":17.862,"size":450,"test":"PDA"},{"testType":"PDA","slNo":7,"pileGroup":"PG059","pileNumber":"8","pilePenetration":15.597,"size":450,"test":"PDA"},{"testType":"PDA","slNo":8,"pileGroup":"PG076","pileNumber":"7","pilePenetration":14.725,"size":450,"test":"PDA"},{"testType":"PDA","slNo":9,"pileGroup":"PG077","pileNumber":"7","pilePenetration":10.325,"size":450,"test":"PDA"},{"testType":"PDA","slNo":10,"pileGroup":"PG079","pileNumber":"9","pilePenetration":12.251,"size":450,"test":"PDA"},{"testType":"PDA","slNo":11,"pileGroup":"PG080","pileNumber":"49","pilePenetration":11.625,"size":450,"test":"PDA"},{"testType":"PDA","slNo":12,"pileGroup":"PG080","pileNumber":"50","pilePenetration":11.825,"size":450,"test":"PDA"},{"testType":"PDA","slNo":13,"pileGroup":"PG081","pileNumber":"27","pilePenetration":12.913,"size":450,"test":"PDA"},{"testType":"PDA","slNo":14,"pileGroup":"PG082","pileNumber":"20","pilePenetration":11.846,"size":450,"test":"PDA"},{"testType":"PDA","slNo":15,"pileGroup":"PG083","pileNumber":"5","pilePenetration":12.965,"size":450,"test":"PDA"},{"testType":"PDA","slNo":16,"pileGroup":"PG083","pileNumber":"33","pilePenetration":15.665,"size":450,"test":"PDA"},{"testType":"PDA","slNo":17,"pileGroup":"PG098","pileNumber":"5","pilePenetration":14.895,"size":450,"test":"PDA"},{"testType":"PDA","slNo":18,"pileGroup":"PG099","pileNumber":"1","pilePenetration":14.975,"size":450,"test":"PDA"},{"testType":"PDA","slNo":19,"pileGroup":"PG100","pileNumber":"1","pilePenetration":14.025,"size":450,"test":"PDA"},{"testType":"PDA","slNo":20,"pileGroup":"PG102","pileNumber":"12","pilePenetration":13.131,"size":450,"test":"PDA"},{"testType":"PDA","slNo":21,"pileGroup":"PG105","pileNumber":"17","pilePenetration":10.984,"size":450,"test":"PDA"},{"testType":"PDA","slNo":22,"pileGroup":"PG109","pileNumber":"12","pilePenetration":11.225,"size":450,"test":"PDA"},{"testType":"PDA","slNo":23,"pileGroup":"PG111","pileNumber":"13","pilePenetration":9.893,"size":450,"test":"PDA"},{"testType":"PDA","slNo":24,"pileGroup":"PG112","pileNumber":"16","pilePenetration":14.405,"size":450,"test":"PDA"},{"testType":"PDA","slNo":25,"pileGroup":"PG131","pileNumber":"20","pilePenetration":11.884,"size":450,"test":"PDA"},{"testType":"PDA","slNo":26,"pileGroup":"PG132","pileNumber":"13","pilePenetration":13.205,"size":450,"test":"PDA"},{"testType":"PDA","slNo":27,"pileGroup":"PG133","pileNumber":"8","pilePenetration":8.717,"size":450,"test":"PDA"},{"testType":"PDA","slNo":28,"pileGroup":"PG138","pileNumber":"7","pilePenetration":9.358,"size":450,"test":"PDA"},{"testType":"PDA","slNo":29,"pileGroup":"PG140","pileNumber":"4","pilePenetration":13.552,"size":450,"test":"PDA"},{"testType":"PDA","slNo":30,"pileGroup":"PG146","pileNumber":"10","pilePenetration":13.984,"size":450,"test":"PDA"},{"testType":"PDA","slNo":31,"pileGroup":"PG147","pileNumber":"3","pilePenetration":12.725,"size":450,"test":"PDA"},{"testType":"PDA","slNo":32,"pileGroup":"PG149","pileNumber":"3","pilePenetration":13.505,"size":450,"test":"PDA"},{"testType":"PDA","slNo":33,"pileGroup":"PG150","pileNumber":"3","pilePenetration":14.575,"size":450,"test":"PDA"},{"testType":"PDA","slNo":34,"pileGroup":"PG151","pileNumber":"2","pilePenetration":14.571,"size":450,"test":"PDA"},{"testType":"PDA","slNo":35,"pileGroup":"PG157","pileNumber":"18","pilePenetration":8.025,"size":450,"test":"PDA"},{"testType":"PDA","slNo":36,"pileGroup":"PG159","pileNumber":"2","pilePenetration":17.305,"size":450,"test":"PDA"},{"testType":"PDA","slNo":37,"pileGroup":"PG160","pileNumber":"1","pilePenetration":17.555,"size":450,"test":"PDA"},{"testType":"PDA","slNo":38,"pileGroup":"PG167","pileNumber":"14","pilePenetration":12.025,"size":450,"test":"PDA"},{"testType":"PDA","slNo":39,"pileGroup":"PG170","pileNumber":"5","pilePenetration":20.405,"size":450,"test":"PDA"},{"testType":"PDA","slNo":40,"pileGroup":"PG171","pileNumber":"4","pilePenetration":15.845,"size":450,"test":"PDA"},{"testType":"PDA","slNo":41,"pileGroup":"PG172","pileNumber":"4","pilePenetration":14.247,"size":450,"test":"PDA"},{"testType":"PDA","slNo":42,"pileGroup":"PG177","pileNumber":"8","pilePenetration":12.225,"size":450,"test":"PDA"},{"testType":"PDA","slNo":43,"pileGroup":"PG181","pileNumber":"5","pilePenetration":19.905,"size":450,"test":"PDA"},{"testType":"PDA","slNo":44,"pileGroup":"PG182","pileNumber":"4","pilePenetration":14.955,"size":450,"test":"PDA"},{"testType":"PDA","slNo":45,"pileGroup":"PG186","pileNumber":"1","pilePenetration":10.581,"size":450,"test":"PDA"},{"testType":"PDA","slNo":46,"pileGroup":"PG198","pileNumber":"6","pilePenetration":15.025,"size":450,"test":"PDA"},{"testType":"PDA","slNo":47,"pileGroup":"PG208","pileNumber":"2","pilePenetration":16.215,"size":450,"test":"PDA"},{"testType":"PDA","slNo":48,"pileGroup":"PG210","pileNumber":"1","pilePenetration":14.955,"size":450,"test":"PDA"},{"testType":"PIT","slNo":1,"pileGroup":"PG053","pileNumber":"15","pilePenetration":18.905,"size":450,"test":"PIT"},{"testType":"PIT","slNo":2,"pileGroup":"PG054","pileNumber":"19","pilePenetration":18.305,"size":450,"test":"PIT"},{"testType":"PIT","slNo":3,"pileGroup":"PG056","pileNumber":"18","pilePenetration":20.551,"size":450,"test":"PIT"},{"testType":"PIT","slNo":4,"pileGroup":"PG057","pileNumber":"20","pilePenetration":20.215,"size":450,"test":"PIT"},{"testType":"PIT","slNo":5,"pileGroup":"PG058","pileNumber":"10","pilePenetration":18.662,"size":450,"test":"PIT"},{"testType":"PIT","slNo":6,"pileGroup":"PG076","pileNumber":"19","pilePenetration":15.725,"size":450,"test":"PIT"},{"testType":"PIT","slNo":7,"pileGroup":"PG077","pileNumber":"17","pilePenetration":12.825,"size":450,"test":"PIT"},{"testType":"PIT","slNo":8,"pileGroup":"PG079","pileNumber":"19","pilePenetration":14.325,"size":450,"test":"PIT"},{"testType":"PIT","slNo":9,"pileGroup":"PG080","pileNumber":"1","pilePenetration":14.925,"size":450,"test":"PIT"},{"testType":"PIT","slNo":10,"pileGroup":"PG080","pileNumber":"24","pilePenetration":13.625,"size":450,"test":"PIT"},{"testType":"PIT","slNo":11,"pileGroup":"PG081","pileNumber":"2","pilePenetration":14.913,"size":450,"test":"PIT"},{"testType":"PIT","slNo":12,"pileGroup":"PG081","pileNumber":"13","pilePenetration":14.013,"size":450,"test":"PIT"},{"testType":"PIT","slNo":13,"pileGroup":"PG082","pileNumber":"10","pilePenetration":14.846,"size":450,"test":"PIT"},{"testType":"PIT","slNo":14,"pileGroup":"PG083","pileNumber":"22","pilePenetration":18.965,"size":450,"test":"PIT"},{"testType":"PIT","slNo":15,"pileGroup":"PG098","pileNumber":"29","pilePenetration":16.095,"size":450,"test":"PIT"},{"testType":"PIT","slNo":16,"pileGroup":"PG102","pileNumber":"1","pilePenetration":14.431,"size":450,"test":"PIT"},{"testType":"PIT","slNo":17,"pileGroup":"PG105","pileNumber":"2","pilePenetration":12.584,"size":450,"test":"PIT"},{"testType":"PIT","slNo":18,"pileGroup":"PG109","pileNumber":"3","pilePenetration":12.625,"size":450,"test":"PIT"},{"testType":"PIT","slNo":19,"pileGroup":"PG111","pileNumber":"2","pilePenetration":11.793,"size":450,"test":"PIT"},{"testType":"PIT","slNo":20,"pileGroup":"PG112","pileNumber":"4","pilePenetration":15.805,"size":450,"test":"PIT"},{"testType":"PIT","slNo":21,"pileGroup":"PG131","pileNumber":"9","pilePenetration":13.484,"size":450,"test":"PIT"},{"testType":"PIT","slNo":22,"pileGroup":"PG132","pileNumber":"27","pilePenetration":16.205,"size":450,"test":"PIT"},{"testType":"PIT","slNo":23,"pileGroup":"PG133","pileNumber":"12","pilePenetration":13.217,"size":450,"test":"PIT"},{"testType":"PIT","slNo":24,"pileGroup":"PG141","pileNumber":"5","pilePenetration":15.445,"size":450,"test":"PIT"},{"testType":"PIT","slNo":25,"pileGroup":"PG146","pileNumber":"19","pilePenetration":16.984,"size":450,"test":"PIT"},{"testType":"PIT","slNo":26,"pileGroup":"PG147","pileNumber":"22","pilePenetration":16.725,"size":450,"test":"PIT"},{"testType":"PIT","slNo":27,"pileGroup":"PG150","pileNumber":"2","pilePenetration":15.875,"size":450,"test":"PIT"},{"testType":"PIT","slNo":28,"pileGroup":"PG155","pileNumber":"2","pilePenetration":14.504,"size":450,"test":"PIT"},{"testType":"PIT","slNo":29,"pileGroup":"PG157","pileNumber":"5","pilePenetration":12.025,"size":450,"test":"PIT"},{"testType":"PIT","slNo":30,"pileGroup":"PG158","pileNumber":"3","pilePenetration":15.025,"size":450,"test":"PIT"},{"testType":"PIT","slNo":31,"pileGroup":"PG160","pileNumber":"2","pilePenetration":18.355,"size":450,"test":"PIT"},{"testType":"PIT","slNo":32,"pileGroup":"PG163","pileNumber":"1","pilePenetration":15.703,"size":450,"test":"PIT"},{"testType":"PIT","slNo":33,"pileGroup":"PG167","pileNumber":"16","pilePenetration":18.725,"size":450,"test":"PIT"},{"testType":"PIT","slNo":34,"pileGroup":"PG183","pileNumber":"4","pilePenetration":15.255,"size":450,"test":"PIT"},{"testType":"PIT","slNo":35,"pileGroup":"PG184","pileNumber":"7","pilePenetration":14.285,"size":450,"test":"PIT"},{"testType":"PIT","slNo":36,"pileGroup":"PG198","pileNumber":"1","pilePenetration":16.025,"size":450,"test":"PIT"},{"testType":"PIT","slNo":37,"pileGroup":"PG202","pileNumber":"8","pilePenetration":19.925,"size":450,"test":"PIT"},{"testType":"PIT","slNo":38,"pileGroup":"PG206","pileNumber":"1","pilePenetration":17.905,"size":450,"test":"PIT"},{"testType":"PIT","slNo":39,"pileGroup":"PG208","pileNumber":"4","pilePenetration":17.915,"size":450,"test":"PIT"},{"testType":"PIT","slNo":40,"pileGroup":"PG210","pileNumber":"5","pilePenetration":16.655,"size":450,"test":"PIT"}];
+    let otherTestList = [];
+    let otherListType = '';
+
+    function otherFns() { return window.firebaseFns; }
+    function otherDb() { return window.firebaseDB; }
+    // Store PDA/PIT inside the already-permitted `pilecaps` collection using a marker.
+    // This avoids Firestore permission failures when security rules do not define `otherTests`.
+    const OTHER_COLLECTION = 'pilecaps';
+    function otherCollection() { return fCollection(window.firebaseDB, OTHER_COLLECTION); }
+    function fCollection(db, name) { return window.firebaseFns.collection(db, name); }
+    function otherAdmin() { return typeof roleIsAdmin === 'function' && roleIsAdmin(); }
+
+    function escOther(v) {
+        return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    }
+    function jsOther(v) {
+        return String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
+    }
+
+    async function loadOtherTests() {
+        if (!window.firebaseDB || !window.firebaseFns || !currentUser) return;
+        try {
+            const f = otherFns();
+            const snap = await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
+            otherTestList = snap.docs.map(d => ({id:d.id, ...d.data()}));
+            if (!otherTestList.length && otherAdmin()) {
+                await seedOtherTests();
+            }
+            updateOtherCounts();
+            if (otherListType) renderOtherList(otherListType);
+        } catch(e) {
+            console.warn('PDA/PIT load failed:', e);
+            otherTestList = [];
+            updateOtherCounts();
+        }
+    }
+
+    async function seedOtherTests() {
+        if (!otherAdmin()) return;
+        const f = otherFns();
+        const batch = f.writeBatch(otherDb());
+        EMBEDDED_PDA_PIT_DATA.forEach((item, i) => {
+            const ref = f.doc(f.collection(otherDb(), OTHER_COLLECTION));
+            batch.set(ref, {
+                __otherTest:true,
+                recordType:'PDA_PIT',
+                testType:item.testType,
+                slNo:item.slNo,
+                pileGroup:item.pileGroup,
+                pileNumber:item.pileNumber,
+                pilePenetration:item.pilePenetration,
+                size:item.size,
+                test:item.test,
+                inputDate:Date.now(),
+                inputBy:currentUser?.uid || '',
+                inputByName:currentProfileName || 'User',
+                status:'Pending',
+                source:'Pile_Test.xlsx'
+            });
+        });
+        await batch.commit();
+        const snap = await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
+        otherTestList = snap.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.__otherTest === true || String(x.recordType||'').toUpperCase()==='PDA_PIT');
+    }
+
+    function updateOtherCounts() {
+        const pda = otherTestList.filter(x => String(x.testType||x.test||'').toUpperCase()==='PDA').length;
+        const pit = otherTestList.filter(x => String(x.testType||x.test||'').toUpperCase()==='PIT').length;
+        const a=document.getElementById('pdaCount'), b=document.getElementById('pitCount');
+        if(a) a.textContent=pda;
+        if(b) b.textContent=pit;
+    }
+
+    window.toggleOthersPanel = function() {
+        const panel=document.getElementById('othersPanel');
+        if(!panel) return;
+        const open=panel.classList.toggle('open');
+        if(open) {
+            const adminBox=document.getElementById('settingsAdminBox');
+            if(adminBox) adminBox.classList.remove('open');
+            loadOtherTests();
+        }
+    };
+
+    window.showOtherTestList = async function(type) {
+        if(!currentUser) return;
+        if(!otherTestList.length) await loadOtherTests();
+        otherListType=type;
+        renderOtherList(type);
+    };
+
+    function renderOtherList(type) {
+        const box=document.getElementById('othersListBox');
+        if(!box) return;
+        const items=otherTestList
+          .filter(x=>String(x.testType||x.test||'').toUpperCase()===type)
+          .sort((a,b)=>Number(a.slNo||0)-Number(b.slNo||0));
+        const admin=otherAdmin();
+        box.innerHTML=`
+          <div class="others-list-head">
+            <div class="others-list-title">${type} Test List (${items.length})</div>
+            <button type="button" class="others-close-list" onclick="closeOtherTestList()">Close List</button>
+          </div>
+          ${items.length ? `<div class="others-table-wrap"><table class="others-table">
+            <thead><tr>
+              <th>SL No.</th><th>Pile Group</th><th>Pile No.</th><th>Pile Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}
+            </tr></thead>
+            <tbody>${items.map(x=>`<tr>
+              <td>${escOther(x.slNo)}</td>
+              <td><b>${escOther(x.pileGroup)}</b></td>
+              <td>${escOther(x.pileNumber)}</td>
+              <td>${escOther(x.pilePenetration)}</td>
+              <td>${escOther(x.size)}</td>
+              <td><b>${escOther(x.testType||x.test)}</b></td>
+              <td><b class="other-status-badge ${String(x.status||'Pending').toLowerCase()}">${escOther(x.status||'Pending')}</b></td>
+              ${admin?`<td><div class="others-action">
+                <button class="others-edit" onclick="editOtherTest('${jsOther(x.id)}')">Edit</button>
+                <button class="others-delete" onclick="deleteOtherTest('${jsOther(x.id)}')">Delete</button>
+              </div></td>`:''}
+            </tr>`).join('')}</tbody>
+          </table></div>` : '<div class="others-empty">No '+type+' data available.</div>'}
+        `;
+    }
+
+    window.closeOtherTestList = function() {
+        otherListType='';
+        const box=document.getElementById('othersListBox');
+        if(box) box.innerHTML='';
+    };
+
+    window.editOtherTest = function(id) {
+        if(!otherAdmin()) return alert('Only Admin can edit PDA/PIT data.');
+        const x=otherTestList.find(v=>v.id===id);
+        if(!x) return;
+        document.getElementById('otherEditId').value=x.id;
+        document.getElementById('otherSlNo').value=x.slNo ?? '';
+        document.getElementById('otherTestType').value=x.testType||x.test||'';
+        document.getElementById('otherPileGroup').value=x.pileGroup||'';
+        document.getElementById('otherPileNumber').value=x.pileNumber||'';
+        document.getElementById('otherPenetration').value=x.pilePenetration ?? '';
+        document.getElementById('otherSize').value=x.size ?? '';
+        document.getElementById('otherStatus').value=x.status || 'Pending';
+        document.getElementById('othersEditTitle').textContent='Edit '+(x.testType||x.test||'PDA/PIT')+' Data';
+        document.getElementById('othersEditMessage').textContent='';
+        document.getElementById('othersEditModal').classList.add('open');
+    };
+
+    window.closeOtherEditModal = function() {
+        const m=document.getElementById('othersEditModal');
+        if(m) m.classList.remove('open');
+    };
+
+    window.saveOtherEdit = async function() {
+        if(!otherAdmin()) return alert('Only Admin can modify PDA/PIT data.');
+        const id=document.getElementById('otherEditId').value;
+        if(!id) return;
+        const item=otherTestList.find(v=>v.id===id);
+        if(!item) return;
+        const pileGroup=document.getElementById('otherPileGroup').value.trim();
+        if(!pileGroup) return alert('Pile Group is required.');
+        const payload={
+            slNo:document.getElementById('otherSlNo').value.trim(),
+            testType:document.getElementById('otherTestType').value.trim().toUpperCase(),
+            pileGroup,
+            pileNumber:document.getElementById('otherPileNumber').value.trim(),
+            pilePenetration:document.getElementById('otherPenetration').value.trim(),
+            size:document.getElementById('otherSize').value.trim(),
+            status:document.getElementById('otherStatus').value,
+            test:document.getElementById('otherTestType').value.trim().toUpperCase(),
+            updatedAt:Date.now(),
+            updatedBy:currentUser?.uid||''
+        };
+        try {
+            const f=otherFns();
+            await f.updateDoc(f.doc(otherDb(),OTHER_COLLECTION,id),payload);
+            otherTestList=otherTestList.map(v=>v.id===id?{...v,...payload}:v);
+            updateOtherCounts();
+            renderOtherList(otherListType || payload.testType);
+            closeOtherEditModal();
+        } catch(e) {
+            alert('Update failed: '+(e.message||e));
+        }
+    };
+
+    window.deleteOtherTest = async function(id) {
+        if(!otherAdmin()) return alert('Only Admin can delete PDA/PIT data.');
+        const x=otherTestList.find(v=>v.id===id);
+        if(!x) return;
+        const type=x.testType||x.test||'PDA/PIT';
+        if(!confirm('Delete this '+type+' record?\n\n'+(x.pileGroup||'')+' / Pile '+(x.pileNumber||''))) return;
+        try {
+            const f=otherFns();
+            await f.deleteDoc(f.doc(otherDb(),OTHER_COLLECTION,id));
+            otherTestList=otherTestList.filter(v=>v.id!==id);
+            updateOtherCounts();
+            renderOtherList(otherListType);
+        } catch(e) {
+            alert('Delete failed: '+(e.message||e));
+        }
+    };
+
+    function normalizeHeader(v) {
+        return String(v??'').trim().toUpperCase().replace(/[^A-Z0-9]+/g,'');
+    }
+    function findCol(headers, names, fallback=-1) {
+        const hs=headers.map(normalizeHeader);
+        for(const n of names) {
+            const i=hs.indexOf(normalizeHeader(n));
+            if(i>=0) return i;
+        }
+        return fallback;
+    }
+
+    window.importPdaPitExcel = function(event) {
+        if(!otherAdmin()) {
+            event.target.value='';
+            return alert('Only Admin can import PDA/PIT Excel data.');
+        }
+        const file=event.target.files?.[0];
+        if(!file) return;
+        const name=String(file.name||'').toLowerCase();
+        if(!/\.(xlsx|xls|csv)$/.test(name)) {
+            event.target.value='';
+            return alert('Please select an Excel or CSV file (.xlsx, .xls, .csv).');
+        }
+        const reader=new FileReader();
+        reader.onload=async function(e) {
+            try {
+                const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+                const parsed=[];
+                for(const sheetName of wb.SheetNames) {
+                    const ws=wb.Sheets[sheetName];
+                    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+                    if(!rows.length) continue;
+                    const headers=rows[0]||[];
+                    const isPda=/PDA/i.test(sheetName)||headers.some(h=>/PDA/i.test(String(h)));
+                    const isPit=/PIT/i.test(sheetName)||headers.some(h=>/PIT/i.test(String(h)));
+                    if(!isPda && !isPit) continue;
+                    const type=isPda?'PDA':'PIT';
+                    const sl=findCol(headers,['SL No.','SL No','SLNO'],0);
+                    const group=findCol(headers,['Pile Group','PileGroup','Pile Group Name'],1);
+                    const pile=findCol(headers,['Pile Numbering','Pile No.','Pile No','Pile Number'],2);
+                    const pen=findCol(headers,['Pile Penetration (m)','Pile Penetration','Penetration'],3);
+                    const size=findCol(headers,['Size (mm)','Size'],4);
+                    const test=findCol(headers,[type+' Test',type],5);
+                    for(let r=1;r<rows.length;r++) {
+                        const row=rows[r]||[];
+                        const pileGroup=String(row[group]??'').trim();
+                        if(!pileGroup) continue;
+                        parsed.push({
+                            __otherTest:true,
+                            recordType:'PDA_PIT',
+                            testType:type,
+                            slNo:String(row[sl]??'').trim() || (parsed.filter(x=>x.testType===type).length+1),
+                            pileGroup,
+                            pileNumber:String(row[pile]??'').trim(),
+                            pilePenetration:String(row[pen]??'').trim(),
+                            size:String(row[size]??'').trim(),
+                            test:String(row[test]??type).trim() || type,
+                            status:'Pending',
+                            inputDate:Date.now(),
+                            inputBy:currentUser?.uid||'',
+                            inputByName:currentProfileName||'User',
+                            source:file.name,
+                            __otherTest:true,
+                            recordType:'PDA_PIT'
+                        });
+                    }
+                }
+                if(!parsed.length) throw new Error('No PDA or PIT rows found.');
+                const f=otherFns();
+                const snap=await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
+                const existing=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.__otherTest === true || String(x.recordType||'').toUpperCase()==='PDA_PIT');
+                const map=new Map(existing.map(x=>[String(x.testType||x.test||'')+'|'+String(x.pileGroup||'')+'|'+String(x.pileNumber||''),x]));
+                parsed.forEach(x=>map.set(String(x.testType)+'|'+String(x.pileGroup)+'|'+String(x.pileNumber),x));
+                const batch=f.writeBatch(otherDb());
+                Array.from(map.values()).forEach(x=>{
+                    const ref=x.id?f.doc(otherDb(),OTHER_COLLECTION,x.id):f.doc(f.collection(otherDb(),OTHER_COLLECTION));
+                    const copy={...x}; delete copy.id;
+                    batch.set(ref,copy,{merge:true});
+                });
+                await batch.commit();
+                await loadOtherTests();
+                event.target.value='';
+                alert('PDA/PIT Excel import complete.\n\nPDA: '+otherTestList.filter(x=>(x.testType||x.test)==='PDA').length+'\nPIT: '+otherTestList.filter(x=>(x.testType||x.test)==='PIT').length);
+            } catch(err) {
+                event.target.value='';
+                console.error(err);
+                alert('PDA/PIT Excel import failed: '+(err.message||err));
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    // Keep Others counts synchronized with login/logout and role changes.
+    function bindOtherAuth() {
+        if(!window.firebaseAuth || !window.firebaseFns) return;
+        window.firebaseFns.onAuthStateChanged(window.firebaseAuth, function(user) {
+            if(user) setTimeout(loadOtherTests, 100);
+            else {
+                otherTestList=[];
+                updateOtherCounts();
+                closeOtherTestList();
+            }
+        });
+    }
+    window.addEventListener('firebase-ready',bindOtherAuth);
+    if(window.firebaseReady) bindOtherAuth();
+
+    // Expose a small refresh hook for existing role UI.
+    const oldApplyRoleUI=window.applyRoleUI;
+    if(typeof oldApplyRoleUI==='function') {
+        window.applyRoleUI=function() {
+            oldApplyRoleUI();
+            const btn=document.getElementById('settingsOthersBtn');
+            if(btn) btn.classList.remove('hidden-by-role'); // Others is visible to all users.
+            document.querySelectorAll('.others-import-btn').forEach(el=>el.classList.toggle('hidden-by-role',!otherAdmin()));
+            if(otherListType) renderOtherList(otherListType);
+        };
+    }
+})();
+</script>
+
+</body></html>
