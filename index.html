@@ -1113,6 +1113,26 @@
 }
 </style>
 
+
+
+<style id="pda-pit-clean-action-search">
+/* PDA / PIT: clean compact search + one Action button */
+#othersListBox .others-list-head{display:flex!important;align-items:center!important;gap:6px!important;flex-wrap:wrap!important;}
+#othersListBox .others-list-title{flex:0 0 auto!important;}
+#othersListBox .others-list-search{flex:1 1 150px!important;min-width:120px!important;margin:0!important;padding:6px 8px!important;height:30px!important;border:1px solid #cfd6df!important;border-radius:7px!important;background:var(--input-bg)!important;color:var(--input-text)!important;font-size:10px!important;box-sizing:border-box!important;}
+#othersListBox .others-list-search:focus{outline:2px solid rgba(13,110,253,.15)!important;border-color:#0d6efd!important;}
+#othersListBox .others-close-list{flex:0 0 auto!important;}
+#othersListBox .others-table.admin-actions-table th:last-child,#othersListBox .others-table.admin-actions-table td:last-child{width:12%!important;min-width:58px!important;}
+#othersListBox .others-table.admin-actions-table .others-action{width:100%!important;}
+#othersListBox .others-table.admin-actions-table .others-action button{flex:1 1 auto!important;min-width:48px!important;max-width:64px!important;padding:5px 6px!important;border-radius:6px!important;font-size:9px!important;}
+.others-delete-modal{background:#dc3545!important;color:#fff!important;border:0!important;}
+.others-delete-modal:hover{background:#b02a37!important;}
+.others-modal-actions .others-delete-modal{margin-left:auto!important;}
+@media(max-width:600px){
+ #othersListBox .others-list-search{order:3!important;flex:1 1 100%!important;width:100%!important;height:29px!important;font-size:9px!important;}
+ #othersListBox .others-table.admin-actions-table th:last-child,#othersListBox .others-table.admin-actions-table td:last-child{width:13%!important;min-width:52px!important;}
+}
+</style>
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
@@ -2629,6 +2649,20 @@
 })();
 </script>
 
+<!-- PDA/PIT Detail View Modal -->
+<div id="othersDetailModal" class="others-modal" aria-hidden="true" onclick="if(event.target===this)closeOtherDetailModal()">
+  <div class="others-modal-card others-detail-card">
+    <div class="others-modal-head">
+      <strong id="othersDetailTitle">PDA Details</strong>
+      <button type="button" class="others-modal-close" onclick="closeOtherDetailModal()">Close</button>
+    </div>
+    <div id="othersDetailGrid" class="others-detail-grid"></div>
+    <div class="others-modal-actions">
+      <button type="button" class="others-cancel" onclick="closeOtherDetailModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- PDA/PIT Edit Modal -->
 <div id="othersEditModal" class="others-modal" aria-hidden="true">
   <div class="others-modal-card">
@@ -2648,12 +2682,33 @@
     </div>
     <div class="others-modal-actions">
       <button type="button" class="others-save" onclick="saveOtherEdit()">Save Changes</button>
+      <button type="button" class="others-delete-modal" onclick="deleteOtherTestFromEdit()">Delete</button>
       <button type="button" class="others-cancel" onclick="closeOtherEditModal()">Cancel</button>
     </div>
     <div id="othersEditMessage" class="auth-message"></div>
   </div>
 </div>
 
+
+
+<style id="pda-pit-detail-edit-icon">
+/* PDA/PIT: tiny edit icon + clickable rows */
+#othersListBox .others-table tbody tr{cursor:pointer!important;transition:background .12s ease!important;}
+#othersListBox .others-table tbody tr:hover td{background:rgba(13,110,253,.08)!important;}
+#othersListBox .others-action{pointer-events:none!important;}
+#othersListBox .others-action .others-edit{pointer-events:auto!important;flex:0 0 28px!important;width:28px!important;height:24px!important;min-width:28px!important;max-width:28px!important;padding:0!important;border-radius:6px!important;font-size:0!important;line-height:1!important;}
+#othersListBox .others-action .others-edit::before{content:'✎';font-size:14px!important;line-height:1!important;font-weight:900!important;}
+.others-detail-card{width:min(520px,96vw)!important;}
+.others-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px;}
+.others-detail-item{padding:8px 9px;border:1px solid var(--border-color,#d9dee5);border-radius:7px;background:rgba(127,127,127,.045);}
+.others-detail-label{display:block;font-size:8px;font-weight:800;opacity:.65;text-transform:uppercase;margin-bottom:3px;}
+.others-detail-value{display:block;font-size:12px;font-weight:900;word-break:break-word;}
+@media(max-width:600px){
+ .others-detail-grid{grid-template-columns:1fr 1fr;gap:5px;}
+ .others-detail-item{padding:7px;}
+ .others-detail-value{font-size:11px;}
+}
+</style>
 
 <script id="others-pda-pit-management">
 (function(){
@@ -2749,23 +2804,33 @@
         renderOtherList(type);
     };
 
-    function renderOtherList(type) {
+    function renderOtherList(type, searchTerm='') {
         const box=document.getElementById('othersListBox');
         if(!box) return;
-        const items=otherTestList
+        const allItems=otherTestList
           .filter(x=>String(x.testType||x.test||'').toUpperCase()===type)
           .sort((a,b)=>Number(a.slNo||0)-Number(b.slNo||0));
+        const q=String(searchTerm||'').trim().toLowerCase();
+        const items=q ? allItems.filter(x => [
+            x.slNo,x.pileGroup,x.pileNumber,x.pilePenetration,
+            x.size,x.testType||x.test,x.status
+        ].some(v=>String(v??'').toLowerCase().includes(q))) : allItems;
         const admin=otherAdmin();
         box.innerHTML=`
           <div class="others-list-head">
-            <div class="others-list-title">${type} Test List (${items.length})</div>
-            <button type="button" class="others-close-list" onclick="closeOtherTestList()">Close List</button>
+            <div class="others-list-title">${type} Test List (${items.length}${q ? ' / '+allItems.length : ''})</div>
+            <input class="others-list-search" id="othersListSearch" type="search"
+              value="${escOther(searchTerm)}"
+              placeholder="Search ${type} / Pile Group / Pile No..."
+              autocomplete="off"
+              oninput="filterOtherTestList(this.value)">
+            <button type="button" class="others-close-list" onclick="closeOtherTestList()">Close</button>
           </div>
           ${items.length ? `<div class="others-table-wrap"><table class="others-table${admin?" admin-actions-table":""}">
             <thead><tr>
-              <th>SL No.</th><th>Pile Group</th><th>Pile No.</th><th>Pile Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}
+              <th>SL</th><th>Pile Group</th><th>Pile No.</th><th>Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}
             </tr></thead>
-            <tbody>${items.map(x=>`<tr>
+            <tbody>${items.map(x=>`<tr onclick="viewOtherTest('${jsOther(x.id)}')" title="Click to view details">
               <td>${escOther(x.slNo)}</td>
               <td><b>${escOther(x.pileGroup)}</b></td>
               <td>${escOther(x.pileNumber)}</td>
@@ -2774,18 +2839,57 @@
               <td><b>${escOther(x.testType||x.test)}</b></td>
               <td><b class="other-status-badge ${String(x.status||'Pending').toLowerCase()}">${escOther(x.status||'Pending')}</b></td>
               ${admin?`<td><div class="others-action">
-                <button class="others-edit" onclick="editOtherTest('${jsOther(x.id)}')">Edit</button>
-                <button class="others-delete" onclick="deleteOtherTest('${jsOther(x.id)}')">Delete</button>
+                <button type="button" class="others-edit" aria-label="Edit" title="Edit" onclick="event.stopPropagation();editOtherTest('${jsOther(x.id)}')"></button>
               </div></td>`:''}
             </tr>`).join('')}</tbody>
-          </table></div>` : '<div class="others-empty">No '+type+' data available.</div>'}
+          </table></div>` : '<div class="others-empty">No '+type+' data found.</div>'}
         `;
     }
+
+    window.filterOtherTestList = function(value) {
+        if(!otherListType) return;
+        renderOtherList(otherListType, value);
+        const input=document.getElementById('othersListSearch');
+        if(input) {
+            input.focus();
+            try { input.setSelectionRange(String(value||'').length, String(value||'').length); } catch(e) {}
+        }
+    };
 
     window.closeOtherTestList = function() {
         otherListType='';
         const box=document.getElementById('othersListBox');
         if(box) box.innerHTML='';
+    };
+
+    window.viewOtherTest = function(id) {
+        const x=otherTestList.find(v=>v.id===id);
+        if(!x) return;
+        const modal=document.getElementById('othersDetailModal');
+        if(!modal) return;
+        const type=String(x.testType||x.test||'PDA/PIT').toUpperCase();
+        const fields=[
+          ['SL No.',x.slNo],
+          ['Test',type],
+          ['Pile Group',x.pileGroup],
+          ['Pile No.',x.pileNumber],
+          ['Pile Penetration (m)',x.pilePenetration],
+          ['Size (mm)',x.size],
+          ['Status',x.status||'Pending']
+        ];
+        document.getElementById('othersDetailTitle').textContent=type+' Details';
+        document.getElementById('othersDetailGrid').innerHTML=fields.map(([k,v])=>`
+          <div class="others-detail-item">
+            <span class="others-detail-label">${escOther(k)}</span>
+            <span class="others-detail-value">${escOther(v??'-')}</span>
+          </div>`).join('');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+    };
+
+    window.closeOtherDetailModal = function() {
+        const modal=document.getElementById('othersDetailModal');
+        if(modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
     };
 
     window.editOtherTest = function(id) {
@@ -2808,6 +2912,12 @@
     window.closeOtherEditModal = function() {
         const m=document.getElementById('othersEditModal');
         if(m) m.classList.remove('open');
+    };
+
+    window.deleteOtherTestFromEdit = async function() {
+        const id=document.getElementById('otherEditId')?.value;
+        if(!id) return;
+        await window.deleteOtherTest(id, true);
     };
 
     window.saveOtherEdit = async function() {
@@ -2842,7 +2952,7 @@
         }
     };
 
-    window.deleteOtherTest = async function(id) {
+    window.deleteOtherTest = async function(id, fromEdit=false) {
         if(!otherAdmin()) return alert('Only Admin can delete PDA/PIT data.');
         const x=otherTestList.find(v=>v.id===id);
         if(!x) return;
@@ -2853,6 +2963,7 @@
             await f.deleteDoc(f.doc(otherDb(),OTHER_COLLECTION,id));
             otherTestList=otherTestList.filter(v=>v.id!==id);
             updateOtherCounts();
+            if(fromEdit) closeOtherEditModal();
             renderOtherList(otherListType);
         } catch(e) {
             alert('Delete failed: '+(e.message||e));
