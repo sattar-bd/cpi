@@ -299,6 +299,12 @@
         font-size:12px;
     }
 }
+/* Search page close button — search result only */
+.search-result-card{position:relative !important;}
+.search-result-close{position:absolute !important;top:8px !important;right:8px !important;width:32px !important;height:32px !important;min-width:32px !important;margin:0 !important;padding:0 !important;border:0 !important;border-radius:50% !important;background:#e53935 !important;color:#fff !important;display:flex !important;align-items:center !important;justify-content:center !important;font-size:22px !important;font-weight:900 !important;line-height:1 !important;cursor:pointer !important;z-index:20 !important;box-shadow:0 2px 7px rgba(0,0,0,.20) !important;}
+.search-result-close:active{transform:scale(.92) !important;}
+@media(max-width:600px){.search-result-close{width:29px !important;height:29px !important;min-width:29px !important;font-size:20px !important;top:6px !important;right:6px !important;}}
+
 .search-result-title {
             font-size: 25px;
             font-weight: 900;
@@ -2498,6 +2504,7 @@
             ];
             card.innerHTML = `
                 <div class="search-result-card">
+                    <button type="button" class="search-result-close" onclick="closeSearchPage()" aria-label="Close search result" title="Close">&times;</button>
                     <div class="search-result-title">Search Result &mdash; ${escapeHtml(item.serial)}</div>
                     <div class="input-date-badge">&#128197; <span>Input Date:</span> <b>${escapeHtml(formatInputDate(item.inputDate))}</b><span>&bull;</span><span>Input By:</span> <b>${escapeHtml(item.inputByName || 'Unknown')}</b></div>
                     <div class="search-result-grid">
@@ -2533,6 +2540,18 @@
                         <button class="icon-edit-btn" onclick="editData('${escapeJs(item.id)}')">&#9998; &nbsp;Edit</button>
                     </div>
                 </div>`;
+        }
+
+        function closeSearchPage(){
+            const input = document.getElementById('searchInput');
+            const select = document.getElementById('serialSelect');
+            const card = document.getElementById('searchResultCard');
+            const result = document.getElementById('resultContainer');
+            if (input) input.value = '';
+            if (select) select.value = '';
+            if (card) { card.style.display = 'none'; card.innerHTML = ''; }
+            if (result) result.style.display = 'none';
+            window.scrollTo(0, 0);
         }
 
         function toggleViewAll(btn){
