@@ -624,6 +624,7 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
         import {
             getAuth, onAuthStateChanged, signInWithEmailAndPassword,
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
@@ -652,6 +653,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const functions = getFunctions(app);
         // Firestore offline persistence: writes made while offline are queued
         // locally and synchronized automatically when the connection returns.
         let db;
@@ -669,7 +671,9 @@
         window.firebaseApp = app;
         window.firebaseAuth = auth;
         window.firebaseDB = db;
+        window.firebaseFunctions = functions;
         window.firebaseFns = {
+            httpsCallable,
             onAuthStateChanged, signInWithEmailAndPassword,
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
             updateProfile, updatePassword, reauthenticateWithCredential,
@@ -718,6 +722,52 @@
 }
 </style>
 
+
+
+<style id="premium-home-menu-style">
+.home-header-premium{
+    position:relative !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+}
+.home-header-premium .home-menu-btn{
+    flex:0 0 42px !important;
+    width:42px !important;
+    height:42px !important;
+    margin:0 !important;
+    padding:9px !important;
+    border:1px solid rgba(255,255,255,.20) !important;
+    border-radius:12px !important;
+    background:rgba(0,0,0,.22) !important;
+    color:#fff !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+    cursor:pointer !important;
+    box-shadow:0 4px 12px rgba(0,0,0,.14) !important;
+    transition:transform .18s ease,background .18s ease,box-shadow .18s ease !important;
+}
+.home-header-premium .home-menu-btn svg{
+    width:24px !important; height:24px !important; fill:none !important;
+    stroke:currentColor !important; stroke-width:2.4 !important;
+    stroke-linecap:round !important;
+}
+.home-header-premium .home-menu-btn:active{transform:scale(.94) !important;}
+.home-header-premium .home-menu-btn:hover{background:rgba(0,0,0,.30) !important;box-shadow:0 6px 16px rgba(0,0,0,.20) !important;}
+.home-header-premium .logo-title-box{flex:1 1 auto !important;min-width:0 !important;}
+.home-header-premium .logo-title-box h2{white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;}
+.home-header-premium .top-actions{flex:0 0 auto !important;}
+.home-header-premium .top-actions #settingsBtn{display:none !important;}
+@media(max-width:520px){
+    .home-header-premium{padding:8px 9px !important;gap:7px !important;}
+    .home-header-premium .home-menu-btn{width:40px !important;height:40px !important;flex-basis:40px !important;border-radius:11px !important;}
+    .home-header-premium .app-logo{width:34px !important;height:34px !important;}
+    .home-header-premium .logo-title-box{gap:6px !important;}
+    .home-header-premium .logo-title-box h2{font-size:18px !important;}
+}
+</style>
 
 <style id="hide-old-login-bar">
 .user-bar {
@@ -1133,12 +1183,61 @@
  #othersListBox .others-table.admin-actions-table th:last-child,#othersListBox .others-table.admin-actions-table td:last-child{width:13%!important;min-width:52px!important;}
 }
 </style>
+
+<style id="pda-pit-action-text-premium">
+/* Final PDA/PIT table polish: smaller action box, brighter/larger text */
+#othersListBox .others-table.admin-actions-table{min-width:680px!important;}
+#othersListBox .others-table.admin-actions-table th,
+#othersListBox .others-table.admin-actions-table td{
+  font-size:10.5px!important;
+  font-weight:600!important;
+  padding:5px 4px!important;
+  line-height:1.15!important;
+}
+#othersListBox .others-table.admin-actions-table th{font-weight:900!important;font-size:10px!important;}
+#othersListBox .others-table.admin-actions-table td:nth-child(2) b{font-size:10.5px!important;font-weight:900!important;}
+#othersListBox .others-table.admin-actions-table .others-action{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:0!important;width:100%!important;
+}
+#othersListBox .others-table.admin-actions-table .others-action .others-edit{
+  flex:0 0 38px!important;
+  width:38px!important;min-width:38px!important;max-width:38px!important;
+  height:30px!important;min-height:30px!important;
+  padding:0!important;margin:0 auto!important;
+  border-radius:6px!important;
+  background:#ffbf00!important;color:#111!important;
+  box-shadow:0 1px 3px rgba(0,0,0,.15)!important;
+}
+#othersListBox .others-table.admin-actions-table .others-action .others-edit::before{
+  font-size:17px!important;
+}
+@media(max-width:600px){
+  #othersListBox .others-table.admin-actions-table{min-width:680px!important;}
+  #othersListBox .others-table.admin-actions-table th,
+  #othersListBox .others-table.admin-actions-table td{
+    font-size:9.5px!important;
+    padding:4px 3px!important;
+    line-height:1.12!important;
+  }
+  #othersListBox .others-table.admin-actions-table th{font-size:9.5px!important;}
+  #othersListBox .others-table.admin-actions-table td:nth-child(2) b{font-size:10px!important;}
+  #othersListBox .others-table.admin-actions-table .others-action .others-edit{
+    flex-basis:36px!important;width:36px!important;min-width:36px!important;max-width:36px!important;
+    height:28px!important;min-height:28px!important;border-radius:5px!important;
+  }
+  #othersListBox .others-table.admin-actions-table .others-action .others-edit::before{font-size:16px!important;}
+}
+</style>
 </head>
 <body id="pageBody">
     <!-- Firebase Auth + Firestore enabled. Configure firebaseConfig above. -->
 
     <div class="container">
-        <div class="header-flex">
+        <div class="header-flex home-header-premium">
+            <button type="button" class="home-menu-btn" onclick="toggleSettings()" aria-label="Open menu" title="Menu">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
             <div class="logo-title-box">
                 <div class="app-logo">
                     <svg viewBox="0 0 24 24">
@@ -1182,20 +1281,19 @@
             <div class="user-bar"><span id="currentUserName"></span><span id="currentUserEmail"></span><span id="roleBadge" class="role-badge"></span></div>
 
             <div id="settingsPanel" class="settings-panel">
-                <div class="settings-head"><strong>Settings & Management</strong><button class="settings-close" onclick="toggleSettings(false)" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-                <div class="settings-user">
-                    <div class="settings-user-name">My Profile</div>
-                    <div class="settings-user-email">Manage your profile name and password</div>
-                    <div class="profile-others-row">
-                        <button type="button" class="profile-open-btn" onclick="toggleProfileBox()">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"></path></svg>
-                            <span>Profile Settings</span>
-                        </button>
-                        <button id="settingsOthersBtn" type="button" class="settings-action settings-others" title="Others - PDA / PIT" aria-label="Others - PDA / PIT" onclick="toggleOthersPanel()">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"></path><circle cx="12" cy="12" r="9"></circle></svg>
-                            <span class="settings-action-label">Others</span>
-                        </button>
+                <div class="settings-head premium-settings-head">
+                    <button type="button" class="settings-menu-btn" aria-label="Settings menu" title="Menu" onclick="settingsMenuAction()">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="settings-head-title"><strong>Settings</strong><span>Manage your workspace</span></div>
+                    <button class="settings-close" onclick="toggleSettings(false)" aria-label="Close" title="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                </div>
+                <div class="settings-user premium-profile-card">
+                    <div class="premium-profile-avatar">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"></path></svg>
                     </div>
+                    <div class="premium-profile-copy"><div class="settings-user-name">My Profile</div><div class="settings-user-email">Manage your name and password securely</div></div>
+                    <button type="button" class="profile-open-btn" onclick="toggleProfileBox()"><span>Open</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
                 </div>
                 <div id="profileBox" class="profile-box">
                     <div class="profile-title">User Profile</div>
@@ -1213,31 +1311,29 @@
                     </div>
                     <div id="profileMessage" class="auth-message"></div>
                 </div>
-                <div class="settings-actions">
-                    <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" title="New Input" aria-label="New Input" onclick="toggleSettings(false);openAddForm()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                        <span class="settings-action-label">New Input</span>
-                    </button>
-                    <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="document.getElementById('excelInput').click()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v5h4M9 12h6M9 16h6"/></svg>
-                        <span class="settings-action-label">Import Excel</span>
-                    </button>
-                    <button id="settingsResetBtn" class="settings-action settings-reset hidden-by-role" title="Reset Data" aria-label="Reset Data" onclick="resetAllData()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v8M12 10v8M16 10v8M6 7l1 14h10l1-14"/></svg>
-                        <span class="settings-action-label">Reset Data</span>
-                    </button>
-                    <button class="settings-action settings-dark" onclick="toggleTheme()" id="themeToggleBtn" title="Dark Mode" aria-label="Dark Mode">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg>
-                        <span class="settings-action-label">Dark Mode</span>
-                    </button>
-                    <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" title="User List" aria-label="User List" onclick="toggleAdminPanel()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg>
-                        <span class="settings-action-label">User List</span>
-                    </button>
-                    <button class="settings-action settings-logout" title="Logout" aria-label="Logout" onclick="logoutFirebase()">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h9"/></svg>
-                        <span class="settings-action-label">Logout</span>
-                    </button>
+                <div class="settings-section-card settings-main-actions">
+                    <div class="settings-section-title"><div><b>Data Management</b><span>Input, import and data control</span></div><span class="settings-section-icon">▦</span></div>
+                    <div class="settings-action-grid">
+                        <button id="settingsInputBtn" class="settings-action settings-input hidden-by-role" title="New Input" aria-label="New Input" onclick="toggleSettings(false);openAddForm()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="settings-action-label">New Input</span><small>Add new record</small></button>
+                        <button id="settingsExcelBtn" class="settings-action settings-excel hidden-by-role" title="Import Excel" aria-label="Import Excel" onclick="document.getElementById('excelInput').click()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v5h4M9 12h6M9 16h6"/></svg><span class="settings-action-label">Import Excel</span><small>Import records</small></button>
+                        <button id="settingsResetBtn" class="settings-action settings-reset hidden-by-role" title="Reset Data" aria-label="Reset Data" onclick="resetAllData()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3M8 10v8M12 10v8M16 10v8M6 7l1 14h10l1-14"/></svg><span class="settings-action-label">Reset Data</span><small>Clear all data</small></button>
+                    </div>
+                </div>
+                <div class="settings-section-card">
+                    <div class="settings-section-title"><div><b>Preferences</b><span>Customize your experience</span></div><span class="settings-section-icon">⚙</span></div>
+                    <div class="settings-action-grid settings-preference-grid">
+                        <button class="settings-action settings-dark" onclick="toggleTheme()" id="themeToggleBtn" title="Dark Mode" aria-label="Dark Mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/></svg><span class="settings-action-label">Dark Mode</span><small>Appearance</small></button>
+                        <button id="settingsOthersBtn" type="button" class="settings-action settings-others" title="Others - PDA / PIT" aria-label="Others - PDA / PIT" onclick="toggleOthersPanel()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"></path><circle cx="12" cy="12" r="9"></circle></svg><span class="settings-action-label">Others</span><small>PDA &amp; PIT</small></button>
+                    </div>
+                </div>
+                <div class="settings-section-card settings-admin-section hidden-by-role">
+                    <div class="settings-section-title"><div><b>Administration</b><span>Users and access control</span></div><span class="settings-section-icon">♟</span></div>
+                    <div class="settings-action-grid settings-admin-actions">
+                        <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" title="User List" aria-label="User List" onclick="toggleAdminPanel()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg><span class="settings-action-label">User List</span><small>Manage users</small></button>
+                    </div>
+                </div>
+                <div class="settings-section-card settings-danger-section">
+                    <div class="settings-action-grid"><button class="settings-action settings-logout" title="Logout" aria-label="Logout" onclick="logoutFirebase()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M9 12h9"/></svg><span class="settings-action-label">Logout</span><small>Sign out safely</small></button></div>
                 </div>
                 <input type="file" id="excelInput" accept="*/*" style="display:none" onchange="importFromExcel(event)">
                 <div id="settingsAdminBox" class="settings-admin-box">
@@ -1723,9 +1819,45 @@
             const panel = document.getElementById('settingsPanel');
             const open = typeof force === 'boolean' ? force : !panel.classList.contains('open');
             panel.classList.toggle('open', open);
+            document.body.classList.toggle('settings-open', open);
             if (open && currentUser) {
+                resetSettingsSubpage();
                 toggleProfileBox(false);
+                closeAdminPage();
             }
+            if (!open) resetSettingsSubpage();
+        }
+
+        function resetSettingsSubpage() {
+            const panel = document.getElementById('settingsPanel');
+            const others = document.getElementById('othersPanel');
+            const box = document.getElementById('othersListBox');
+            const title = panel ? panel.querySelector('.settings-head-title strong') : null;
+            const sub = panel ? panel.querySelector('.settings-head-title span') : null;
+            const menu = panel ? panel.querySelector('.settings-menu-btn') : null;
+            if (panel) panel.classList.remove('others-page-open');
+            if (others) others.classList.remove('open');
+            if (box) box.innerHTML = '';
+            if (typeof otherListType !== 'undefined') otherListType = '';
+            if (title) title.textContent = 'Settings';
+            if (sub) sub.textContent = 'Manage your workspace';
+            if (menu) {
+                menu.setAttribute('aria-label','Settings menu');
+                menu.setAttribute('title','Menu');
+                menu.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+            }
+        }
+
+        function settingsMenuAction() {
+            const panel = document.getElementById('settingsPanel');
+            if (panel && panel.classList.contains('others-page-open')) {
+                resetSettingsSubpage();
+                return;
+            }
+        }
+
+        function backFromOthers() {
+            resetSettingsSubpage();
         }
 
         async function toggleAdminPanel() {
@@ -1827,6 +1959,7 @@
                             <div><span class="user-role">${role.toUpperCase()}</span></div>
                             <div class="user-actions">
                                 <button class="user-reset" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>
+                                    ${!isSuper ? `<button class="user-password" onclick="openAdminPassword('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Password</button>` : ''}
                                 ${isSuper ? `
                                     <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(u.email)}','${escapeJs(u.name || u.displayName || '')}')">Edit Name</button>
                                     <span style="font-size:10px;font-weight:bold;">Super Admin</span>
@@ -1846,6 +1979,54 @@
 
         function escapeJs(v) {
             return String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
+        }
+
+        function openAdminPassword(uid, email) {
+            if (!roleIsAdmin()) return alert('Only Admin can change user passwords.');
+            if (!uid || !email) return alert('User information is missing.');
+            if (String(email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+                return alert('Super Admin password cannot be changed from this panel.');
+            }
+            const modal = document.getElementById('adminPasswordModal');
+            if (!modal) return;
+            document.getElementById('adminPasswordUid').value = uid;
+            document.getElementById('adminPasswordEmail').textContent = email;
+            document.getElementById('adminNewPassword').value = '';
+            document.getElementById('adminConfirmPassword').value = '';
+            document.getElementById('adminPasswordMessage').textContent = '';
+            modal.classList.add('open');
+            setTimeout(() => document.getElementById('adminNewPassword')?.focus(), 50);
+        }
+
+        function closeAdminPassword() {
+            document.getElementById('adminPasswordModal')?.classList.remove('open');
+        }
+
+        async function saveAdminPassword() {
+            if (!roleIsAdmin()) return alert('Only Admin can change user passwords.');
+            const uid = document.getElementById('adminPasswordUid')?.value || '';
+            const email = document.getElementById('adminPasswordEmail')?.textContent || '';
+            const password = document.getElementById('adminNewPassword')?.value || '';
+            const confirmPassword = document.getElementById('adminConfirmPassword')?.value || '';
+            const msg = document.getElementById('adminPasswordMessage');
+            if (!uid || !email) return;
+            if (password.length < 6) { if (msg) msg.textContent = 'Password must be at least 6 characters.'; return; }
+            if (password !== confirmPassword) { if (msg) msg.textContent = 'Passwords do not match.'; return; }
+            if (!confirm(`Change password for ${email}?`)) return;
+            const btn = document.getElementById('adminPasswordSaveBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+            if (msg) msg.textContent = '';
+            try {
+                const call = window.firebaseFns.httpsCallable(window.firebaseFunctions, 'adminChangeUserPassword');
+                await call({ uid, password });
+                if (msg) msg.textContent = 'Password changed successfully.';
+                setTimeout(closeAdminPassword, 700);
+            } catch (err) {
+                console.error(err);
+                if (msg) msg.textContent = (err?.message || 'Password change failed.').replace('FirebaseError: ', '');
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = 'Save Password'; }
+            }
         }
 
         async function adminResetUser(email) {
@@ -2786,14 +2967,28 @@
     }
 
     window.toggleOthersPanel = function() {
+        const settings=document.getElementById('settingsPanel');
         const panel=document.getElementById('othersPanel');
-        if(!panel) return;
-        const open=panel.classList.toggle('open');
-        if(open) {
-            const adminBox=document.getElementById('settingsAdminBox');
-            if(adminBox) adminBox.classList.remove('open');
-            loadOtherTests();
+        if(!panel || !settings) return;
+        const isOpen=settings.classList.contains('others-page-open');
+        if(isOpen) { backFromOthers(); return; }
+        settings.classList.add('others-page-open');
+        panel.classList.add('open');
+        const adminBox=document.getElementById('settingsAdminBox');
+        if(adminBox) adminBox.classList.remove('open');
+        const profile=document.getElementById('profileBox');
+        if(profile) profile.classList.remove('open');
+        const title=settings.querySelector('.settings-head-title strong');
+        const sub=settings.querySelector('.settings-head-title span');
+        const menu=settings.querySelector('.settings-menu-btn');
+        if(title) title.textContent='Others';
+        if(sub) sub.textContent='PDA & PIT Test Schedule';
+        if(menu) {
+            menu.setAttribute('aria-label','Back to Settings');
+            menu.setAttribute('title','Back');
+            menu.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>';
         }
+        loadOtherTests();
     };
 
     window.showOtherTestList = async function(type) {
@@ -3091,4 +3286,298 @@
 })();
 </script>
 
+
+<style id="premium-settings-v2">
+/* Premium Settings UI — functionality unchanged */
+.premium-settings-head{position:relative;display:flex!important;align-items:center!important;gap:10px!important;padding:11px 12px!important;background:linear-gradient(135deg,rgba(0,123,255,.10),rgba(111,66,193,.08));}
+.settings-menu-btn{width:38px!important;height:38px!important;flex:0 0 38px!important;margin:0!important;padding:8px!important;border:1px solid var(--border-color)!important;border-radius:11px!important;background:var(--container-bg)!important;color:var(--text-color)!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 3px 10px rgba(0,0,0,.08)!important;cursor:pointer!important;}
+.settings-menu-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;}
+.settings-head-title{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+.settings-head-title strong{font-size:17px!important;line-height:1.1;}
+.settings-head-title span{font-size:9px;opacity:.62;font-weight:600;}
+.premium-settings-head .settings-close{flex:0 0 34px!important;margin:0!important;border-radius:10px!important;}
+.premium-profile-card{display:flex!important;align-items:center!important;gap:10px!important;padding:12px!important;background:linear-gradient(135deg,rgba(0,123,255,.08),rgba(25,135,84,.06))!important;border-bottom:0!important;}
+.premium-profile-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:13px;background:#0878ff;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 12px rgba(8,120,255,.22);}
+.premium-profile-avatar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;}
+.premium-profile-copy{min-width:0;flex:1;}
+.premium-profile-card .settings-user-email{font-size:9px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.premium-profile-card .profile-open-btn{width:auto!important;flex:0 0 auto!important;margin:0!important;padding:7px 9px!important;border-radius:9px!important;font-size:10px!important;display:flex!important;align-items:center!important;gap:3px!important;}
+.premium-profile-card .profile-open-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.settings-section-card{margin:8px 10px;border:1px solid var(--border-color);border-radius:13px;background:var(--container-bg);box-shadow:0 3px 12px rgba(0,0,0,.06);overflow:hidden;}
+.settings-section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px 8px;border-bottom:1px solid var(--border-color);}
+.settings-section-title div{display:flex;flex-direction:column;gap:1px;}
+.settings-section-title b{font-size:12px;line-height:1.1;}
+.settings-section-title span{font-size:8px;opacity:.58;font-weight:600;}
+.settings-section-icon{font-size:16px!important;opacity:.65!important;}
+.settings-action-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;padding:9px!important;}
+.settings-action-grid .settings-action{position:relative;width:100%!important;min-height:64px!important;height:auto!important;margin:0!important;padding:9px!important;border:1px solid var(--border-color)!important;border-radius:11px!important;background:rgba(127,127,127,.035)!important;box-shadow:none!important;display:grid!important;grid-template-columns:32px 1fr!important;grid-template-rows:auto auto!important;column-gap:8px!important;align-items:center!important;text-align:left!important;font-size:inherit!important;line-height:1.1!important;cursor:pointer!important;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease!important;}
+.settings-action-grid .settings-action svg{grid-row:1/3;width:28px!important;height:28px!important;flex:0 0 28px!important;padding:6px;border-radius:8px;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important;}
+.settings-action-grid .settings-action-label{display:block!important;color:var(--text-color)!important;font-size:11px!important;font-weight:850!important;max-width:none!important;text-align:left!important;white-space:normal!important;}
+.settings-action-grid .settings-action small{display:block;font-size:8px;color:var(--text-color);opacity:.55;font-weight:600;}
+.settings-action-grid .settings-action:hover,.settings-action-grid .settings-action:focus{transform:translateY(-1px)!important;box-shadow:0 5px 14px rgba(0,0,0,.08)!important;}
+.settings-input svg{background:#e9f3ff}.settings-input{color:#0878ff!important}.settings-excel svg{background:#e9f9f0}.settings-excel{color:#10a957!important}.settings-reset svg{background:#fff0f2}.settings-reset{color:#e51e3d!important}.settings-dark svg{background:#fff8e5}.settings-dark{color:#d99800!important}.settings-users svg{background:#f3ecff}.settings-users{color:#7441d9!important}.settings-logout svg{background:#fff0f4}.settings-logout{color:#e62450!important}.settings-others svg{background:#eaf7ff}.settings-others{color:#0878c9!important;}
+.settings-preference-grid{grid-template-columns:1fr 1fr!important}.settings-admin-actions{grid-template-columns:1fr!important}.settings-danger-section{border-color:#ffd1d9!important;background:rgba(255,240,244,.35)!important;margin-bottom:10px;}
+.settings-danger-section .settings-action{border-color:#ffcbd5!important;background:#fff7f9!important;}
+@media(max-width:600px){.settings-section-card{margin:7px 8px;border-radius:12px}.settings-action-grid{gap:6px!important;padding:8px!important}.settings-action-grid .settings-action{min-height:60px!important;padding:8px!important;grid-template-columns:29px 1fr!important;column-gap:7px!important}.settings-action-grid .settings-action svg{width:26px!important;height:26px!important}.settings-action-grid .settings-action-label{font-size:10px!important}.settings-action-grid .settings-action small{font-size:7.5px}.premium-profile-avatar{width:40px;height:40px;flex-basis:40px}.premium-profile-card{padding:10px!important;}.settings-head-title strong{font-size:16px!important;}}
+</style>
+
+
+<style id="premium-settings-final">
+/* FINAL PREMIUM SETTINGS: full-screen menu, no home content visible behind it */
+body.settings-open{overflow:hidden !important;}
+#settingsPanel.settings-panel{
+    position:fixed !important;
+    inset:0 !important;
+    z-index:99999 !important;
+    width:100vw !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    margin:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:var(--bg-color,#f4f6f8) !important;
+    box-shadow:none !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    overscroll-behavior:contain !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding-bottom:max(14px,env(safe-area-inset-bottom)) !important;
+}
+#settingsPanel:not(.open){display:none !important;}
+#settingsPanel .premium-settings-head{
+    position:sticky !important; top:0 !important; z-index:20 !important;
+    min-height:70px !important; box-sizing:border-box !important;
+    padding:12px 14px !important;
+    border-bottom:1px solid var(--border-color) !important;
+    background:color-mix(in srgb,var(--container-bg,#fff) 94%,#007bff 6%) !important;
+    backdrop-filter:blur(16px) !important; -webkit-backdrop-filter:blur(16px) !important;
+}
+#settingsPanel .settings-menu-btn{
+    width:46px !important;height:46px !important;flex:0 0 46px !important;
+    border-radius:14px !important; background:var(--container-bg) !important;
+    border:1px solid var(--border-color) !important;
+    box-shadow:0 5px 16px rgba(0,0,0,.10) !important;
+}
+#settingsPanel .settings-menu-btn svg{width:23px !important;height:23px !important;}
+#settingsPanel .settings-head-title strong{font-size:20px !important;font-weight:900 !important;}
+#settingsPanel .settings-head-title span{font-size:11px !important;opacity:.62 !important;}
+#settingsPanel .settings-close{width:42px !important;height:42px !important;flex:0 0 42px !important;border-radius:13px !important;}
+#settingsPanel .premium-profile-card{
+    margin:10px 12px !important; border:1px solid var(--border-color) !important;
+    border-radius:18px !important; padding:14px !important;
+    background:linear-gradient(135deg,rgba(0,123,255,.12),rgba(25,135,84,.08)) !important;
+    box-shadow:0 6px 18px rgba(0,0,0,.07) !important;
+}
+#settingsPanel .premium-profile-avatar{width:50px !important;height:50px !important;flex-basis:50px !important;border-radius:15px !important;}
+#settingsPanel .premium-profile-avatar svg{width:28px !important;height:28px !important;}
+#settingsPanel .premium-profile-copy .settings-user-name{font-size:16px !important;font-weight:900 !important;}
+#settingsPanel .premium-profile-card .settings-user-email{font-size:10px !important;margin-top:3px !important;}
+#settingsPanel .profile-open-btn{min-height:38px !important;padding:8px 12px !important;border-radius:11px !important;font-size:11px !important;font-weight:800 !important;}
+#settingsPanel .settings-section-card{margin:10px 12px !important;border-radius:17px !important;box-shadow:0 5px 18px rgba(0,0,0,.06) !important;}
+#settingsPanel .settings-section-title{padding:13px 14px 11px !important;}
+#settingsPanel .settings-section-title b{font-size:14px !important;font-weight:900 !important;}
+#settingsPanel .settings-section-title span{font-size:9px !important;}
+#settingsPanel .settings-action-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:9px !important;padding:10px !important;}
+#settingsPanel .settings-action-grid .settings-action{
+    min-height:76px !important; padding:10px !important;
+    grid-template-columns:40px minmax(0,1fr) !important;
+    column-gap:10px !important; border-radius:14px !important;
+    box-sizing:border-box !important; overflow:hidden !important;
+}
+#settingsPanel .settings-action-grid .settings-action svg{
+    width:40px !important;height:40px !important;
+    padding:9px !important; box-sizing:border-box !important;
+    border-radius:12px !important; flex:none !important;
+}
+#settingsPanel .settings-action-grid .settings-action-label{font-size:12px !important;font-weight:900 !important;line-height:1.15 !important;}
+#settingsPanel .settings-action-grid .settings-action small{font-size:9px !important;line-height:1.2 !important;margin-top:3px !important;opacity:.58 !important;}
+#settingsPanel .settings-action-grid .settings-action:hover{transform:translateY(-2px) !important;}
+#settingsPanel .settings-danger-section{margin-top:12px !important;}
+#settingsPanel .settings-danger-section .settings-action-grid{grid-template-columns:1fr !important;}
+#settingsPanel .settings-danger-section .settings-action{min-height:62px !important;grid-template-columns:42px 1fr !important;}
+#settingsPanel .settings-danger-section .settings-action svg{width:42px !important;height:42px !important;}
+#settingsPanel .settings-admin-box,#settingsPanel .others-panel,#settingsPanel .profile-box{margin-left:12px !important;margin-right:12px !important;}
+@media(max-width:600px){
+    #settingsPanel .premium-settings-head{min-height:66px !important;padding:10px 11px !important;}
+    #settingsPanel .settings-menu-btn{width:44px !important;height:44px !important;flex-basis:44px !important;}
+    #settingsPanel .settings-close{width:40px !important;height:40px !important;flex-basis:40px !important;}
+    #settingsPanel .settings-section-card{margin:8px 10px !important;}
+    #settingsPanel .premium-profile-card{margin:9px 10px !important;}
+    #settingsPanel .settings-action-grid{gap:8px !important;padding:9px !important;}
+    #settingsPanel .settings-action-grid .settings-action{min-height:72px !important;grid-template-columns:38px minmax(0,1fr) !important;column-gap:9px !important;padding:9px !important;}
+    #settingsPanel .settings-action-grid .settings-action svg{width:38px !important;height:38px !important;padding:8px !important;}
+    #settingsPanel .settings-action-grid .settings-action-label{font-size:11px !important;}
+    #settingsPanel .settings-action-grid .settings-action small{font-size:8px !important;}
+}
+</style>
+
+<style id="others-settings-subpage-premium">
+/* Others opens as a real sub-page inside Settings. Home and Settings cards stay hidden. */
+#settingsPanel.others-page-open{
+  overflow-y:auto !important;
+}
+#settingsPanel.others-page-open > *:not(.premium-settings-head):not(#othersPanel){
+  display:none !important;
+}
+#settingsPanel.others-page-open #othersPanel{
+  display:block !important;
+  position:relative !important;
+  margin:0 !important;
+  padding:14px 12px 24px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:var(--bg-color,#f4f6f8) !important;
+  min-height:calc(100dvh - 66px) !important;
+  box-sizing:border-box !important;
+}
+#settingsPanel.others-page-open #othersPanel .others-head{
+  padding:14px !important;
+  margin:0 0 10px !important;
+  border:1px solid var(--border-color) !important;
+  border-radius:16px !important;
+  background:var(--container-bg,#fff) !important;
+  box-shadow:0 5px 18px rgba(0,0,0,.07) !important;
+}
+#settingsPanel.others-page-open #othersPanel .others-title{font-size:18px !important;font-weight:900 !important;}
+#settingsPanel.others-page-open #othersPanel .others-subtitle{font-size:10px !important;margin-top:3px !important;}
+#settingsPanel.others-page-open #othersPanel .others-buttons{gap:10px !important;margin-bottom:10px !important;}
+#settingsPanel.others-page-open #othersPanel .others-test-btn{
+  min-height:74px !important;
+  border-radius:15px !important;
+  padding:12px 14px !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.06) !important;
+}
+#settingsPanel.others-page-open #othersPanel .others-test-btn span{font-size:14px !important;font-weight:900 !important;}
+#settingsPanel.others-page-open #othersPanel .others-test-btn b{font-size:24px !important;}
+#settingsPanel.others-page-open #othersListBox .others-list-box{
+  margin-top:10px !important;
+  padding:12px !important;
+  border:1px solid var(--border-color) !important;
+  border-radius:15px !important;
+  background:var(--container-bg,#fff) !important;
+  box-shadow:0 5px 18px rgba(0,0,0,.06) !important;
+}
+#settingsPanel.others-page-open #othersListBox .others-list-head{padding:0 0 8px !important;}
+#settingsPanel.others-page-open #othersListBox .others-table-wrap{max-height:58vh !important;}
+@media(max-width:600px){
+  #settingsPanel.others-page-open #othersPanel{padding:10px 9px 20px !important;}
+  #settingsPanel.others-page-open #othersPanel .others-head{padding:12px !important;border-radius:14px !important;}
+  #settingsPanel.others-page-open #othersPanel .others-buttons{gap:7px !important;}
+  #settingsPanel.others-page-open #othersPanel .others-test-btn{min-height:62px !important;padding:9px 10px !important;border-radius:12px !important;}
+  #settingsPanel.others-page-open #othersPanel .others-test-btn span{font-size:12px !important;}
+  #settingsPanel.others-page-open #othersPanel .others-test-btn b{font-size:21px !important;}
+  #settingsPanel.others-page-open #othersListBox .others-list-box{padding:9px !important;border-radius:12px !important;}
+}
+</style>
+
+<style id="user-list-premium-fix">
+/* User List — dedicated premium sub-page */
+#settingsPanel.user-list-page-open{position:fixed!important;inset:0!important;z-index:9998!important;margin:0!important;border-radius:0!important;max-height:100vh!important;height:100vh!important;overflow-y:auto!important;background:var(--container-bg,#fff)!important;box-shadow:none!important;padding-bottom:20px!important;}
+#settingsPanel.user-list-page-open > .settings-user,
+#settingsPanel.user-list-page-open > .profile-box,
+#settingsPanel.user-list-page-open > .settings-section-card,
+#settingsPanel.user-list-page-open > #excelInput,
+#settingsPanel.user-list-page-open > #othersPanel{display:none!important;}
+#settingsPanel.user-list-page-open > .settings-admin-box{display:block!important;border:0!important;padding:12px!important;margin:0!important;background:transparent!important;}
+#settingsPanel.user-list-page-open .settings-admin-title{font-size:18px!important;margin:2px 0 10px!important;}
+#settingsPanel.user-list-page-open .settings-admin-list{border:0!important;padding:0!important;background:transparent!important;}
+#settingsPanel.user-list-page-open .settings-head-title strong{font-size:18px!important;}
+#settingsPanel.user-list-page-open .settings-head-title span{font-size:10px!important;}
+#settingsPanel.user-list-page-open .settings-menu-btn{background:var(--container-bg,#fff)!important;}
+#settingsPanel.user-list-page-open .settings-menu-btn svg{display:none!important;}
+#settingsPanel.user-list-page-open .settings-menu-btn::before{content:'←';font-size:28px;line-height:1;font-weight:400;}
+#settingsPanel.user-list-page-open .user-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;padding:13px!important;margin:9px 0!important;border:1px solid var(--border-color)!important;border-radius:14px!important;background:var(--container-bg,#fff)!important;box-shadow:0 3px 12px rgba(0,0,0,.07)!important;}
+#settingsPanel.user-list-page-open .user-row > div{font-size:12px!important;line-height:1.25!important;}
+#settingsPanel.user-list-page-open .user-row > div:first-child b{font-size:15px!important;}
+#settingsPanel.user-list-page-open .user-actions{display:flex!important;flex-wrap:wrap!important;gap:6px!important;align-items:center!important;}
+#settingsPanel.user-list-page-open .user-actions button{width:auto!important;margin:0!important;padding:7px 10px!important;border-radius:8px!important;font-size:10px!important;font-weight:800!important;}
+#settingsPanel.user-list-page-open .user-role{display:inline-block!important;padding:4px 8px!important;border-radius:7px!important;font-size:9px!important;font-weight:900!important;background:#eef6ff!important;color:#0878ff!important;}
+@media(max-width:600px){
+ #settingsPanel.user-list-page-open > .settings-head{padding:14px 12px!important;}
+ #settingsPanel.user-list-page-open > .settings-admin-box{padding:10px!important;}
+ #settingsPanel.user-list-page-open .user-row{padding:12px!important;border-radius:13px!important;}
+}
+
+        .user-password{background:#198754;color:#fff;border:none;}
+        .admin-password-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px;}
+        .admin-password-modal.open{display:flex;}
+        .admin-password-card{width:min(360px,94vw);background:var(--container-bg,#fff);color:var(--text-color,#111);border-radius:16px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.28);border:1px solid var(--border-color,#ddd);}
+        .admin-password-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
+        .admin-password-head b{font-size:17px;}
+        .admin-password-close{width:34px!important;height:34px!important;margin:0!important;padding:0!important;background:transparent!important;color:inherit!important;border:1px solid var(--border-color,#ddd)!important;}
+        .admin-password-email{font-size:12px;opacity:.72;margin-bottom:10px;word-break:break-all;}
+        .admin-password-card input{width:100%;box-sizing:border-box;margin:5px 0;padding:10px 11px;border:1px solid var(--border-color,#ccc);border-radius:9px;font-size:13px;background:var(--input-bg,#fff);color:var(--text-color,#111);}
+        .admin-password-save{width:100%;margin:8px 0 0!important;background:#198754!important;color:#fff!important;border:none!important;font-weight:800;}
+        .admin-password-message{min-height:18px;margin-top:7px;text-align:center;font-size:11px;font-weight:700;color:#dc3545;}
+        @media(max-width:600px){.user-actions button{padding:5px 6px;font-size:10px;}.admin-password-card{padding:16px;border-radius:14px;}}
+</style>
+<script>
+(function(){
+  function openUserListPage(){
+    if(typeof roleIsAdmin==='function' && !roleIsAdmin()){
+      return alert('Only Admin can view the user list.');
+    }
+    const panel=document.getElementById('settingsPanel');
+    const box=document.getElementById('settingsAdminBox');
+    const menu=document.querySelector('#settingsPanel .settings-menu-btn');
+    const title=document.querySelector('#settingsPanel .settings-head-title strong');
+    const sub=document.querySelector('#settingsPanel .settings-head-title span');
+    if(!panel||!box) return;
+    panel.classList.remove('others-page-open');
+    panel.classList.add('user-list-page-open');
+    box.classList.add('open');
+    if(title) title.textContent='User List';
+    if(sub) sub.textContent='Manage users & access';
+    if(menu){menu.setAttribute('aria-label','Back to Settings');menu.setAttribute('title','Back');}
+    loadUserList();
+  }
+  function closeUserListPage(){
+    const panel=document.getElementById('settingsPanel');
+    const box=document.getElementById('settingsAdminBox');
+    const menu=document.querySelector('#settingsPanel .settings-menu-btn');
+    const title=document.querySelector('#settingsPanel .settings-head-title strong');
+    const sub=document.querySelector('#settingsPanel .settings-head-title span');
+    if(panel) panel.classList.remove('user-list-page-open');
+    if(box) box.classList.remove('open');
+    if(title) title.textContent='Settings';
+    if(sub) sub.textContent='Manage your workspace';
+    if(menu){menu.setAttribute('aria-label','Settings menu');menu.setAttribute('title','Menu');}
+  }
+  window.openUserListPage=openUserListPage;
+  window.toggleAdminPanel=openUserListPage;
+  window.openAdminPage=openUserListPage;
+  window.settingsMenuAction=function(){
+    const panel=document.getElementById('settingsPanel');
+    if(panel && panel.classList.contains('user-list-page-open')) return closeUserListPage();
+    if(panel && panel.classList.contains('others-page-open')){
+      if(typeof resetSettingsSubpage==='function') resetSettingsSubpage();
+    }
+  };
+  window.closeAdminPage=closeUserListPage;
+  const oldApply=window.applyRoleUI;
+  if(typeof oldApply==='function'){
+    window.applyRoleUI=function(){
+      oldApply();
+      const btn=document.getElementById('settingsUsersBtn');
+      const sec=btn && btn.closest('.settings-admin-section');
+      const admin=(typeof roleIsAdmin==='function') && roleIsAdmin();
+      if(btn) btn.classList.toggle('hidden-by-role',!admin);
+      if(sec) sec.classList.toggle('hidden-by-role',!admin);
+    };
+  }
+})();
+</script>
+
+
+    <div id="adminPasswordModal" class="admin-password-modal" role="dialog" aria-modal="true" aria-labelledby="adminPasswordTitle">
+        <div class="admin-password-card">
+            <div class="admin-password-head"><b id="adminPasswordTitle">Change Password</b><button type="button" class="admin-password-close" onclick="closeAdminPassword()">✕</button></div>
+            <div id="adminPasswordEmail" class="admin-password-email"></div>
+            <input type="hidden" id="adminPasswordUid">
+            <input type="password" id="adminNewPassword" placeholder="New password (minimum 6 characters)" autocomplete="new-password">
+            <input type="password" id="adminConfirmPassword" placeholder="Confirm new password" autocomplete="new-password">
+            <button type="button" id="adminPasswordSaveBtn" class="admin-password-save" onclick="saveAdminPassword()">Save Password</button>
+            <div id="adminPasswordMessage" class="admin-password-message"></div>
+        </div>
+    </div>
 </body></html>
