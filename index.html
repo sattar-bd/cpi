@@ -1026,6 +1026,20 @@
 </style>
 
 
+<style id="pda-pit-status-system">
+/* PDA / PIT status dashboard — mirrors the Home status system */
+.others-status-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 9px;}
+.other-status-card{margin:0!important;width:100%!important;min-height:54px!important;padding:7px 8px!important;border-radius:9px!important;border:1px solid transparent!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;cursor:pointer!important;box-sizing:border-box!important;transition:.15s!important;}
+.other-status-card span{font-size:11px!important;font-weight:800!important;}
+.other-status-card b{font-size:20px!important;line-height:1!important;}
+.other-status-card.pending{background:#fff3cd!important;color:#856404!important;border-color:#ffe69c!important;}
+.other-status-card.processing{background:#ffe5cc!important;color:#b45f06!important;border-color:#ffc98f!important;}
+.other-status-card.complete{background:#dff5e7!important;color:#16713a!important;border-color:#b9e2c7!important;}
+.other-status-card.hold{background:#eee2ff!important;color:#6433a8!important;border-color:#d9c2ff!important;}
+.other-status-card.active{box-shadow:0 0 0 2px currentColor!important;transform:translateY(-1px)!important;}
+@media(max-width:600px){.others-status-cards{grid-template-columns:repeat(3,1fr);gap:5px}.other-status-card{min-height:46px!important;padding:5px 6px!important;border-radius:8px!important}.other-status-card span{font-size:9px!important}.other-status-card b{font-size:17px!important}.other-status-card.hold{grid-column:1/-1;min-height:38px!important;justify-content:center;gap:12px}}
+</style>
+
 <style id="others-status-style">
 .other-status-badge{display:inline-block;padding:3px 6px;border-radius:8px;font-size:9px;font-weight:800;}
 .other-status-badge.pending{background:#fff3cd;color:#856404}.other-status-badge.processing{background:#ffe5cc;color:#b45f06}.other-status-badge.hold{background:#eee2ff;color:#6433a8}.other-status-badge.complete{background:#dff5e7;color:#16713a}
@@ -2894,9 +2908,21 @@
 /* PDA/PIT: tiny edit icon + clickable rows */
 #othersListBox .others-table tbody tr{cursor:pointer!important;transition:background .12s ease!important;}
 #othersListBox .others-table tbody tr:hover td{background:rgba(13,110,253,.08)!important;}
-#othersListBox .others-action{pointer-events:none!important;}
+#othersListBox .others-action{pointer-events:auto!important;}
 #othersListBox .others-action .others-edit{pointer-events:auto!important;flex:0 0 28px!important;width:28px!important;height:24px!important;min-width:28px!important;max-width:28px!important;padding:0!important;border-radius:6px!important;font-size:0!important;line-height:1!important;}
 #othersListBox .others-action .others-edit::before{content:'✎';font-size:14px!important;line-height:1!important;font-weight:900!important;}
+/* PDA/PIT edit modal: always visible above every page layer, with its own scroll */
+#othersEditModal{position:fixed!important;inset:0!important;z-index:1000000!important;display:none!important;align-items:flex-start!important;justify-content:center!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:12px!important;box-sizing:border-box!important;}
+#othersEditModal.open{display:flex!important;}
+#othersEditModal .others-modal-card{position:relative!important;width:min(520px,96vw)!important;max-width:520px!important;max-height:calc(100vh - 24px)!important;overflow-y:auto!important;overflow-x:hidden!important;margin:auto!important;box-sizing:border-box!important;flex:none!important;}
+#othersEditModal .others-form-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
+#othersEditModal input,#othersEditModal select{width:100%!important;box-sizing:border-box!important;}
+@media(max-width:600px){
+  #othersEditModal{padding:8px!important;}
+  #othersEditModal .others-modal-card{width:100%!important;max-width:100%!important;max-height:calc(100vh - 16px)!important;margin:auto 0!important;padding:10px!important;border-radius:10px!important;}
+  #othersEditModal .others-form-grid{grid-template-columns:1fr 1fr!important;gap:6px!important;}
+  #othersEditModal .others-modal-head strong{font-size:14px!important;}
+}
 .others-detail-card{width:min(520px,96vw)!important;}
 .others-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px;}
 .others-detail-item{padding:8px 9px;border:1px solid var(--border-color,#d9dee5);border-radius:7px;background:rgba(127,127,127,.045);}
@@ -2922,7 +2948,7 @@
     const OTHER_COLLECTION = 'pilecaps';
     function otherCollection() { return fCollection(window.firebaseDB, OTHER_COLLECTION); }
     function fCollection(db, name) { return window.firebaseFns.collection(db, name); }
-    function otherAdmin() { return typeof roleIsAdmin === 'function' && roleIsAdmin(); }
+    function otherAdmin() { return String(currentRole||'').trim().toLowerCase()==='admin' || (typeof roleIsAdmin === 'function' && roleIsAdmin()); }
 
     function escOther(v) {
         return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -2983,7 +3009,26 @@
         const a=document.getElementById('pdaCount'), b=document.getElementById('pitCount');
         if(a) a.textContent=pda;
         if(b) b.textContent=pit;
+        updateOtherStatusCards();
     }
+
+    function updateOtherStatusCards() {
+        const type=otherListType;
+        if(!type) return;
+        const items=otherTestList.filter(x=>String(x.testType||x.test||'').toUpperCase()===String(type).toUpperCase());
+        const norm=s=>String(s||'Pending').trim().toLowerCase();
+        const counts={pending:0,processing:0,complete:0,hold:0};
+        items.forEach(x=>{ const k=norm(x.status); if(k==='pending'||k==='processing'||k==='complete'||k==='hold') counts[k]++; else counts.pending++; });
+        ['pending','processing','complete','hold'].forEach(k=>{
+            const el=document.getElementById('otherStatusCount_'+k);
+            if(el) el.textContent=counts[k];
+        });
+    }
+
+    window.filterOtherByStatus = function(status) {
+        if(!otherListType) return;
+        renderOtherList(otherListType, document.getElementById('othersListSearch')?.value||'', status);
+    };
 
     window.toggleOthersPanel = function() {
         const settings=document.getElementById('settingsPanel');
@@ -3017,56 +3062,54 @@
         renderOtherList(type);
     };
 
-    function renderOtherList(type, searchTerm='') {
+    function renderOtherList(type, searchTerm='', statusFilter='All') {
         const box=document.getElementById('othersListBox');
         if(!box) return;
         const allItems=otherTestList
           .filter(x=>String(x.testType||x.test||'').toUpperCase()===type)
           .sort((a,b)=>Number(a.slNo||0)-Number(b.slNo||0));
         const q=String(searchTerm||'').trim().toLowerCase();
-        const items=q ? allItems.filter(x => [
+        const searched=q ? allItems.filter(x => [
             x.slNo,x.pileGroup,x.pileNumber,x.pilePenetration,
             x.size,x.testType||x.test,x.status
         ].some(v=>String(v??'').toLowerCase().includes(q))) : allItems;
+        const statusNorm=x=>String(x.status||'Pending').trim().toLowerCase();
+        const filtered=statusFilter==='All' ? searched : searched.filter(x=>statusNorm(x)===String(statusFilter).toLowerCase());
         const admin=otherAdmin();
+        const counts={pending:0,processing:0,complete:0,hold:0};
+        allItems.forEach(x=>{const k=statusNorm(x); if(counts[k]!==undefined) counts[k]++; else counts.pending++;});
         box.innerHTML=`
+          <div class="others-status-cards">
+            <button type="button" class="other-status-card pending ${statusFilter==='Pending'?'active':''}" data-status="Pending" onclick="filterOtherByStatus('Pending')"><span>Pending</span><b id="otherStatusCount_pending">${counts.pending}</b></button>
+            <button type="button" class="other-status-card processing ${statusFilter==='Processing'?'active':''}" data-status="Processing" onclick="filterOtherByStatus('Processing')"><span>Processing</span><b id="otherStatusCount_processing">${counts.processing}</b></button>
+            <button type="button" class="other-status-card complete ${statusFilter==='Complete'?'active':''}" data-status="Complete" onclick="filterOtherByStatus('Complete')"><span>Complete</span><b id="otherStatusCount_complete">${counts.complete}</b></button>
+            <button type="button" class="other-status-card hold ${statusFilter==='Hold'?'active':''}" data-status="Hold" onclick="filterOtherByStatus('Hold')"><span>Hold</span><b id="otherStatusCount_hold">${counts.hold}</b></button>
+          </div>
           <div class="others-list-head">
-            <div class="others-list-title">${type} Test List (${items.length}${q ? ' / '+allItems.length : ''})</div>
+            <div class="others-list-title">${type} ${statusFilter==='All'?'Test List':statusFilter+' List'} (${filtered.length}${q ? ' / '+searched.length : ''})</div>
             <input class="others-list-search" id="othersListSearch" type="search"
-              value="${escOther(searchTerm)}"
-              placeholder="Search ${type} / Pile Group / Pile No..."
-              autocomplete="off"
+              value="${escOther(searchTerm)}" placeholder="Search ${type} / Pile Group / Pile No..." autocomplete="off"
               oninput="filterOtherTestList(this.value)">
             <button type="button" class="others-close-list" onclick="closeOtherTestList()">Close</button>
           </div>
-          ${items.length ? `<div class="others-table-wrap"><table class="others-table${admin?" admin-actions-table":""}">
-            <thead><tr>
-              <th>SL</th><th>Pile Group</th><th>Pile No.</th><th>Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}
-            </tr></thead>
-            <tbody>${items.map(x=>`<tr onclick="viewOtherTest('${jsOther(x.id)}')" title="Click to view details">
-              <td>${escOther(x.slNo)}</td>
-              <td><b>${escOther(x.pileGroup)}</b></td>
-              <td>${escOther(x.pileNumber)}</td>
-              <td>${escOther(x.pilePenetration)}</td>
-              <td>${escOther(x.size)}</td>
-              <td><b>${escOther(x.testType||x.test)}</b></td>
-              <td><b class="other-status-badge ${String(x.status||'Pending').toLowerCase()}">${escOther(x.status||'Pending')}</b></td>
-              ${admin?`<td><div class="others-action">
-                <button type="button" class="others-edit" aria-label="Edit" title="Edit" onclick="event.stopPropagation();editOtherTest('${jsOther(x.id)}')"></button>
-              </div></td>`:''}
+          ${filtered.length ? `<div class="others-table-wrap"><table class="others-table${admin?" admin-actions-table":""}">
+            <thead><tr><th>SL</th><th>Pile Group</th><th>Pile No.</th><th>Penetration (m)</th><th>Size (mm)</th><th>Test</th><th>Status</th>${admin?'<th>Action</th>':''}</tr></thead>
+            <tbody>${filtered.map(x=>`<tr onclick="viewOtherTest('${jsOther(x.id)}')" title="Click to view details">
+              <td>${escOther(x.slNo)}</td><td><b>${escOther(x.pileGroup)}</b></td><td>${escOther(x.pileNumber)}</td><td>${escOther(x.pilePenetration)}</td><td>${escOther(x.size)}</td><td><b>${escOther(x.testType||x.test)}</b></td>
+              <td><b class="other-status-badge ${statusNorm(x)}">${escOther(x.status||'Pending')}</b></td>
+              ${admin?`<td><div class="others-action"><button type="button" class="others-edit" aria-label="Edit" title="Edit" onclick="event.preventDefault();event.stopPropagation();window.editOtherTest('${jsOther(x.id)}')">✎</button></div></td>`:''}
             </tr>`).join('')}</tbody>
-          </table></div>` : '<div class="others-empty">No '+type+' data found.</div>'}
+          </table></div>` : '<div class="others-empty">No '+type+' '+(statusFilter==='All'?'':statusFilter+' ')+'data found.</div>'}
         `;
     }
 
     window.filterOtherTestList = function(value) {
         if(!otherListType) return;
-        renderOtherList(otherListType, value);
+        const active=document.querySelector('.other-status-card.active');
+        const status=active?.getAttribute('data-status') || 'All';
+        renderOtherList(otherListType, value, status);
         const input=document.getElementById('othersListSearch');
-        if(input) {
-            input.focus();
-            try { input.setSelectionRange(String(value||'').length, String(value||'').length); } catch(e) {}
-        }
+        if(input) { input.focus(); try { input.setSelectionRange(String(value||'').length, String(value||'').length); } catch(e) {} }
     };
 
     window.closeOtherTestList = function() {
@@ -3119,12 +3162,17 @@
         document.getElementById('otherStatus').value=x.status || 'Pending';
         document.getElementById('othersEditTitle').textContent='Edit '+(x.testType||x.test||'PDA/PIT')+' Data';
         document.getElementById('othersEditMessage').textContent='';
-        document.getElementById('othersEditModal').classList.add('open');
+        const editModal=document.getElementById('othersEditModal');
+        editModal.classList.add('open');
+        editModal.setAttribute('aria-hidden','false');
+        editModal.scrollTop=0;
+        const editCard=editModal.querySelector('.others-modal-card');
+        if(editCard) editCard.scrollTop=0;
     };
 
     window.closeOtherEditModal = function() {
         const m=document.getElementById('othersEditModal');
-        if(m) m.classList.remove('open');
+        if(m){ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }
     };
 
     window.deleteOtherTestFromEdit = async function() {
