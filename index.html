@@ -2973,7 +2973,9 @@
       <button type="button" class="others-modal-close" onclick="closeOtherDetailModal()">Close</button>
     </div>
     <div id="othersDetailGrid" class="others-detail-grid"></div>
-    <div class="others-modal-actions">
+    <div class="others-modal-actions" id="othersDetailActions">
+      <button type="button" class="others-save" id="othersDetailEditBtn" onclick="editOtherFromDetail()" style="display:none;">✎ Edit</button>
+      <button type="button" class="others-delete-modal" id="othersDetailDeleteBtn" onclick="deleteOtherFromDetail()" style="display:none;">Delete</button>
       <button type="button" class="others-cancel" onclick="closeOtherDetailModal()">Close</button>
     </div>
   </div>
@@ -3014,8 +3016,12 @@
 #othersListBox .others-action{pointer-events:auto!important;}
 #othersListBox .others-action .others-edit{pointer-events:auto!important;flex:0 0 28px!important;width:28px!important;height:24px!important;min-width:28px!important;max-width:28px!important;padding:0!important;border-radius:6px!important;font-size:0!important;line-height:1!important;}
 #othersListBox .others-action .others-edit::before{content:'✎';font-size:14px!important;line-height:1!important;font-weight:900!important;}
+body.others-detail-open{overflow:hidden!important;}
+#othersDetailActions{display:flex!important;gap:7px!important;flex-wrap:wrap!important;}
+#othersDetailActions button{min-height:38px!important;}
+
 /* PDA/PIT edit modal: always visible above every page layer, with its own scroll */
-#othersEditModal{position:fixed!important;inset:0!important;z-index:1000000!important;display:none!important;align-items:flex-start!important;justify-content:center!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:12px!important;box-sizing:border-box!important;}
+#othersEditModal{position:fixed!important;inset:0!important;z-index:1000002!important;display:none!important;align-items:flex-start!important;justify-content:center!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:12px!important;box-sizing:border-box!important;}
 #othersEditModal.open{display:flex!important;}
 #othersEditModal .others-modal-card{position:relative!important;width:min(520px,96vw)!important;max-width:520px!important;max-height:calc(100vh - 24px)!important;overflow-y:auto!important;overflow-x:hidden!important;margin:auto!important;box-sizing:border-box!important;flex:none!important;}
 #othersEditModal .others-form-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
@@ -3026,12 +3032,46 @@
   #othersEditModal .others-form-grid{grid-template-columns:1fr 1fr!important;gap:6px!important;}
   #othersEditModal .others-modal-head strong{font-size:14px!important;}
 }
-.others-detail-card{width:min(520px,96vw)!important;}
+/* PDA/PIT detail view: fixed to the visible viewport on mobile */
+#othersDetailModal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000001!important;
+  display:none!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:12px!important;
+  box-sizing:border-box!important;
+  background:rgba(0,0,0,.52)!important;
+}
+#othersDetailModal.open{display:flex!important;}
+#othersDetailModal .others-detail-card{
+  position:relative!important;
+  width:min(520px,96vw)!important;
+  max-width:520px!important;
+  max-height:calc(100vh - 24px)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  margin:auto!important;
+  box-sizing:border-box!important;
+  flex:none!important;
+}
 .others-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px;}
 .others-detail-item{padding:8px 9px;border:1px solid var(--border-color,#d9dee5);border-radius:7px;background:rgba(127,127,127,.045);}
 .others-detail-label{display:block;font-size:8px;font-weight:800;opacity:.65;text-transform:uppercase;margin-bottom:3px;}
 .others-detail-value{display:block;font-size:12px;font-weight:900;word-break:break-word;}
 @media(max-width:600px){
+ #othersDetailModal{padding:8px!important;}
+ #othersDetailModal .others-detail-card{
+   width:100%!important;
+   max-width:100%!important;
+   max-height:calc(100vh - 16px)!important;
+   margin:auto 0!important;
+   padding:10px!important;
+   border-radius:10px!important;
+ }
  .others-detail-grid{grid-template-columns:1fr 1fr;gap:5px;}
  .others-detail-item{padding:7px;}
  .others-detail-value{font-size:11px;}
@@ -3221,6 +3261,8 @@
         if(box) box.innerHTML='';
     };
 
+    let currentOtherDetailId = '';
+
     window.viewOtherTest = function(id) {
         const x=otherTestList.find(v=>v.id===id);
         if(!x) return;
@@ -3242,16 +3284,43 @@
             <span class="others-detail-label">${escOther(k)}</span>
             <span class="others-detail-value">${escOther(v??'-')}</span>
           </div>`).join('');
+        currentOtherDetailId = x.id;
+        const detailEditBtn=document.getElementById('othersDetailEditBtn');
+        const detailDeleteBtn=document.getElementById('othersDetailDeleteBtn');
+        const canManage=otherAdmin();
+        if(detailEditBtn) detailEditBtn.style.display=canManage?'inline-flex':'none';
+        if(detailDeleteBtn) detailDeleteBtn.style.display=canManage?'inline-flex':'none';
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
+        modal.scrollTop=0;
+        const detailCard=modal.querySelector('.others-detail-card');
+        if(detailCard) detailCard.scrollTop=0;
+        document.body.classList.add('others-detail-open');
+    };
+
+    window.editOtherFromDetail = function() {
+        const id=currentOtherDetailId;
+        if(!id) return;
+        if(typeof window.closeOtherDetailModal === 'function') window.closeOtherDetailModal();
+        setTimeout(()=>window.editOtherTest(id),0);
+    };
+
+    window.deleteOtherFromDetail = async function() {
+        const id=currentOtherDetailId;
+        if(!id) return;
+        await window.deleteOtherTest(id, false);
+        if(!otherTestList.some(v=>v.id===id)) window.closeOtherDetailModal();
     };
 
     window.closeOtherDetailModal = function() {
         const modal=document.getElementById('othersDetailModal');
         if(modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+        document.body.classList.remove('others-detail-open');
     };
 
     window.editOtherTest = function(id) {
+        /* If detail view is open, close it first so the edit form is always clickable. */
+        if(typeof window.closeOtherDetailModal === 'function') window.closeOtherDetailModal();
         if(!otherAdmin()) return alert('Only Admin can edit PDA/PIT data.');
         const x=otherTestList.find(v=>v.id===id);
         if(!x) return;
