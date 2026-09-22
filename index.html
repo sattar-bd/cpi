@@ -1074,6 +1074,9 @@
 .others-title{font-size:15px;font-weight:900;}
 .others-subtitle{font-size:10px;opacity:.72;margin-top:2px;}
 .others-import-btn{width:auto!important;margin:0!important;padding:6px 9px!important;border:0!important;border-radius:7px!important;background:#198754!important;color:#fff!important;font-size:10px!important;font-weight:800!important;}
+.others-reset-btn{width:auto!important;margin:0!important;padding:7px 10px!important;border:0!important;border-radius:7px!important;background:#dc3545!important;color:#fff!important;font-size:10px!important;font-weight:800!important;cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;box-shadow:0 2px 6px rgba(220,53,69,.28)!important;}
+.others-reset-btn:hover{background:#b02a37!important;}
+
 .others-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .others-test-btn{margin:0!important;border:1px solid transparent!important;border-radius:10px!important;padding:8px 10px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;cursor:pointer!important;font-weight:900!important;min-height:48px!important;}
 .others-test-btn span{font-size:14px;}
@@ -1114,6 +1117,24 @@
   .others-form-grid{grid-template-columns:1fr 1fr;}
 }
 
+
+.others-manual-btn{width:auto!important;margin:0!important;padding:7px 10px!important;border:0!important;border-radius:7px!important;background:#0d6efd!important;color:#fff!important;font-size:10px!important;font-weight:800!important;cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;box-shadow:0 2px 6px rgba(13,110,253,.25)!important;}
+.others-manual-btn:hover{background:#0b5ed7!important;}
+#othersManualModal{position:fixed!important;inset:0!important;z-index:1000003!important;display:none!important;align-items:flex-start!important;justify-content:center!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:12px!important;box-sizing:border-box!important;background:rgba(0,0,0,.52)!important;}
+#othersManualModal.open{display:flex!important;}
+#othersManualModal .others-manual-card{position:relative!important;width:min(520px,96vw)!important;max-width:520px!important;max-height:calc(100vh - 24px)!important;overflow-y:auto!important;overflow-x:hidden!important;margin:auto!important;box-sizing:border-box!important;flex:none!important;background:var(--container-bg,#fff)!important;color:var(--text-color,#333)!important;border-radius:12px!important;padding:12px!important;}
+#othersManualModal .others-form-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
+#othersManualModal input,#othersManualModal select{width:100%!important;box-sizing:border-box!important;}
+@media(max-width:600px){
+  #othersPanel .others-head > div:last-child{display:flex!important;gap:4px!important;flex-wrap:wrap!important;justify-content:flex-end!important;}
+  #othersPanel .others-import-btn,#othersPanel .others-reset-btn,#othersPanel .others-manual-btn{padding:5px 7px!important;font-size:8.5px!important;border-radius:6px!important;}
+  #othersManualModal{padding:8px!important;}
+  #othersManualModal .others-manual-card{width:100%!important;max-width:100%!important;max-height:calc(100vh - 16px)!important;margin:auto 0!important;padding:10px!important;border-radius:10px!important;}
+  #othersManualModal .others-form-grid{grid-template-columns:1fr 1fr!important;gap:6px!important;}
+}
+
+</style>
+<style id="pda-pit-manual-add-style">
 </style>
 
 
@@ -1203,6 +1224,8 @@
 #othersPanel .others-title{font-size:14px!important;}
 #othersPanel .others-subtitle{font-size:9px!important;}
 #othersPanel .others-import-btn{padding:5px 8px!important;font-size:9px!important;border-radius:6px!important;}
+#othersPanel .others-reset-btn{padding:5px 8px!important;font-size:9px!important;border-radius:6px!important;}
+
 #othersPanel .others-buttons{gap:6px!important;margin:0 0 6px!important;}
 #othersPanel .others-test-btn{
   min-height:38px!important;
@@ -1471,7 +1494,10 @@
                             <div class="others-title">Others</div>
                             <div class="others-subtitle">PDA &amp; PIT Test Schedule</div>
                         </div>
-                        <button type="button" class="others-import-btn hidden-by-role" onclick="document.getElementById('othersExcelInput').click()">Import Excel</button>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <button type="button" class="others-import-btn" onclick="document.getElementById('othersExcelInput').click()">Import Excel</button><button type="button" class="others-manual-btn" onclick="openPdaPitManualAdd()">+ Manual Add</button>
+                            <button type="button" class="others-reset-btn" onclick="resetPdaPitData()">Reset PDA/PIT</button>
+                        </div>
                     </div>
                     <input type="file" id="othersExcelInput" accept="*/*" style="display:none" onchange="importPdaPitExcel(event)">
                     <div class="others-buttons">
@@ -2965,6 +2991,45 @@
 })();
 </script>
 
+
+<!-- PDA/PIT Manual Add Modal -->
+<div id="othersManualModal" class="others-modal" aria-hidden="true" onclick="if(event.target===this)closePdaPitManualAdd()">
+  <div class="others-manual-card">
+    <div class="others-modal-head">
+      <strong>Add PDA / PIT Manually</strong>
+      <button type="button" class="others-modal-close" onclick="closePdaPitManualAdd()">Close</button>
+    </div>
+    <div class="others-form-grid">
+      <div>
+        <label>Test</label>
+        <select id="manualOtherTestType">
+          <option value="PDA">PDA</option>
+          <option value="PIT">PIT</option>
+        </select>
+      </div>
+      <div><label>SL No.</label><input id="manualOtherSlNo" type="text" placeholder="Auto"></div>
+      <div><label>Pile Group *</label><input id="manualOtherPileGroup" type="text" placeholder="e.g. PG053"></div>
+      <div><label>Pile No.</label><input id="manualOtherPileNumber" type="text"></div>
+      <div><label>Pile Penetration (m)</label><input id="manualOtherPenetration" type="text"></div>
+      <div><label>Size (mm)</label><input id="manualOtherSize" type="text"></div>
+      <div>
+        <label>Status</label>
+        <select id="manualOtherStatus">
+          <option value="Pending">Pending</option>
+          <option value="Processing">Processing</option>
+          <option value="Hold">Hold</option>
+          <option value="Complete">Complete</option>
+        </select>
+      </div>
+    </div>
+    <div class="others-modal-actions">
+      <button type="button" class="others-save" onclick="savePdaPitManualAdd()">Save</button>
+      <button type="button" class="others-cancel" onclick="closePdaPitManualAdd()">Cancel</button>
+    </div>
+    <div id="othersManualMessage" class="auth-message"></div>
+  </div>
+</div>
+
 <!-- PDA/PIT Detail View Modal -->
 <div id="othersDetailModal" class="others-modal" aria-hidden="true" onclick="if(event.target===this)closeOtherDetailModal()">
   <div class="others-modal-card others-detail-card">
@@ -3100,12 +3165,70 @@ body.others-detail-open{overflow:hidden!important;}
         return String(v ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
     }
 
+
+    // Reset ONLY PDA/PIT records. Main PileCap data is never touched.
+    window.resetPdaPitData = async function() {
+        if(!otherAdmin()) return alert('Only Admin can reset PDA/PIT data.');
+
+        try {
+            const f = otherFns();
+            const snap = await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
+            const pdaPitDocs = snap.docs.filter(d => {
+                const x = d.data() || {};
+                return x.__otherTest === true ||
+                       String(x.recordType || '').toUpperCase() === 'PDA_PIT';
+            });
+
+            if(!pdaPitDocs.length) {
+                otherTestList = [];
+                otherListType = '';
+                updateOtherCounts();
+                const box = document.getElementById('othersListBox');
+                if(box) box.innerHTML = '';
+                return alert('No PDA/PIT data found to reset.');
+            }
+
+            if(!confirm(
+                'WARNING!\\n\\n' +
+                'All PDA and PIT data will be permanently deleted.\\n' +
+                'Main PileCap data will NOT be deleted.\\n\\n' +
+                'Continue?'
+            )) return;
+
+            // Firestore batches support a limited number of writes.
+            const batchSize = 450;
+            for(let i = 0; i < pdaPitDocs.length; i += batchSize) {
+                const batch = f.writeBatch(otherDb());
+                pdaPitDocs.slice(i, i + batchSize).forEach(d => {
+                    batch.delete(f.doc(otherDb(), OTHER_COLLECTION, d.id));
+                });
+                await batch.commit();
+            }
+
+            otherTestList = [];
+            otherListType = '';
+
+            const box = document.getElementById('othersListBox');
+            if(box) box.innerHTML = '';
+
+            updateOtherCounts();
+            updateOtherStatusCards();
+
+            alert('All PDA/PIT data has been reset successfully.');
+        } catch(e) {
+            console.error(e);
+            alert('PDA/PIT reset failed: ' + (e.message || e));
+        }
+    };
+
     async function loadOtherTests() {
         if (!window.firebaseDB || !window.firebaseFns || !currentUser) return;
         try {
             const f = otherFns();
             const snap = await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
-            otherTestList = snap.docs.map(d => ({id:d.id, ...d.data()}));
+            otherTestList = snap.docs
+                .map(d => ({id:d.id, ...d.data()}))
+                .filter(x => x.__otherTest === true || String(x.recordType||'').toUpperCase() === 'PDA_PIT');
             if (!otherTestList.length && otherAdmin()) {
                 await seedOtherTests();
             }
@@ -3414,6 +3537,85 @@ body.others-detail-open{overflow:hidden!important;}
         }
         return fallback;
     }
+
+
+    // Manual PDA/PIT add — Admin only.
+    window.openPdaPitManualAdd = function() {
+        if(!otherAdmin()) return alert('Only Admin can add PDA/PIT data.');
+        const modal=document.getElementById('othersManualModal');
+        if(!modal) return;
+        document.getElementById('manualOtherTestType').value='PDA';
+        document.getElementById('manualOtherSlNo').value='';
+        document.getElementById('manualOtherPileGroup').value='';
+        document.getElementById('manualOtherPileNumber').value='';
+        document.getElementById('manualOtherPenetration').value='';
+        document.getElementById('manualOtherSize').value='';
+        document.getElementById('manualOtherStatus').value='Pending';
+        document.getElementById('othersManualMessage').textContent='';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        setTimeout(()=>document.getElementById('manualOtherPileGroup')?.focus(),50);
+    };
+
+    window.closePdaPitManualAdd = function() {
+        const modal=document.getElementById('othersManualModal');
+        if(modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+    };
+
+    window.savePdaPitManualAdd = async function() {
+        if(!otherAdmin()) return alert('Only Admin can add PDA/PIT data.');
+        const type=String(document.getElementById('manualOtherTestType')?.value||'PDA').toUpperCase();
+        const pileGroup=String(document.getElementById('manualOtherPileGroup')?.value||'').trim();
+        if(type!=='PDA' && type!=='PIT') return alert('Select PDA or PIT.');
+        if(!pileGroup) return alert('Pile Group is required.');
+
+        const f=otherFns();
+        try {
+            const snap=await f.getDocs(f.collection(otherDb(), OTHER_COLLECTION));
+            const existing=snap.docs
+                .map(d=>({id:d.id,...d.data()}))
+                .filter(x=>x.__otherTest===true || String(x.recordType||'').toUpperCase()==='PDA_PIT');
+
+            const manualSl=String(document.getElementById('manualOtherSlNo')?.value||'').trim();
+            const typeRows=existing.filter(x=>String(x.testType||x.test||'').toUpperCase()===type);
+            let nextSl=1;
+            if(!manualSl){
+                const nums=typeRows.map(x=>parseInt(String(x.slNo||''),10)).filter(Number.isFinite);
+                nextSl=nums.length ? Math.max(...nums)+1 : 1;
+            }
+
+            const payload={
+                __otherTest:true,
+                recordType:'PDA_PIT',
+                testType:type,
+                slNo:manualSl || String(nextSl),
+                pileGroup,
+                pileNumber:String(document.getElementById('manualOtherPileNumber')?.value||'').trim(),
+                pilePenetration:String(document.getElementById('manualOtherPenetration')?.value||'').trim(),
+                size:String(document.getElementById('manualOtherSize')?.value||'').trim(),
+                test:type,
+                status:String(document.getElementById('manualOtherStatus')?.value||'Pending'),
+                inputDate:Date.now(),
+                inputBy:currentUser?.uid||'',
+                inputByName:currentProfileName||'User',
+                source:'Manual'
+            };
+
+            const ref=await f.addDoc(f.collection(otherDb(), OTHER_COLLECTION),payload);
+            otherTestList.push({id:ref.id,...payload});
+            updateOtherCounts();
+            updateOtherStatusCards();
+            closePdaPitManualAdd();
+
+            // Show the newly selected type list.
+            otherListType=type;
+            renderOtherList(type);
+            alert(type+' data added successfully.');
+        } catch(e) {
+            console.error(e);
+            alert('Manual PDA/PIT save failed: '+(e.message||e));
+        }
+    };
 
     window.importPdaPitExcel = function(event) {
         if(!otherAdmin()) {
