@@ -1718,7 +1718,8 @@
             const f = window.firebaseFns;
             const normalized = normalizePhone(phone);
             const profileData = {
-                name, displayName: name, phoneNumber: normalized, email: '',
+                name, displayName: name, phoneNumber: normalized,
+                email: '',
                 authEmail: user.email || phoneAuthEmail(normalized),
                 role: 'user', uid: user.uid, createdAt: Date.now(), updatedAt: Date.now()
             };
@@ -2130,10 +2131,9 @@
             try {
                 const f = window.firebaseFns;
 
-                // Some older versions saved the same account in both `user`
-                // and `users`, and duplicate documents can also exist. Use
-                // normalized email as the unique key so one account appears once.
-                const byEmail = new Map();
+                // Read both legacy collections. A phone-registered account may
+                // have an empty `email`, so use email OR phone OR uid as its key.
+                const byKey = new Map();
 
                 for (const collectionName of ['users', 'user']) {
                     const snap = await f.getDocs(
@@ -2142,43 +2142,74 @@
 
                     snap.docs.forEach(ds => {
                         const d = ds.data() || {};
-                        const rawEmail = String(d.email || d.profile?.email || '').trim();
-                        if (!rawEmail) return;
+                        const email = String(d.email || d.profile?.email || '').trim();
+                        const phone = String(d.phoneNumber || d.phone || d.profile?.phoneNumber || '').trim();
+                        const authEmail = String(d.authEmail || d.profile?.authEmail || '').trim();
+                        const uid = String(d.uid || ds.id || '').trim();
 
-                        const emailKey = rawEmail.toLowerCase();
-                        const old = byEmail.get(emailKey);
+                        // Email accounts use email as the stable key. Phone
+                        // accounts use phoneNumber, with uid as a final fallback.
+                        const key = email
+                            ? 'email:' + email.toLowerCase()
+                            : phone
+                                ? 'phone:' + phone
+                                : authEmail
+                                    ? 'auth:' + authEmail.toLowerCase()
+                                    : uid
+                                        ? 'uid:' + uid
+                                        : '';
+                        if (!key) return;
+
+                        const old = byKey.get(key);
                         const oldRole = String(old?.role || '').trim().toLowerCase();
                         const newRole = String(d.role || d.profile?.role || '').trim().toLowerCase();
 
                         const merged = {
                             ...(old || {}),
                             ...d,
-                            email: old?.email || rawEmail,
-                            uid: old?.uid || ds.id,
+                            name: d.name || d.displayName || old?.name || old?.displayName || '',
+                            displayName: d.displayName || d.name || old?.displayName || old?.name || '',
+                            email: d.email || old?.email || '',
+                            phoneNumber: d.phoneNumber || d.phone || old?.phoneNumber || old?.phone || '',
+                            authEmail: d.authEmail || old?.authEmail || '',
+                            uid: d.uid || old?.uid || ds.id,
                             role: (oldRole === 'admin' || newRole === 'admin') ? 'admin' : 'user'
                         };
 
                         // Use the real Auth UID for the currently logged-in account.
-                        if (currentUser &&
-                            String(currentUser.email || '').trim().toLowerCase() === emailKey) {
-                            merged.uid = currentUser.uid;
-                        }
-
-                        // Super Admin is always shown as one ADMIN record.
-                        if (emailKey === SUPER_ADMIN_EMAIL.toLowerCase()) {
-                            merged.role = 'admin';
-                            if (currentUser &&
-                                String(currentUser.email || '').trim().toLowerCase() === emailKey) {
+                        if (currentUser) {
+                            const currentEmail = String(currentUser.email || '').trim().toLowerCase();
+                            const recordEmail = String(merged.email || '').trim().toLowerCase();
+                            const currentAuthEmail = String(merged.authEmail || '').trim().toLowerCase();
+                            if ((currentEmail && (currentEmail === recordEmail || currentEmail === currentAuthEmail)) ||
+                                String(currentUser.uid) === String(merged.uid)) {
                                 merged.uid = currentUser.uid;
                             }
                         }
 
-                        byEmail.set(emailKey, merged);
+                        // Super Admin is always shown as one ADMIN record.
+                        const recordEmail = String(merged.email || merged.authEmail || '').trim().toLowerCase();
+                        if (recordEmail === SUPER_ADMIN_EMAIL.toLowerCase()) {
+                            merged.role = 'admin';
+                            if (currentUser &&
+                                String(currentUser.email || '').trim().toLowerCase() === recordEmail) {
+                                merged.uid = currentUser.uid;
+                            }
+                        }
+
+                        byKey.set(key, merged);
                     });
                 }
 
-                const users = Array.from(byEmail.values()).filter(u => u.email);
-                users.sort((a, b) => String(a.email).localeCompare(String(b.email)));
+                const users = Array.from(byKey.values()).filter(u =>
+                    String(u.email || u.phoneNumber || u.authEmail || u.uid || '').trim()
+                );
+
+                users.sort((a, b) => {
+                    const aKey = String(a.email || a.phoneNumber || a.authEmail || a.name || '').toLowerCase();
+                    const bKey = String(b.email || b.phoneNumber || b.authEmail || b.name || '').toLowerCase();
+                    return aKey.localeCompare(bKey);
+                });
 
                 if (!users.length) {
                     box.innerHTML = '<div style="padding:10px;text-align:center;">No users found.</div>';
@@ -2186,25 +2217,30 @@
                 }
 
                 box.innerHTML = users.map(u => {
-                    const email = escapeHtml(u.email || '-');
-                    const name = escapeHtml(u.name || u.displayName || u.email || 'User');
+                    const email = escapeHtml(u.email || u.authEmail || '-');
+                    const phone = escapeHtml(u.phoneNumber || u.phone || '');
+                    const name = escapeHtml(u.name || u.displayName || u.email || u.phoneNumber || 'User');
                     const role = String(u.role || 'user').toLowerCase() === 'admin' ? 'admin' : 'user';
-                    const isSuper = String(u.email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+                    const isSuper = String(u.email || u.authEmail || '').toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+                    const contact = phone && !u.email
+                        ? phone
+                        : (phone ? `${email}<br><span style="font-size:10px;opacity:.75;">${phone}</span>` : email);
+                    const resetIdentifier = u.email || u.authEmail || u.phoneNumber || '';
                     return `
                         <div class="user-row">
                             <div><b>${name}</b></div>
-                            <div>${email}</div>
+                            <div>${contact}</div>
                             <div><span class="user-role">${role.toUpperCase()}</span></div>
                             <div class="user-actions">
-                                <button class="user-reset" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>
-                                    ${!isSuper ? `<button class="user-password" onclick="openAdminPassword('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Password</button>` : ''}
+                                ${resetIdentifier ? `<button class="user-reset" onclick="adminResetUser('${escapeJs(resetIdentifier)}')">Reset</button>` : ''}
+                                ${!isSuper ? `<button class="user-password" onclick="openAdminPassword('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}')">Password</button>` : ''}
                                 ${isSuper ? `
-                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(u.email)}','${escapeJs(u.name || u.displayName || '')}')">Edit Name</button>
+                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}','${escapeJs(u.name || u.displayName || '')}')">Edit Name</button>
                                     <span style="font-size:10px;font-weight:bold;">Super Admin</span>
                                 ` : `
-                                    <button class="user-role-btn" onclick="adminToggleRole('${escapeJs(u.uid)}','${escapeJs(u.email)}','${role}')">${role === 'admin' ? 'Make User' : 'Make Admin'}</button>
-                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(u.email)}','${escapeJs(u.name || u.displayName || '')}')">Edit</button>
-                                    <button class="user-delete" onclick="adminDeleteUser('${escapeJs(u.uid)}','${escapeJs(u.email)}')">Delete</button>
+                                    <button class="user-role-btn" onclick="adminToggleRole('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}','${role}')">${role === 'admin' ? 'Make User' : 'Make Admin'}</button>
+                                    <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}','${escapeJs(u.name || u.displayName || '')}')">Edit</button>
+                                    <button class="user-delete" onclick="adminDeleteUser('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}')">Delete</button>
                                 `}
                             </div>
                         </div>`;
