@@ -576,8 +576,7 @@
         .auth-primary { background:#007bff; color:#fff; border:none; font-weight:bold; }
         .auth-danger { background:#dc3545; color:#fff; border:none; font-weight:bold; }
         .auth-message { min-height:20px; font-size:12px; font-weight:bold; margin:6px 0; text-align:center; }
-        #recaptcha-container { margin:6px 0; display:flex; justify-content:center; }
-        #authPhone, #authOtp { letter-spacing:.2px; }
+        #authPhone { letter-spacing:.2px; }
         #sendOtpBtn { margin-top:2px; }
         .default-login-info {
             margin: 6px 0 10px;
@@ -638,7 +637,7 @@
             getAuth, onAuthStateChanged, signInWithEmailAndPassword,
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
             updateProfile, updatePassword, reauthenticateWithCredential,
-            EmailAuthProvider, RecaptchaVerifier, signInWithPhoneNumber
+            EmailAuthProvider
         } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         import {
             getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
@@ -686,7 +685,7 @@
             onAuthStateChanged, signInWithEmailAndPassword,
             createUserWithEmailAndPassword, signOut, sendPasswordResetEmail,
             updateProfile, updatePassword, reauthenticateWithCredential,
-            EmailAuthProvider, RecaptchaVerifier, signInWithPhoneNumber,
+            EmailAuthProvider,
             collection, doc, getDoc, getDocs, setDoc, query, where,
             addDoc, updateDoc, deleteDoc, writeBatch
         };
@@ -1418,10 +1417,6 @@
                 <input type="email" id="authEmail" placeholder="Email address" autocomplete="email" value="user@gmail.com">
                 <input type="tel" id="authPhone" placeholder="Mobile number, e.g. +60123456789" autocomplete="tel" style="display:none;">
                 <input type="password" id="authPassword" placeholder="Password (minimum 6 characters)" autocomplete="current-password" value="123456">
-                <div id="phoneOtpBox" style="display:none;">
-                    <input type="text" id="authOtp" placeholder="Enter 6-digit SMS OTP" inputmode="numeric" autocomplete="one-time-code">
-                    <button type="button" id="sendOtpBtn" class="auth-primary" onclick="sendPhoneOtp()">Send OTP</button>
-                </div>
                 <div class="default-login-info">
                     <b>Default User</b><br>
                     ID: user@gmail.com<br>
@@ -1430,7 +1425,6 @@
                 <input type="password" id="authPassword2" placeholder="Confirm password" autocomplete="new-password" style="display:none;">
                 <button id="authSubmit" class="auth-primary" onclick="submitAuth()">Login</button>
                 <button type="button" id="forgotPasswordBtn" style="background:none;border:none;color:#007bff;font-weight:bold;font-size:12px;" onclick="resetPassword()">Forgot Password?</button>
-                <div id="recaptcha-container"></div>
                 <button id="authLogout" class="auth-danger" onclick="logoutFirebase()" style="display:none;">Logout</button>
                 <div id="authMessage" class="auth-message"></div>
             </div>
@@ -1669,8 +1663,6 @@
         let authMode = 'login';
         let authMethod = 'email';
         let firebaseInitialized = false;
-        let phoneConfirmationResult = null;
-        let phoneRecaptchaVerifier = null;
         const SUPER_ADMIN_EMAIL = 'sattar124@gmail.com';
 
         function setAuthMessage(msg, error=false) {
@@ -1678,83 +1670,56 @@
             if (el) { el.innerText = msg || ''; el.style.color = error ? '#dc3545' : '#198754'; }
         }
 
+        function normalizePhone(phone) {
+            return String(phone || '').replace(/[\s()-]/g, '');
+        }
+
+        function phoneAuthEmail(phone) {
+            const digits = normalizePhone(phone).replace(/[^0-9+]/g, '').replace(/^\+/, '');
+            return `phone_${digits}@shop-20145.firebaseapp.com`;
+        }
+
         function showAuthMode(mode) {
             authMode = mode;
             document.getElementById('loginTab').classList.toggle('active', mode === 'login');
             document.getElementById('registerTab').classList.toggle('active', mode === 'register');
             document.getElementById('authSubmit').innerText = mode === 'login' ? 'Login' : 'Register';
-            document.getElementById('authPassword2').style.display =
-                (mode === 'register' && authMethod === 'email') ? 'block' : 'none';
+            document.getElementById('authPassword2').style.display = mode === 'register' ? 'block' : 'none';
             document.getElementById('authName').style.display = mode === 'register' ? 'block' : 'none';
-            document.getElementById('forgotPasswordBtn').style.display =
-                (authMethod === 'email') ? 'block' : 'none';
-            document.getElementById('phoneOtpBox').style.display =
-                authMethod === 'phone' ? 'block' : 'none';
-            document.getElementById('authPassword').style.display =
-                authMethod === 'email' ? 'block' : 'none';
+            document.getElementById('forgotPasswordBtn').style.display = authMethod === 'email' ? 'block' : 'none';
             setAuthMessage('');
-            phoneConfirmationResult = null;
         }
 
         function showAuthMethod() {
             authMethod = document.getElementById('authMethod').value;
-            document.getElementById('authEmail').style.display = authMethod === 'email' ? 'block' : 'none';
-            document.getElementById('authPhone').style.display = authMethod === 'phone' ? 'block' : 'none';
-            document.getElementById('authPassword').style.display = authMethod === 'email' ? 'block' : 'none';
-            document.getElementById('authPassword2').style.display =
-                (authMode === 'register' && authMethod === 'email') ? 'block' : 'none';
-            document.getElementById('phoneOtpBox').style.display = authMethod === 'phone' ? 'block' : 'none';
-            document.getElementById('forgotPasswordBtn').style.display =
-                authMethod === 'email' ? 'block' : 'none';
-            document.getElementById('authSubmit').innerText =
-                authMethod === 'phone' ? (authMode === 'register' ? 'Verify & Register' : 'Verify & Login')
-                                       : (authMode === 'login' ? 'Login' : 'Register');
+            const isEmail = authMethod === 'email';
+            document.getElementById('authEmail').style.display = isEmail ? 'block' : 'none';
+            document.getElementById('authPhone').style.display = isEmail ? 'none' : 'block';
+            document.getElementById('authPassword2').style.display = authMode === 'register' ? 'block' : 'none';
+            document.getElementById('forgotPasswordBtn').style.display = isEmail ? 'block' : 'none';
+            document.getElementById('authSubmit').innerText = authMode === 'login' ? 'Login' : 'Register';
             setAuthMessage('');
-            phoneConfirmationResult = null;
         }
 
-        function ensurePhoneRecaptcha() {
-            if (phoneRecaptchaVerifier) return phoneRecaptchaVerifier;
+        async function findPhoneProfile(phone) {
             const f = window.firebaseFns;
-            phoneRecaptchaVerifier = new f.RecaptchaVerifier(window.firebaseAuth, 'recaptcha-container', {
-                size: 'invisible',
-                callback: () => {}
-            });
-            return phoneRecaptchaVerifier;
-        }
-
-        async function sendPhoneOtp() {
-            if (!firebaseInitialized) return setAuthMessage('Firebase is not configured yet.', true);
-            const phone = document.getElementById('authPhone').value.trim();
-            if (!phone) return setAuthMessage('Enter your mobile number with country code, e.g. +60123456789.', true);
-
-            try {
-                setAuthMessage('Sending OTP...');
-                const verifier = ensurePhoneRecaptcha();
-                phoneConfirmationResult = await window.firebaseFns.signInWithPhoneNumber(
-                    window.firebaseAuth, phone, verifier
-                );
-                setAuthMessage('OTP sent. Enter the 6-digit code, then tap Verify & Login/Register.');
-                document.getElementById('authOtp').focus();
-            } catch (err) {
-                console.error(err);
+            const normalized = normalizePhone(phone);
+            for (const collectionName of ['user', 'users']) {
                 try {
-                    if (phoneRecaptchaVerifier) {
-                        phoneRecaptchaVerifier.clear();
-                        phoneRecaptchaVerifier = null;
-                    }
-                } catch (_) {}
-                let msg = err.message || 'Could not send OTP.';
-                if (err.code === 'auth/invalid-phone-number') msg = 'Invalid mobile number. Use international format, e.g. +60123456789.';
-                if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
-                setAuthMessage(msg.replace('Firebase: ', ''), true);
+                    const q = f.query(f.collection(window.firebaseDB, collectionName), f.where('phoneNumber', '==', normalized));
+                    const snap = await f.getDocs(q);
+                    if (!snap.empty) return snap.docs[0].data() || {};
+                } catch (e) { console.warn('Phone lookup failed:', e); }
             }
+            return null;
         }
 
         async function savePhoneProfile(user, name, phone) {
             const f = window.firebaseFns;
+            const normalized = normalizePhone(phone);
             const profileData = {
-                name, displayName: name, phoneNumber: phone, email: '',
+                name, displayName: name, phoneNumber: normalized, email: '',
+                authEmail: user.email || phoneAuthEmail(normalized),
                 role: 'user', uid: user.uid, createdAt: Date.now(), updatedAt: Date.now()
             };
             await f.setDoc(f.doc(window.firebaseDB, 'user', user.uid), profileData);
@@ -1765,43 +1730,45 @@
             if (!firebaseInitialized) return setAuthMessage('Firebase is not configured yet.', true);
 
             const name = document.getElementById('authName').value.trim();
-            if (authMethod !== 'email') return setAuthMessage('Password reset is available for Email accounts only.', true);
             const email = document.getElementById('authEmail').value.trim();
-            const phone = document.getElementById('authPhone').value.trim();
-            const otp = document.getElementById('authOtp').value.trim();
+            const phone = normalizePhone(document.getElementById('authPhone').value.trim());
             const password = document.getElementById('authPassword').value;
             const password2 = document.getElementById('authPassword2').value;
 
             if (authMode === 'register' && !name) return setAuthMessage('Enter your name.', true);
+            if (!password) return setAuthMessage('Enter password.', true);
+            if (password.length < 6) return setAuthMessage('Password must be at least 6 characters.', true);
+            if (authMode === 'register' && password !== password2) return setAuthMessage('Passwords do not match.', true);
 
             try {
                 const f = window.firebaseFns;
+                let authEmail = email;
 
                 if (authMethod === 'phone') {
-                    if (!phone) return setAuthMessage('Enter your mobile number with country code.', true);
-                    if (!phoneConfirmationResult) {
-                        return setAuthMessage('First tap Send OTP and enter the SMS code.', true);
+                    if (!phone || !/^\+?[0-9]{8,15}$/.test(phone)) {
+                        return setAuthMessage('Enter a valid mobile number, e.g. +60123456789.', true);
                     }
-                    if (!otp) return setAuthMessage('Enter the SMS OTP.', true);
-
-                    setAuthMessage('Verifying OTP...');
-                    const cred = await phoneConfirmationResult.confirm(otp);
-
-                    if (authMode === 'register') {
+                    if (authMode === 'login') {
+                        const profile = await findPhoneProfile(phone);
+                        if (!profile) return setAuthMessage('No account found with this mobile number.', true);
+                        authEmail = profile.authEmail || phoneAuthEmail(phone);
+                        await f.signInWithEmailAndPassword(window.firebaseAuth, authEmail, password);
+                    } else {
+                        const existing = await findPhoneProfile(phone);
+                        if (existing) return setAuthMessage('This mobile number is already registered.', true);
+                        authEmail = phoneAuthEmail(phone);
+                        const cred = await f.createUserWithEmailAndPassword(window.firebaseAuth, authEmail, password);
                         await f.updateProfile(cred.user, { displayName: name });
                         await savePhoneProfile(cred.user, name, phone);
                     }
-                    phoneConfirmationResult = null;
                     setAuthMessage('');
                     return;
                 }
 
-                if (!email || !password) return setAuthMessage('Enter email and password.', true);
-
+                if (!email) return setAuthMessage('Enter email address.', true);
                 if (authMode === 'login') {
                     await f.signInWithEmailAndPassword(window.firebaseAuth, email, password);
                 } else {
-                    if (password !== password2) return setAuthMessage('Passwords do not match.', true);
                     const cred = await f.createUserWithEmailAndPassword(window.firebaseAuth, email, password);
                     await f.updateProfile(cred.user, { displayName: name });
                     const profileData = { name, displayName: name, email, role: 'user', uid: cred.user.uid, createdAt: Date.now(), updatedAt: Date.now() };
@@ -1812,15 +1779,16 @@
             } catch (err) {
                 console.error(err);
                 let msg = (err.message || 'Authentication failed.').replace('Firebase: ', '');
-                if (err.code === 'auth/invalid-verification-code') msg = 'Invalid OTP. Please check the SMS code.';
-                if (err.code === 'auth/code-expired') msg = 'OTP expired. Please send a new OTP.';
-                if (err.code === 'auth/account-exists-with-different-credential') msg = 'This mobile/email is already linked to another account.';
+                if (err.code === 'auth/email-already-in-use') msg = authMethod === 'phone' ? 'This mobile number is already registered.' : 'This email is already registered.';
+                if (err.code === 'auth/invalid-email') msg = 'Invalid login identifier.';
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') msg = 'Incorrect password.';
                 setAuthMessage(msg, true);
             }
         }
 
         async function resetPassword() {
             if (!firebaseInitialized) return setAuthMessage('Firebase is not configured yet.', true);
+            if (authMethod !== 'email') return setAuthMessage('Password reset is available for Email accounts only.', true);
             const email = document.getElementById('authEmail').value.trim();
             if (!email) {
                 return setAuthMessage('First enter your email address, then tap Forgot Password.', true);
