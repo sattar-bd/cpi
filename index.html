@@ -2232,7 +2232,7 @@
                             <div>${contact}</div>
                             <div><span class="user-role">${role.toUpperCase()}</span></div>
                             <div class="user-actions">
-                                ${resetIdentifier ? `<button class="user-reset" onclick="adminResetUser('${escapeJs(resetIdentifier)}')">Reset</button>` : ''}
+                                ${u.email ? `<button class="user-reset" onclick="adminResetUser('${escapeJs(u.email)}')">Reset</button>` : `<button class="user-reset" disabled title="Password reset email is not available for mobile-only accounts.">Reset</button>`}
                                 ${!isSuper ? `<button class="user-password" onclick="openAdminPassword('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}')">Password</button>` : ''}
                                 ${isSuper ? `
                                     <button class="user-edit" onclick="adminEditUser('${escapeJs(u.uid)}','${escapeJs(resetIdentifier)}','${escapeJs(u.name || u.displayName || '')}')">Edit Name</button>
@@ -2313,7 +2313,7 @@
             }
         }
 
-        async function adminEditUser(uid, email, currentName) {
+        async function adminEditUser(uid, identifier, currentName) {
             if (!roleIsAdmin()) return alert('Only Admin can manage users.');
             const newName = prompt('Edit user name:', currentName || '');
             if (newName === null) return;
@@ -2323,10 +2323,11 @@
 
             try {
                 const f = window.firebaseFns;
+                // For mobile-only accounts, do NOT write the phone number into
+                // the `email` field. Preserve the existing contact fields.
                 const update = {
                     name,
                     displayName: name,
-                    email,
                     uid,
                     updatedAt: Date.now()
                 };
@@ -2347,17 +2348,18 @@
             }
         }
 
-        async function adminToggleRole(uid, email, currentRole) {
+        async function adminToggleRole(uid, identifier, currentRole) {
             if (!roleIsAdmin()) return alert('Only Admin can manage users.');
-            if (String(email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return alert('Super Admin role cannot be changed.');
+            if (String(identifier).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return alert('Super Admin role cannot be changed.');
             const newRole = currentRole === 'admin' ? 'user' : 'admin';
-            if (!confirm(`Change ${email} role to ${newRole.toUpperCase()}?`)) return;
+            if (!confirm(`Change ${identifier} role to ${newRole.toUpperCase()}?`)) return;
             try {
                 const f = window.firebaseFns;
-                // Keep both profile collections synchronized.
+                // Keep both profile collections synchronized without changing
+                // a mobile account's email field.
                 for (const collectionName of ['users', 'user']) {
                     await f.setDoc(f.doc(window.firebaseDB, collectionName, uid), {
-                        email, role: newRole, uid, updatedAt: Date.now()
+                        role: newRole, uid, updatedAt: Date.now()
                     }, {merge:true});
                 }
                 await loadUserList();
@@ -2366,10 +2368,10 @@
             }
         }
 
-        async function adminDeleteUser(uid, email) {
+        async function adminDeleteUser(uid, identifier) {
             if (!roleIsAdmin()) return alert('Only Admin can manage users.');
-            if (String(email).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return alert('Super Admin cannot be deleted.');
-            if (!confirm(`Delete profile for ${email}? This removes the user profile from the app database. The Firebase Authentication account itself must be deleted from Firebase Console/Admin SDK.`)) return;
+            if (String(identifier).toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return alert('Super Admin cannot be deleted.');
+            if (!confirm(`Delete profile for ${identifier}? This removes the user profile from the app database. The Firebase Authentication account itself must be deleted from Firebase Console/Admin SDK.`)) return;
             try {
                 const f = window.firebaseFns;
                 for (const collectionName of ['users', 'user']) {
