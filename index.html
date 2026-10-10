@@ -1483,6 +1483,7 @@
                     <div class="settings-section-title"><div><b>Administration</b><span>Users and access control</span></div><span class="settings-section-icon">♟</span></div>
                     <div class="settings-action-grid settings-admin-actions">
                         <button id="settingsUsersBtn" class="settings-action settings-users hidden-by-role" title="User List" aria-label="User List" onclick="toggleAdminPanel()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 18.5a4.5 4.5 0 0 1 7 0"/></svg><span class="settings-action-label">User List</span><small>Manage users</small></button>
+                        <button id="settingsLoginHistoryBtn" class="settings-action settings-users hidden-by-role" title="Login History" aria-label="Login History" onclick="openLoginHistoryPage()"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="settings-action-label">Login History</span><small>View sign-in records</small></button>
                     </div>
                 </div>
                 <div class="settings-section-card settings-danger-section">
@@ -1492,6 +1493,14 @@
                 <div id="settingsAdminBox" class="settings-admin-box">
                     <div class="settings-admin-title">&#128081; Admin Panel &mdash; User Management</div>
                     <div class="settings-admin-list"><div id="userListContainer"></div></div>
+                </div>
+                <div id="settingsLoginHistoryBox" class="settings-admin-box login-history-box">
+                    <div class="settings-admin-title">&#128337; Admin Panel &mdash; Login History</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;">
+                        <input id="loginHistorySearch" type="search" placeholder="Search name, email, or UID" style="flex:1;min-width:180px;padding:10px;border:1px solid var(--border-color);border-radius:9px;background:var(--container-bg);color:var(--text-color);" oninput="filterLoginHistory()">
+                        <button type="button" onclick="loadLoginHistory()" style="padding:9px 12px;border:0;border-radius:9px;cursor:pointer;">Refresh</button>
+                    </div>
+                    <div id="loginHistoryContainer" class="settings-admin-list"></div>
                 </div>
 
                 <!-- Others: PDA / PIT Test Schedule -->
@@ -1808,7 +1817,38 @@
 
         async function logoutFirebase() {
             if (!window.firebaseAuth) return;
+            const user = window.firebaseAuth.currentUser;
+            if (user) await writeLoginHistoryEvent(user, 'logout');
+            try { if (user && window.sessionStorage) sessionStorage.removeItem('loginHistoryLogged:' + user.uid); } catch (e) {}
             await window.firebaseFns.signOut(window.firebaseAuth);
+        }
+
+        async function writeLoginHistoryEvent(user, action) {
+            try {
+                if (!user || !window.firebaseDB || !window.firebaseFns) return;
+                const f = window.firebaseFns;
+                let displayName = user.displayName || '';
+                try {
+                    for (const colName of ['user', 'users']) {
+                        const snap = await f.getDoc(f.doc(window.firebaseDB, colName, user.uid));
+                        if (snap.exists()) {
+                            const d = snap.data() || {};
+                            displayName = d.displayName || d.name || displayName;
+                            if (displayName) break;
+                        }
+                    }
+                } catch (e) {}
+                await f.addDoc(f.collection(window.firebaseDB, 'loginHistory'), {
+                    uid: user.uid,
+                    email: user.email || '',
+                    name: displayName || '',
+                    action: action,
+                    timestamp: Date.now(),
+                    userAgent: (navigator && navigator.userAgent) ? navigator.userAgent : ''
+                });
+            } catch (err) {
+                console.warn('Login history could not be saved. Check Firestore rules for loginHistory:', err);
+            }
         }
 
         async function loadFirebaseData() {
@@ -1823,7 +1863,7 @@
 
         function applyRoleUI() {
             const admin = roleIsAdmin();
-            ['settingsInputBtn','settingsExcelBtn','settingsResetBtn','settingsUsersBtn'].forEach(id => {
+            ['settingsInputBtn','settingsExcelBtn','settingsResetBtn','settingsUsersBtn','settingsLoginHistoryBtn'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.toggle('hidden-by-role', !admin);
             });
@@ -1963,6 +2003,14 @@
             }
 
             const f = window.firebaseFns;
+            // Log one authenticated session per tab; reloads do not create duplicate login rows.
+            try {
+                const sessionKey = 'loginHistoryLogged:' + user.uid;
+                if (!sessionStorage.getItem(sessionKey)) {
+                    sessionStorage.setItem(sessionKey, '1');
+                    writeLoginHistoryEvent(user, 'login');
+                }
+            } catch (e) { writeLoginHistoryEvent(user, 'login'); }
             const loginEmail = String(user.email || '').trim().toLowerCase();
 
             // Permanent Super Admin
@@ -4166,4 +4214,86 @@ body.settings-open{overflow:hidden !important;}
 <a id="floatingWhatsAppButton" href="https://wa.me/60165251783" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp এ যোগাযোগ করুন" title="WhatsApp এ যোগাযোগ করুন">
   <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19.11 17.41c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.56.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.02-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.27s.98 2.63 1.11 2.81c.14.18 1.92 2.94 4.65 4.12.65.28 1.16.45 1.56.57.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.82-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.32z"/><path d="M16.01 3.2a12.76 12.76 0 0 0-10.9 19.4L3.2 28.8l6.36-1.87A12.8 12.8 0 1 0 16.01 3.2zm0 23.35c-2.02 0-4-.54-5.73-1.57l-.41-.24-3.78 1.11 1.13-3.68-.27-.43a10.65 10.65 0 1 1 9.06 4.81z"/></svg>
 </a>
+
+<style>
+#settingsPanel.login-history-page-open{position:fixed!important;inset:0!important;z-index:9998!important;margin:0!important;border-radius:0!important;max-height:100vh!important;height:100vh!important;overflow-y:auto!important;background:var(--container-bg,#fff)!important;box-shadow:none!important;padding-bottom:20px!important;}
+#settingsPanel.login-history-page-open > .settings-user,#settingsPanel.login-history-page-open > .profile-box,#settingsPanel.login-history-page-open > .settings-section-card,#settingsPanel.login-history-page-open > #excelInput,#settingsPanel.login-history-page-open > #othersPanel,#settingsPanel.login-history-page-open > #settingsAdminBox{display:none!important;}
+#settingsPanel.login-history-page-open > #settingsLoginHistoryBox{display:block!important;border:0!important;padding:12px!important;margin:0!important;background:transparent!important;}
+#settingsPanel.login-history-page-open .settings-menu-btn{background:var(--container-bg,#fff)!important;}
+#settingsPanel.login-history-page-open .settings-menu-btn svg{display:none!important;}
+#settingsPanel.login-history-page-open .settings-menu-btn::before{content:'←';font-size:28px;line-height:1;font-weight:400;}
+.login-history-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px;margin:8px 0;border:1px solid var(--border-color);border-radius:12px;background:var(--container-bg,#fff);overflow-wrap:anywhere;}
+.login-history-row .history-meta{font-size:12px;opacity:.8;margin-top:5px;}
+.login-history-action{font-size:11px;font-weight:800;border-radius:8px;padding:5px 8px;height:max-content;background:#e8f7ed;color:#16753b;}
+.login-history-action.logout{background:#fff0f0;color:#b42318;}
+@media(max-width:600px){.login-history-row{grid-template-columns:1fr;}}
+</style>
+<script>
+(function(){
+  let cachedLoginHistory=[];
+  function historyEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  window.openLoginHistoryPage=async function(){
+    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()) return alert('Only Admin can view login history.');
+    const panel=document.getElementById('settingsPanel');
+    const box=document.getElementById('settingsLoginHistoryBox');
+    const menu=document.querySelector('#settingsPanel .settings-menu-btn');
+    const title=document.querySelector('#settingsPanel .settings-head-title strong');
+    const sub=document.querySelector('#settingsPanel .settings-head-title span');
+    if(!panel||!box)return;
+    panel.classList.remove('user-list-page-open','others-page-open');
+    panel.classList.add('login-history-page-open');
+    box.classList.add('open');
+    const userBox=document.getElementById('settingsAdminBox'); if(userBox)userBox.classList.remove('open');
+    if(title)title.textContent='Login History';
+    if(sub)sub.textContent='Review account sign-in activity';
+    if(menu){menu.setAttribute('aria-label','Back to Settings');menu.setAttribute('title','Back');}
+    await window.loadLoginHistory();
+  };
+  window.loadLoginHistory=async function(){
+    if(typeof roleIsAdmin==='function'&&!roleIsAdmin())return alert('Only Admin can view login history.');
+    const out=document.getElementById('loginHistoryContainer'); if(!out)return;
+    out.innerHTML='<div style="padding:12px;text-align:center;">Loading login history...</div>';
+    try{
+      const f=window.firebaseFns;
+      const snap=await f.getDocs(f.collection(window.firebaseDB,'loginHistory'));
+      cachedLoginHistory=snap.docs.map(d=>({id:d.id,...(d.data()||{})})).sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0));
+      window.filterLoginHistory();
+    }catch(err){
+      console.error('Could not load login history:',err);
+      out.innerHTML='<div style="padding:12px;">Could not load history. Firestore Security Rules must allow admins to read <b>loginHistory</b> records.</div>';
+    }
+  };
+  window.filterLoginHistory=function(){
+    const out=document.getElementById('loginHistoryContainer'); if(!out)return;
+    const search=(document.getElementById('loginHistorySearch')?.value||'').trim().toLowerCase();
+    const rows=cachedLoginHistory.filter(r=>[r.name,r.email,r.uid,r.action].some(v=>String(v||'').toLowerCase().includes(search)));
+    if(!rows.length){out.innerHTML='<div style="padding:12px;text-align:center;">No login history found.</div>';return;}
+    out.innerHTML=rows.map(r=>{
+      const time=Number(r.timestamp||0);
+      const date=time?new Date(time).toLocaleString():'Time unavailable';
+      const action=String(r.action||'event').toLowerCase();
+      return '<div class="login-history-row"><div><b>'+historyEsc(r.name||'Unnamed user')+'</b><div>'+historyEsc(r.email||'No email / phone login')+'</div><div class="history-meta">UID: '+historyEsc(r.uid||'—')+'</div><div class="history-meta">'+historyEsc(date)+'</div><div class="history-meta">Device: '+historyEsc(r.userAgent||'Unknown')+'</div></div><span class="login-history-action '+(action==='logout'?'logout':'')+'">'+historyEsc(action.toUpperCase())+'</span></div>';
+    }).join('');
+  };
+  const priorClose=window.closeAdminPage;
+  window.closeAdminPage=function(){
+    const panel=document.getElementById('settingsPanel');
+    const box=document.getElementById('settingsLoginHistoryBox');
+    if(panel)panel.classList.remove('login-history-page-open');
+    if(box)box.classList.remove('open');
+    if(typeof priorClose==='function')priorClose();
+    const title=document.querySelector('#settingsPanel .settings-head-title strong');
+    const sub=document.querySelector('#settingsPanel .settings-head-title span');
+    const menu=document.querySelector('#settingsPanel .settings-menu-btn');
+    if(title)title.textContent='Settings'; if(sub)sub.textContent='Manage your workspace';
+    if(menu){menu.setAttribute('aria-label','Settings menu');menu.setAttribute('title','Menu');}
+  };
+  const priorMenu=window.settingsMenuAction;
+  window.settingsMenuAction=function(){
+    const panel=document.getElementById('settingsPanel');
+    if(panel&&panel.classList.contains('login-history-page-open')){window.closeAdminPage();return;}
+    if(typeof priorMenu==='function')priorMenu();
+  };
+})();
+</script>
 </body></html>
