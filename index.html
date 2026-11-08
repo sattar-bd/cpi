@@ -4263,7 +4263,21 @@ body.settings-open{overflow:hidden !important;}
       out.innerHTML='<div style="padding:12px;">Could not load history. Firestore Security Rules must allow admins to read <b>loginHistory</b> records.</div>';
     }
   };
+  window.deleteLoginHistory=async function(id){
+    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()) return alert('Only Admin can delete login history.');
+    if(!id || !confirm('এই Login History রেকর্ডটি ডিলিট করবেন?')) return;
+    try{
+      const f=window.firebaseFns;
+      await f.deleteDoc(f.doc(window.firebaseDB,'loginHistory',id));
+      cachedLoginHistory=cachedLoginHistory.filter(r=>r.id!==id);
+      window.filterLoginHistory();
+    }catch(err){
+      console.error('Delete login history failed:',err);
+      alert('History delete failed: '+(err.message||err)+'\\nFirestore Rules-এ admin delete permission থাকতে হবে।');
+    }
+  };
   window.filterLoginHistory=function(){
+    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()) return alert('Only Admin can view login history.');
     const out=document.getElementById('loginHistoryContainer'); if(!out)return;
     const search=(document.getElementById('loginHistorySearch')?.value||'').trim().toLowerCase();
     const rows=cachedLoginHistory.filter(r=>[r.name,r.email,r.uid,r.action].some(v=>String(v||'').toLowerCase().includes(search)));
@@ -4272,7 +4286,7 @@ body.settings-open{overflow:hidden !important;}
       const time=Number(r.timestamp||0);
       const date=time?new Date(time).toLocaleString():'Time unavailable';
       const action=String(r.action||'event').toLowerCase();
-      return '<div class="login-history-row"><div><b>'+historyEsc(r.name||'Unnamed user')+'</b><div>'+historyEsc(r.email||'No email / phone login')+'</div><div class="history-meta">UID: '+historyEsc(r.uid||'—')+'</div><div class="history-meta">'+historyEsc(date)+'</div><div class="history-meta">Device: '+historyEsc(r.userAgent||'Unknown')+'</div></div><span class="login-history-action '+(action==='logout'?'logout':'')+'">'+historyEsc(action.toUpperCase())+'</span></div>';
+      return '<div class="login-history-row"><div><b>'+historyEsc(r.name||'Unnamed user')+'</b><div>'+historyEsc(r.email||'No email / phone login')+'</div><div class="history-meta">UID: '+historyEsc(r.uid||'—')+'</div><div class="history-meta">'+historyEsc(date)+'</div><div class="history-meta">Device: '+historyEsc(r.userAgent||'Unknown')+'</div></div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="login-history-action '+(action==='logout'?'logout':'')+'">'+historyEsc(action.toUpperCase())+'</span><button type="button" onclick="deleteLoginHistory(\\''+historyEsc(r.id)+'\\')" style="width:auto;margin:0;padding:7px 10px;border:0;border-radius:7px;background:#dc3545;color:#fff;font-weight:800;cursor:pointer;">Delete</button></div></div>';
     }).join('');
   };
   const priorClose=window.closeAdminPage;
