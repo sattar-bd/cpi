@@ -2783,7 +2783,9 @@
         }
 
         function searchData() {
-            const q = document.getElementById('searchInput').value.trim();
+            let q = document.getElementById('searchInput').value.trim();
+            // Allow searching by number only: 1 -> PG001, 12 -> PG012
+            if (/^\d+$/.test(q)) q = 'PG' + q.padStart(3, '0');
             const select = document.getElementById('serialSelect');
             if (!q) {
                 document.getElementById('searchResultCard').style.display = 'none';
