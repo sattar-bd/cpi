@@ -2904,9 +2904,18 @@
         }
 
         function openColumnModalForSearch(){
-            // Show ONLY the row matching the No. currently searched.
+            // Resolve the same serial used by searchData(), including numeric suffix searches.
             const q = String(document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-            const item = (dataList || []).find(x => String(x?.serial || '').trim().toLowerCase() === q);
+            let item = (dataList || []).find(x => String(x?.serial || '').trim().toLowerCase() === q);
+            if (!item && /^\d+$/.test(q)) {
+                const wantedNumber = String(parseInt(q, 10));
+                const matches = (dataList || []).filter(x => {
+                    const serial = String(x?.serial || '').trim();
+                    const suffix = serial.match(/(\d+)$/);
+                    return suffix && String(parseInt(suffix[1], 10)) === wantedNumber;
+                });
+                item = matches.find(x => /^PG\d+$/i.test(String(x?.serial || '').trim())) || matches[0] || null;
+            }
             const rows = item ? [{
                 serial: String(item.serial || '').trim(),
                 column: String(item.column || '').trim(),
