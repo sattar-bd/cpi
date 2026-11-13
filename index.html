@@ -1499,7 +1499,6 @@
                     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;">
                         <input id="loginHistorySearch" type="search" placeholder="Search name, email, or UID" style="flex:1;min-width:180px;padding:10px;border:1px solid var(--border-color);border-radius:9px;background:var(--container-bg);color:var(--text-color);" oninput="filterLoginHistory()">
                         <button type="button" onclick="loadLoginHistory()" style="padding:9px 12px;border:0;border-radius:9px;cursor:pointer;">Refresh</button>
-                        <button type="button" onclick="deleteAllLoginHistory()" style="padding:9px 12px;border:0;border-radius:9px;cursor:pointer;background:#dc3545;color:#fff;font-weight:800;">Delete All</button>
                     </div>
                     <div id="loginHistoryContainer" class="settings-admin-list"></div>
                 </div>
@@ -4221,7 +4220,7 @@ body.settings-open{overflow:hidden !important;}
 <style>
 #settingsPanel.login-history-page-open{position:fixed!important;inset:0!important;z-index:9998!important;margin:0!important;border-radius:0!important;max-height:100vh!important;height:100vh!important;overflow-y:auto!important;background:var(--container-bg,#fff)!important;box-shadow:none!important;padding-bottom:20px!important;}
 #settingsPanel.login-history-page-open > .settings-user,#settingsPanel.login-history-page-open > .profile-box,#settingsPanel.login-history-page-open > .settings-section-card,#settingsPanel.login-history-page-open > #excelInput,#settingsPanel.login-history-page-open > #othersPanel,#settingsPanel.login-history-page-open > #settingsAdminBox{display:none!important;}
-#settingsPanel.login-history-page-open > #settingsLoginHistoryBox{display:block!important;visibility:visible!important;border:0!important;padding:12px!important;margin:0!important;background:transparent!important;}
+#settingsPanel.login-history-page-open > #settingsLoginHistoryBox{display:block!important;border:0!important;padding:12px!important;margin:0!important;background:transparent!important;}
 #settingsPanel.login-history-page-open .settings-menu-btn{background:var(--container-bg,#fff)!important;}
 #settingsPanel.login-history-page-open .settings-menu-btn svg{display:none!important;}
 #settingsPanel.login-history-page-open .settings-menu-btn::before{content:'←';font-size:28px;line-height:1;font-weight:400;}
@@ -4263,7 +4262,7 @@ body.settings-open{overflow:hidden !important;}
       window.filterLoginHistory();
     }catch(err){
       console.error('Could not load login history:',err);
-      out.innerHTML='<div style="padding:12px;border:1px solid #dc3545;border-radius:10px;color:#b42318;background:#fff5f5;"><b>Login History লোড হয়নি</b><br><span style="font-size:12px;">Error: '+historyEsc(err.code||'unknown')+' — '+historyEsc(err.message||String(err))+'</span><br><br><b>সমাধান:</b> Firestore Rules-এ loginHistory collection-এর admin read permission থাকতে হবে। Rules আপডেট করে Refresh চাপুন।</div>';
+      out.innerHTML='<div style="padding:12px;">Could not load history. Firestore Security Rules must allow admins to read <b>loginHistory</b> records.</div>';
     }
   };
   window.deleteLoginHistory=async function(id){
@@ -4276,26 +4275,6 @@ body.settings-open{overflow:hidden !important;}
       window.filterLoginHistory();
     }catch(err){
       console.error('Delete login history failed:',err);
-      alert('History delete failed: '+(err.message||err)+'\\nFirestore Rules-এ admin delete permission থাকতে হবে।');
-    }
-  };
-  window.deleteAllLoginHistory=async function(){
-    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()) return alert('Only Admin can delete login history.');
-    if(!cachedLoginHistory.length) return alert('No login history to delete.');
-    if(!confirm('সব Login History রেকর্ড স্থায়ীভাবে ডিলিট করবেন?')) return;
-    try{
-      const f=window.firebaseFns;
-      // Firestore batch supports up to 500 writes per batch.
-      for(let i=0;i<cachedLoginHistory.length;i+=450){
-        const batch=f.writeBatch(window.firebaseDB);
-        cachedLoginHistory.slice(i,i+450).forEach(r=>batch.delete(f.doc(window.firebaseDB,'loginHistory',r.id)));
-        await batch.commit();
-      }
-      cachedLoginHistory=[];
-      window.filterLoginHistory();
-      alert('সব Login History ডিলিট হয়েছে।');
-    }catch(err){
-      console.error('Delete all login history failed:',err);
       alert('History delete failed: '+(err.message||err)+'\\nFirestore Rules-এ admin delete permission থাকতে হবে।');
     }
   };
@@ -4330,23 +4309,6 @@ body.settings-open{overflow:hidden !important;}
     const panel=document.getElementById('settingsPanel');
     if(panel&&panel.classList.contains('login-history-page-open')){window.closeAdminPage();return;}
     if(typeof priorMenu==='function')priorMenu();
-  };
-})();
-</script>
-
-<script id="login-history-visibility-fix">
-(function(){
-  const originalOpen=window.openLoginHistoryPage;
-  window.openLoginHistoryPage=async function(){
-    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()){
-      alert('আপনার অ্যাকাউন্ট Admin হিসেবে শনাক্ত হয়নি। Admin account দিয়ে লগইন করুন।');
-      return;
-    }
-    const section=document.querySelector('#settingsPanel .settings-admin-section');
-    const btn=document.getElementById('settingsLoginHistoryBtn');
-    if(section)section.classList.remove('hidden-by-role');
-    if(btn)btn.classList.remove('hidden-by-role');
-    if(typeof originalOpen==='function')await originalOpen();
   };
 })();
 </script>
