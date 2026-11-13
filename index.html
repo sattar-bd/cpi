@@ -2792,11 +2792,35 @@
                 if (select) select.value = '';
                 return;
             }
+
+            // Allow searching by the numeric suffix too: typing "1" finds PG001.
+            // Full serial searches continue to work exactly as before.
+            let searchSerial = q;
+            if (/^\d+$/.test(q)) {
+                const wantedNumber = String(parseInt(q, 10));
+                const numericMatches = dataList.filter(item => {
+                    const serial = String(item.serial ?? '').trim();
+                    const suffix = serial.match(/(\d+)$/);
+                    return suffix && String(parseInt(suffix[1], 10)) === wantedNumber;
+                });
+                if (numericMatches.length === 1) {
+                    searchSerial = String(numericMatches[0].serial).trim();
+                } else if (numericMatches.length > 1) {
+                    // Prefer the usual PG prefix when several serials share a number.
+                    const preferred = numericMatches.find(item =>
+                        /^PG\d+$/i.test(String(item.serial ?? '').trim())
+                    );
+                    if (preferred) searchSerial = String(preferred.serial).trim();
+                }
+            }
+
             if (select) {
-                const match = [...select.options].find(o => o.value.toLowerCase() === q.toLowerCase());
+                const match = [...select.options].find(o =>
+                    o.value.toLowerCase() === searchSerial.toLowerCase()
+                );
                 select.value = match ? match.value : '';
             }
-            showSearchResultForSerial(q);
+            showSearchResultForSerial(searchSerial);
         }
 
         function showSearchResultForSerial(q) {
