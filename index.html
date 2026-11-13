@@ -1499,6 +1499,7 @@
                     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;">
                         <input id="loginHistorySearch" type="search" placeholder="Search name, email, or UID" style="flex:1;min-width:180px;padding:10px;border:1px solid var(--border-color);border-radius:9px;background:var(--container-bg);color:var(--text-color);" oninput="filterLoginHistory()">
                         <button type="button" onclick="loadLoginHistory()" style="padding:9px 12px;border:0;border-radius:9px;cursor:pointer;">Refresh</button>
+                        <button type="button" onclick="deleteAllLoginHistory()" style="padding:9px 12px;border:0;border-radius:9px;cursor:pointer;background:#dc3545;color:#fff;font-weight:800;">Delete All</button>
                     </div>
                     <div id="loginHistoryContainer" class="settings-admin-list"></div>
                 </div>
@@ -4275,6 +4276,26 @@ body.settings-open{overflow:hidden !important;}
       window.filterLoginHistory();
     }catch(err){
       console.error('Delete login history failed:',err);
+      alert('History delete failed: '+(err.message||err)+'\\nFirestore Rules-এ admin delete permission থাকতে হবে।');
+    }
+  };
+  window.deleteAllLoginHistory=async function(){
+    if(typeof roleIsAdmin==='function'&&!roleIsAdmin()) return alert('Only Admin can delete login history.');
+    if(!cachedLoginHistory.length) return alert('No login history to delete.');
+    if(!confirm('সব Login History রেকর্ড স্থায়ীভাবে ডিলিট করবেন?')) return;
+    try{
+      const f=window.firebaseFns;
+      // Firestore batch supports up to 500 writes per batch.
+      for(let i=0;i<cachedLoginHistory.length;i+=450){
+        const batch=f.writeBatch(window.firebaseDB);
+        cachedLoginHistory.slice(i,i+450).forEach(r=>batch.delete(f.doc(window.firebaseDB,'loginHistory',r.id)));
+        await batch.commit();
+      }
+      cachedLoginHistory=[];
+      window.filterLoginHistory();
+      alert('সব Login History ডিলিট হয়েছে।');
+    }catch(err){
+      console.error('Delete all login history failed:',err);
       alert('History delete failed: '+(err.message||err)+'\\nFirestore Rules-এ admin delete permission থাকতে হবে।');
     }
   };
