@@ -882,6 +882,15 @@
 
 
 
+<style id="search-result-numbered-order-style">
+/* Search result: fill down the left column (1-6), then the right (7-11). */
+.search-result-card .search-result-numbered-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    grid-template-rows:repeat(6,auto) !important;
+    grid-auto-flow:column !important;
+}
+</style>
+
 <style id="home-search-premium-ui">
 /* Home page search + select: premium UI only */
 #homeView .search-box{
@@ -2836,20 +2845,26 @@
                 return;
             }
 
+            // Search result order: left column 1-6, right column 7-11.
             const fields = [
                 ['No.','&#8597;',item.serial],
                 ['REF','&#9644;',item.ref],
                 ['FFL','&#8597;',item.ffl],
                 ['TOPC','&#9672;',item.topc],
                 ['PCOL','&#9646;',item.pcol],
-                ['THICKNESS','&#9707;',item.thickness]
+                ['THICKNESS','&#9707;',item.thickness],
+                ['SFL','&#8597;',item.sfl],
+                ['ZONE','&#8982;',item.zone],
+                ['BEAM DEPTH','&#9644;',item.beamDepth],
+                ['BEAM REF','&#9650;',item.beamRef],
+                ['REMARKS','&#8801;',item.remarks]
             ];
             card.innerHTML = `
                 <div class="search-result-card">
                     <button type="button" class="search-result-close" onclick="closeSearchPage()" aria-label="Close search result" title="Close">&times;</button>
                     <div class="search-result-title">Search Result &mdash; ${escapeHtml(item.serial)}</div>
                     <div class="input-date-badge">&#128197; <span>Input Date:</span> <b>${escapeHtml(formatInputDate(item.inputDate))}</b><span>&bull;</span><span>Input By:</span> <b>${escapeHtml(item.inputByName || 'Unknown')}</b></div>
-                    <div class="search-result-grid">
+                    <div class="search-result-grid search-result-numbered-grid">
                         ${fields.map(([k,icon,v]) => `
                             <div class="search-result-field">
                                 <span class="search-result-icon">${icon}</span>
@@ -2860,22 +2875,6 @@
                             </div>`).join('')}
                     </div>
                     <div class="view-all-details" style="display:block;">
-                        <div class="search-result-grid">
-                            ${[
-                                ['SFL','&#8597;',item.sfl],
-                                ['ZONE','&#8982;',item.zone],
-                                ['BEAM DEPTH','&#9644;',item.beamDepth],
-                                ['BEAM REF','&#9650;',item.beamRef],
-                                ['REMARKS','&#8801;',item.remarks]
-                            ].map(([k,icon,v]) => `
-                                <div class="search-result-field">
-                                    <span class="search-result-icon">${icon}</span>
-                                    <div class="search-result-content">
-                                        <span class="search-result-label">${k}</span>
-                                        <span class="search-result-value">${escapeHtml(v || '-')}</span>
-                                    </div>
-                                </div>`).join('')}
-                        </div>
                         <button type="button" class="view-all-btn" onclick="openColumnModalForSearch()" style="margin-top:8px;">COLUMN</button>
                     </div>
                     <div class="search-result-actions">
@@ -4329,4 +4328,14 @@ body.settings-open{overflow:hidden !important;}
   };
 })();
 </script>
+<style id="search-result-numbered-column-order">
+/* Search Result: number items vertically down the left column (1-6), then right (7-11). */
+.search-result-card .search-result-numbered-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  grid-template-rows:repeat(6,auto) !important;
+  grid-auto-flow:column !important;
+  grid-auto-columns:minmax(0,1fr) !important;
+}
+</style>
 </body></html>
