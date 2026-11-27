@@ -1620,6 +1620,10 @@
                     <label>Thickness:</label>
                 <input type="text" id="thickness" placeholder="Enter Thickness..." onfocus="scrollToElement(this)">
                 </div>
+                <div class="edit-field">
+                    <label>Stump:</label>
+                <input type="text" id="stump" placeholder="Enter Stump..." onfocus="scrollToElement(this)">
+                </div>
                 <div class="edit-field full">
                     <label>Remarks / Notes:</label>
                 <input type="text" id="remarks" placeholder="Enter Remarks..." onfocus="scrollToElement(this)">
@@ -2520,6 +2524,7 @@
             const column = document.getElementById('column').value.trim();
             const size = document.getElementById('size').value.trim();
             const thickness = document.getElementById('thickness').value.trim();
+            const stump = document.getElementById('stump').value.trim();
             const remarks = document.getElementById('remarks').value.trim();
             const ffl = document.getElementById('ffl').value.trim();
             const sfl = document.getElementById('sfl').value.trim();
@@ -2533,7 +2538,7 @@
 
             const existingItem = editId ? dataList.find(x => x.id === editId) : null;
             const item = {
-                serial, zone, column, size, thickness, remarks,
+                serial, zone, column, size, thickness, stump, remarks,
                 ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status,
                 inputDate: existingItem?.inputDate || Date.now(),
                 inputBy: existingItem?.inputBy || currentUser?.uid || '',
@@ -2563,6 +2568,7 @@
                 document.getElementById('column').value = item.column || '';
                 document.getElementById('size').value = item.size || '';
                 document.getElementById('thickness').value = item.thickness || '';
+                document.getElementById('stump').value = item.stump || '';
                 document.getElementById('remarks').value = item.remarks || '';
                 document.getElementById('ffl').value = item.ffl || '';
                 document.getElementById('sfl').value = item.sfl || '';
@@ -2604,6 +2610,7 @@
             document.getElementById('column').value = '';
             document.getElementById('size').value = '';
             document.getElementById('thickness').value = '';
+            document.getElementById('stump').value = '';
             document.getElementById('remarks').value = '';
             document.getElementById('ffl').value = '';
             document.getElementById('sfl').value = '';
@@ -2832,9 +2839,6 @@
             showSearchResultForSerial(searchSerial);
         }
 
-        // Stump values sourced from the uploaded Excel workbook (Ref. -> Stump).
-        const excelStumpDataBySerial = Object.freeze({"PG055": "1.800"});
-
         function showSearchResultForSerial(q) {
             const card = document.getElementById('searchResultCard');
             const result = document.getElementById('resultContainer');
@@ -2861,7 +2865,7 @@
                 ['BEAM DEPTH','&#9644;',item.beamDepth],
                 ['BEAM REF','&#9650;',item.beamRef],
                 ['REMARKS','&#8801;',item.remarks],
-                ['STUMP','&#9633;',excelStumpDataBySerial[String(item.serial ?? '').trim().toUpperCase()]]
+                ['STUMP','&#9633;',item.stump]
             ];
             card.innerHTML = `
                 <div class="search-result-card">
@@ -3040,6 +3044,7 @@
                     const columnCol    = findHeader(['COLUMN','Column'], 8);
                     const sizeCol      = findHeader(['SIZE','Size'], 9);
                     const thicknessCol = findHeader(['THICKNESS','Thickness'], 17);
+                    const stumpCol     = findHeader(['STUMP','Stump'], 42);
                     const remarksCol   = findHeader(['REMARKS','Remarks','Remark'], 22);
                     const fflCol       = findHeader(['FFL'], 23);
                     const sflCol       = findHeader(['SFL'], 24);
@@ -3103,6 +3108,7 @@
                             topc: clean(get(row, topcCol)),
                             pcol: clean(get(row, pcolCol)),
                             thickness: clean(get(row, thicknessCol)),
+                            stump: clean(get(row, stumpCol)),
                             sfl: clean(get(row, sflCol)),
                             zone: clean(get(row, zoneCol)),
                             beamDepth: clean(get(row, beamDepthCol)),
