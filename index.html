@@ -2832,6 +2832,9 @@
             showSearchResultForSerial(searchSerial);
         }
 
+        // Stump values sourced from the uploaded Excel workbook (Ref. -> Stump).
+        const excelStumpDataBySerial = Object.freeze({"PG055": "1.800"});
+
         function showSearchResultForSerial(q) {
             const card = document.getElementById('searchResultCard');
             const result = document.getElementById('resultContainer');
@@ -2857,7 +2860,8 @@
                 ['ZONE','&#8982;',item.zone],
                 ['BEAM DEPTH','&#9644;',item.beamDepth],
                 ['BEAM REF','&#9650;',item.beamRef],
-                ['REMARKS','&#8801;',item.remarks]
+                ['REMARKS','&#8801;',item.remarks],
+                ['STUMP','&#9633;',excelStumpDataBySerial[String(item.serial ?? '').trim().toUpperCase()]]
             ];
             card.innerHTML = `
                 <div class="search-result-card">
