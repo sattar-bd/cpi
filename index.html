@@ -3041,7 +3041,10 @@
                     const noCol        = findHeader(['No.','No','Serial','Serial No','Serial Number'], 0);
                     const refCol       = findHeader(['REF','Ref','Ref.','Reference'], 7);
                     const zoneCol      = findHeader(['ZONE','Zone'], 6);
-                    const columnCol    = findHeader(['COLUMN','Column'], 8);
+                    // In this workbook, the merged "Column" header is in H, but
+                    // the actual column reference values (e.g. OC22) are in I.
+                    // Reading the header cell directly returns blank for every record.
+                    const columnCol    = 8;
                     const sizeCol      = findHeader(['SIZE','Size'], 9);
                     const thicknessCol = findHeader(['THICKNESS','Thickness'], 17);
                     const remarksCol   = findHeader(['REMARKS','Remarks','Remark'], 22);
