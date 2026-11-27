@@ -1620,10 +1620,6 @@
                     <label>Thickness:</label>
                 <input type="text" id="thickness" placeholder="Enter Thickness..." onfocus="scrollToElement(this)">
                 </div>
-                <div class="edit-field">
-                    <label>Stump:</label>
-                <input type="text" id="stump" placeholder="Enter Stump..." onfocus="scrollToElement(this)">
-                </div>
                 <div class="edit-field full">
                     <label>Remarks / Notes:</label>
                 <input type="text" id="remarks" placeholder="Enter Remarks..." onfocus="scrollToElement(this)">
@@ -1635,6 +1631,10 @@
                 <div class="edit-field">
                     <label>SFL:</label>
                 <input type="text" id="sfl" placeholder="Enter SFL..." onfocus="scrollToElement(this)">
+                </div>
+                <div class="edit-field">
+                    <label>Stump:</label>
+                <input type="text" id="stump" placeholder="Enter Stump..." onfocus="scrollToElement(this)">
                 </div>
                 <div class="edit-field">
                     <label>Beam Ref:</label>
@@ -2524,10 +2524,10 @@
             const column = document.getElementById('column').value.trim();
             const size = document.getElementById('size').value.trim();
             const thickness = document.getElementById('thickness').value.trim();
-            const stump = document.getElementById('stump').value.trim();
             const remarks = document.getElementById('remarks').value.trim();
             const ffl = document.getElementById('ffl').value.trim();
             const sfl = document.getElementById('sfl').value.trim();
+            const stump = document.getElementById('stump').value.trim();
             const beamRef = document.getElementById('beamRef').value.trim();
             const beamDepth = document.getElementById('beamDepth').value.trim();
             const topc = document.getElementById('topc').value.trim();
@@ -2538,8 +2538,8 @@
 
             const existingItem = editId ? dataList.find(x => x.id === editId) : null;
             const item = {
-                serial, zone, column, size, thickness, stump, remarks,
-                ffl, sfl, beamRef, beamDepth, topc, pcol, ref, status,
+                serial, zone, column, size, thickness, remarks,
+                ffl, sfl, stump, beamRef, beamDepth, topc, pcol, ref, status,
                 inputDate: existingItem?.inputDate || Date.now(),
                 inputBy: existingItem?.inputBy || currentUser?.uid || '',
                 inputByName: existingItem?.inputByName || currentProfileName || 'User'
@@ -2568,10 +2568,10 @@
                 document.getElementById('column').value = item.column || '';
                 document.getElementById('size').value = item.size || '';
                 document.getElementById('thickness').value = item.thickness || '';
-                document.getElementById('stump').value = item.stump || '';
                 document.getElementById('remarks').value = item.remarks || '';
                 document.getElementById('ffl').value = item.ffl || '';
                 document.getElementById('sfl').value = item.sfl || '';
+                document.getElementById('stump').value = item.stump || '';
                 document.getElementById('beamRef').value = item.beamRef || '';
                 document.getElementById('beamDepth').value = item.beamDepth || '';
                 document.getElementById('topc').value = item.topc || '';
@@ -2610,10 +2610,10 @@
             document.getElementById('column').value = '';
             document.getElementById('size').value = '';
             document.getElementById('thickness').value = '';
-            document.getElementById('stump').value = '';
             document.getElementById('remarks').value = '';
             document.getElementById('ffl').value = '';
             document.getElementById('sfl').value = '';
+            document.getElementById('stump').value = '';
             document.getElementById('beamRef').value = '';
             document.getElementById('beamDepth').value = '';
             document.getElementById('topc').value = '';
@@ -2861,11 +2861,11 @@
                 ['PCOL','&#9646;',item.pcol],
                 ['THICKNESS','&#9707;',item.thickness],
                 ['SFL','&#8597;',item.sfl],
+                ['STUMP','&#9638;',item.stump],
                 ['ZONE','&#8982;',item.zone],
                 ['BEAM DEPTH','&#9644;',item.beamDepth],
                 ['BEAM REF','&#9650;',item.beamRef],
-                ['REMARKS','&#8801;',item.remarks],
-                ['STUMP','&#9633;',item.stump]
+                ['REMARKS','&#8801;',item.remarks]
             ];
             card.innerHTML = `
                 <div class="search-result-card">
@@ -3044,10 +3044,10 @@
                     const columnCol    = findHeader(['COLUMN','Column'], 8);
                     const sizeCol      = findHeader(['SIZE','Size'], 9);
                     const thicknessCol = findHeader(['THICKNESS','Thickness'], 17);
-                    const stumpCol     = findHeader(['STUMP','Stump'], 42);
                     const remarksCol   = findHeader(['REMARKS','Remarks','Remark'], 22);
                     const fflCol       = findHeader(['FFL'], 23);
                     const sflCol       = findHeader(['SFL'], 24);
+                    const stumpCol     = findHeader(['STUMP'], 39);
                     const beamRefCol   = findHeader(['BEAM REF','Beam Ref','Beam Reference'], 25);
                     const beamDepthCol = findHeader(['BEAM DEPTH','Beam Depth','BEAMDEPTH'], 26);
                     const topcCol      = findHeader(['TOPC'], 27);
@@ -3108,8 +3108,8 @@
                             topc: clean(get(row, topcCol)),
                             pcol: clean(get(row, pcolCol)),
                             thickness: clean(get(row, thicknessCol)),
-                            stump: clean(get(row, stumpCol)),
                             sfl: clean(get(row, sflCol)),
+                            stump: clean(get(row, stumpCol)),
                             zone: clean(get(row, zoneCol)),
                             beamDepth: clean(get(row, beamDepthCol)),
                             beamRef: clean(get(row, beamRefCol)),
